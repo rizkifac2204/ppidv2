@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useFormik } from "formik";
-import { useSession, signIn } from "next-auth/react";
+import NextLink from "next/link";
+import { signIn, getSession } from "next-auth/react";
 import * as yup from "yup";
 
 import Image from "next/image";
@@ -33,23 +34,38 @@ function Copyright(props) {
   );
 }
 
-const validationSchema = yup.object({
-  username: yup.string("Masukan Username").required("Harus Diisi"),
-  password: yup.string("Masukan password").required("Password Harus Diisi"),
-});
-
-const handleSubmit = (values) => {
-  console.log(values);
-  signIn("credentials", {
-    username: values.username,
-    password: values.password,
-  });
-};
+export async function getServerSideProps(ctx) {
+  const isUser = await getSession(ctx);
+  if (isUser) {
+    return {
+      redirect: {
+        destination: "/admin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
+}
 
 export default function Login() {
-  const { data: session, status } = useSession();
   const [error, setError] = useState(null);
   const router = useRouter();
+
+  const validationSchema = yup.object({
+    username: yup.string("Masukan Username").required("Harus Diisi"),
+    password: yup.string("Masukan password").required("Password Harus Diisi"),
+  });
+
+  const handleSubmit = (values) => {
+    setError(null);
+    signIn("credentials", {
+      username: values.username,
+      password: values.password,
+    });
+  };
+
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -64,14 +80,6 @@ export default function Login() {
     const getError = getQueryRouter.error;
     if (getError) setError(getError);
   }, [getQueryRouter]);
-  useEffect(() => {
-    if (status === "authenticated") return router.push("/admin");
-  }, [session, status]);
-
-  function handleChange(e, formik) {
-    formik.handleChange(e);
-    setError(null);
-  }
 
   return (
     <>
@@ -125,7 +133,7 @@ export default function Login() {
                   name="username"
                   autoComplete="username"
                   value={formik.values.username}
-                  onChange={(e) => handleChange(e, formik)}
+                  onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={
                     formik.touched.username && Boolean(formik.errors.username)
@@ -140,7 +148,7 @@ export default function Login() {
                   type="password"
                   autoComplete="current-password"
                   value={formik.values.password}
-                  onChange={(e) => handleChange(e, formik)}
+                  onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={
                     formik.touched.password && Boolean(formik.errors.password)
@@ -158,19 +166,16 @@ export default function Login() {
               </form>
               <Grid container>
                 <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Kembali
-                  </Link>
+                  <NextLink href="/">Kembali</NextLink>
                 </Grid>
-                <Grid item>
-                  <Link
-                    href="#"
-                    variant="body2"
-                    onClick={() => signIn("google")}
-                  >
-                    Sudah Daftar Email? Login Dengan Google
-                  </Link>
-                </Grid>
+                <Button
+                  type="button"
+                  variant="text"
+                  size="small"
+                  onClick={() => signIn("google")}
+                >
+                  Sudah Daftar Email? Login Dengan Google
+                </Button>
               </Grid>
               <Copyright sx={{ mt: 5 }} />
             </Box>
