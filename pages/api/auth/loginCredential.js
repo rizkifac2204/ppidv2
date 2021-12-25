@@ -1,4 +1,4 @@
-import db from "@/libs/db";
+import db from "libs/db";
 import bcrypt from "bcrypt";
 import sha1 from "js-sha1";
 

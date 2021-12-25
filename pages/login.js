@@ -111,7 +111,7 @@ export default function Login() {
             }}
           >
             <Avatar sx={{ m: 1 }}>
-              <Image src="/images/logo-1.png" layout="fill" />
+              <Image src="/images/logo-1.png" layout="fill" alt="PPID" />
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in PPID Bawaslu

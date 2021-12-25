@@ -1,4 +1,4 @@
-import db from "@/libs/db";
+import db from "libs/db";
 
 const Handler = async (req, res) => {
   if (req.method !== "POST") {

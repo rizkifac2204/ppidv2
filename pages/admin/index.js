@@ -1,7 +1,7 @@
 function Index() {
   return (
     <>
-      <div>Dashboard Admin</div>
+      <div>Dashboard Admin </div>
     </>
   );
 }

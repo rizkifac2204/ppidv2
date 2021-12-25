@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "@/components/Layout/Layout";
+import Layout from "components/Layout";
 import "../styles/globals.css";
 
 // Toast dibutuhkan pada semua halaman termasuk saat logout
@@ -25,7 +25,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
         <meta name="description" content="Rizki New PPID v.2"></meta>
-        <link rel="icon" href="/images/logo-1.png" type="image/x-icon" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <title>PPID</title>
       </Head>
       <ToastContainer />
