@@ -5,6 +5,7 @@ import { ThemeProvider } from "@mui/material/styles";
 
 // components self
 import Sidebar from "./Sidebar";
+import Appbar from "./Appbar";
 import { useRizkiContext, lightTheme, darkTheme } from "context";
 
 export default function Layout({ children }) {
@@ -14,13 +15,14 @@ export default function Layout({ children }) {
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
+        <Appbar />
         <Sidebar />
         <Box
           component="main"
           sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
         >
           <Toolbar />
-          {JSON.stringify(controller)}
+          {/* {JSON.stringify(controller)} */}
           {children}
         </Box>
       </Box>
