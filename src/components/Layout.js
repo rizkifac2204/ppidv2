@@ -1,33 +1,29 @@
-import { useState } from "react";
-
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import Toolbar from "@mui/material/Toolbar";
+import { ThemeProvider } from "@mui/material/styles";
 
+// components self
 import Sidebar from "./Sidebar";
+import { useRizkiContext, lightTheme, darkTheme } from "context";
 
-function Layout({ children }) {
-  const [open, setOpen] = useState(false);
+export default function Layout({ children }) {
+  const [controller, dispatch] = useRizkiContext();
+  const { darkMode } = controller;
   return (
-    <>
-      {/* <Sidebar />
-      <Drawer open={open} onClose={() => setOpen(false)}>
+    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <Sidebar />
         <Box
-          sx={{ width: 250 }}
-          role="presentation"
-          onClick={() => setOpen(false)}
-          onKeyDown={() => setOpen(false)}
+          component="main"
+          sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
         >
-          <h1>HEai</h1>
+          <Toolbar />
+          {JSON.stringify(controller)}
+          {children}
         </Box>
-      </Drawer>
-      {children}
-      {JSON.stringify(open)}
-      <Button variant="contained" onClick={() => setOpen(true)}>
-        Open
-      </Button> */}
-    </>
+      </Box>
+    </ThemeProvider>
   );
 }
-
-export default Layout;

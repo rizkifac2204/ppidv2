@@ -19,6 +19,8 @@ Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 
+import { ContextProvider } from "context";
+
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <>
@@ -32,9 +34,11 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
       <SessionProvider session={session}>
         {Component.auth ? (
           <Auth>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+            <ContextProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ContextProvider>
           </Auth>
         ) : (
           <Component {...pageProps} />
