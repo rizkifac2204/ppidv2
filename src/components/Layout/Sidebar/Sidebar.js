@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import {
@@ -13,6 +14,7 @@ import {
 } from "context";
 import Link from "next/link";
 import Image from "next/image";
+import { mainListItems, secondaryListItems } from "./ListItems";
 
 const openedMixin = (theme, close) => ({
   width: close ? 0 : drawerWidth,
@@ -41,7 +43,8 @@ const closedMixin = (theme, close) => ({
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open" && prop !== "close",
 })(({ theme, open, close }) => ({
-  width: drawerWidth,
+  "& .MuiDrawer-paper": {},
+  position: "relative",
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
@@ -66,34 +69,32 @@ function Sidebar() {
 
   return (
     <Drawer variant="permanent" open={toggleSidebar} close={closeSidebar}>
-      <Toolbar>
-        {toggleSidebar ? (
-          darkMode ? (
-            <Image src="/images/logo-white.png" alt="Logo" layout="fill" />
-          ) : (
-            <Image src="/images/logo-dark.png" alt="Logo" layout="fill" />
-          )
-        ) : (
-          <Image src="/images/logo.png" alt="Logo" layout="fill" />
-        )}
-      </Toolbar>
+      <Link href={"/admin"}>
+        <a>
+          <Toolbar
+            sx={{
+              my: 2,
+            }}
+          >
+            {toggleSidebar ? (
+              darkMode ? (
+                <Image src="/images/logo-white.png" alt="Logo" layout="fill" />
+              ) : (
+                <Image
+                  src="/images/logo-dark.png"
+                  alt="Logo"
+                  layout="fill"
+                  priority
+                />
+              )
+            ) : (
+              <Image src="/images/logo.png" alt="Logo" layout="fill" />
+            )}
+          </Toolbar>
+        </a>
+      </Link>
 
-      <List>
-        <Link href="/admin">
-          <a>Dashboard</a>
-        </Link>
-      </List>
-      <List>
-        <Link href="/admin/one">
-          <a>One</a>
-        </Link>
-      </List>
-      <List>
-        <Link href="/admin/two">
-          <a>Two</a>
-        </Link>
-      </List>
-      <List>Item 3</List>
+      <List>{mainListItems}</List>
 
       <Box component="div" sx={{ flexGrow: 1 }} />
       <Button onClick={closeDrawer}>

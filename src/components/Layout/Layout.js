@@ -4,8 +4,8 @@ import Toolbar from "@mui/material/Toolbar";
 import { ThemeProvider } from "@mui/material/styles";
 
 // components self
-import Sidebar from "./Sidebar";
-import Appbar from "./Appbar";
+import Sidebar from "./Sidebar/Sidebar";
+import Appbar from "./Appbar/Appbar";
 import { useRizkiContext, lightTheme, darkTheme } from "context";
 
 export default function Layout({ children }) {
@@ -19,7 +19,16 @@ export default function Layout({ children }) {
         <Sidebar />
         <Box
           component="main"
-          sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
+          sx={{
+            p: 2,
+            backgroundColor: (theme) =>
+              theme.palette.mode === "light"
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
+            flexGrow: 1,
+            height: "100vh",
+            overflow: "auto",
+          }}
         >
           <Toolbar />
           {/* {JSON.stringify(controller)} */}

@@ -6,6 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Brightness4OutlinedIcon from "@mui/icons-material/Brightness4Outlined";
 import LogoutIcon from "@mui/icons-material/Logout";
+import Typography from "@mui/material/Typography";
 import {
   useRizkiContext,
   setToggleSidebar,
@@ -47,16 +48,25 @@ function AppbarLayout() {
   };
 
   return (
-    <AppBar position="fixed" open={toggleSidebar} close={closeSidebar}>
+    <AppBar position="absolute" open={toggleSidebar} close={closeSidebar}>
       <Toolbar>
         <IconButton
+          edge="start"
           color="inherit"
           aria-label="open drawer"
           onClick={toggleDrawer}
-          edge="start"
         >
           <MenuIcon />
         </IconButton>
+        <Typography
+          component="h1"
+          variant="h6"
+          color="inherit"
+          noWrap
+          sx={{ flexGrow: 1 }}
+        >
+          Dashboard
+        </Typography>
         <Box component="div" sx={{ flexGrow: 1 }} />
         <IconButton
           color="inherit"
