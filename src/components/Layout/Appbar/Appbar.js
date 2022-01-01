@@ -68,7 +68,7 @@ function AppbarLayout() {
           Dashboard
         </Typography>
         <Box component="div" sx={{ flexGrow: 1 }} />
-        {/* <IconButton
+        <IconButton
           color="inherit"
           onClick={() => setDarkMode(action, !darkMode)}
         >
@@ -76,7 +76,7 @@ function AppbarLayout() {
         </IconButton>
         <IconButton onClick={signOut} color="inherit">
           <LogoutIcon />
-        </IconButton> */}
+        </IconButton>
       </Toolbar>
     </AppBar>
   );

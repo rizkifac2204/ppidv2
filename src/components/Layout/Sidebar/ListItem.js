@@ -9,13 +9,27 @@ import Link from "next/link";
 import Tooltip from "@mui/material/Tooltip";
 import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
+import { useRouter } from "next/router";
 
 export const SingleLevel = ({ item }) => {
+  const routes = useRouter();
+  const isActive = () => routes.pathname === item.path;
   return (
     <Link href={item.path}>
-      <ListItem button>
+      <ListItem
+        button
+        sx={{
+          color: isActive() ? "primary.main" : "",
+        }}
+      >
         <Tooltip title={item.title} placement="right">
-          <ListItemIcon>{item.icon}</ListItemIcon>
+          <ListItemIcon
+            sx={{
+              color: isActive() ? "primary.main" : "",
+            }}
+          >
+            {item.icon}
+          </ListItemIcon>
         </Tooltip>
         <ListItemText primary={item.title} />
       </ListItem>
@@ -24,21 +38,38 @@ export const SingleLevel = ({ item }) => {
 };
 
 export const MultiLevel = ({ item }) => {
+  const routes = useRouter();
+  const firstPath = routes.pathname.split("/")[2];
+
+  const isActive = () => firstPath === item.title.toLowerCase();
+
   const [open, setOpen] = useState(false);
   const handleClick = () => {
     setOpen((prev) => !prev);
   };
   return (
     <>
-      <ListItem button onClick={handleClick}>
+      <ListItem
+        button
+        onClick={handleClick}
+        sx={{
+          color: isActive() ? "primary.main" : "",
+        }}
+      >
         <Tooltip title={item.title} placement="right">
-          <ListItemIcon>{item.icon}</ListItemIcon>
+          <ListItemIcon
+            sx={{
+              color: isActive() ? "primary.main" : "",
+            }}
+          >
+            {item.icon}
+          </ListItemIcon>
         </Tooltip>
         <ListItemText primary={item.title} />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
+        <List component="div" disablePadding dense>
           {item.children.map((child, key) => (
             <Box key={key} sx={{ paddingLeft: 1, paddingY: 0 }}>
               <MenuItem item={child} />

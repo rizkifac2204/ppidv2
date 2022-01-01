@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 
 const Begin = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   return (
     <>
       <h1>Halaman Awal</h1>
@@ -10,8 +11,9 @@ const Begin = () => {
       <ul>
         <li>1. Tampilan selamat datang; atau </li>
         <li>2. Tampilan Formulir dan pencarian data semua Bawaslu; atau</li>
-        <li>3. dll</li>
+        <li>3. dll woy</li>
       </ul>
+      {JSON.stringify(session)}
       {session ? (
         <>
           <Link href="/admin">

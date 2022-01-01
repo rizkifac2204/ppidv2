@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Layout from "components/Layout/Layout";
 import "../styles/globals.css";
+import "react-perfect-scrollbar/dist/css/styles.css";
 
 // Toast dibutuhkan pada semua halaman termasuk saat logout
 import { ToastContainer } from "react-toastify";

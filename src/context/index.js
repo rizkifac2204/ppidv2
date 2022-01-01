@@ -3,6 +3,7 @@ import { createTheme } from "@mui/material/styles";
 import { orange } from "@mui/material/colors";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 const getDesignTokens = (mode) => ({
   palette: {
@@ -71,6 +72,7 @@ const ContextProvider = ({ children }) => {
   };
   const [state, dispatch] = useReducer(reducer, initialState);
   useEffect(() => {
+    toast.dismiss();
     if (isMobile) dispatch({ type: "TOGGLE_SIDEBAR", value: false });
   }, [router]);
   return (

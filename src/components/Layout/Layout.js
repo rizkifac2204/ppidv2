@@ -2,6 +2,8 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import { ThemeProvider } from "@mui/material/styles";
+import PerfectScrollbar from "react-perfect-scrollbar";
+import Container from "@mui/material/Container";
 
 // components self
 import Sidebar from "./Sidebar/Sidebar";
@@ -30,9 +32,10 @@ export default function Layout({ children }) {
             overflow: "auto",
           }}
         >
-          <Toolbar />
-          {/* {JSON.stringify(controller)} */}
-          {children}
+          <PerfectScrollbar options={{ suppressScrollX: true }}>
+            <Toolbar />
+            <Container maxWidth={false}>{children}</Container>
+          </PerfectScrollbar>
         </Box>
       </Box>
     </ThemeProvider>
