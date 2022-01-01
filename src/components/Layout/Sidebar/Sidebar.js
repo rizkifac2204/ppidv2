@@ -1,9 +1,7 @@
 import MuiDrawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
-import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import {
@@ -14,7 +12,7 @@ import {
 } from "context";
 import Link from "next/link";
 import Image from "next/image";
-import { mainListItems, secondaryListItems } from "./ListItems";
+import MainList from "./MainList";
 
 const openedMixin = (theme, close) => ({
   width: close ? 0 : drawerWidth,
@@ -58,10 +56,25 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
+const LogoContainer = styled("div", {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  position: "relative",
+  margin: 10,
+  ...(open && {
+    width: 160,
+    height: 50,
+  }),
+  ...(!open && {
+    width: 50,
+    height: 50,
+    marginLeft: 10,
+  }),
+}));
+
 function Sidebar() {
   const [init, action] = useRizkiContext();
   const { toggleSidebar, closeSidebar, darkMode } = init;
-
   const closeDrawer = () => {
     setToggleSidebar(action, !toggleSidebar);
     setCloseSidebar(action, true);
@@ -69,32 +82,42 @@ function Sidebar() {
 
   return (
     <Drawer variant="permanent" open={toggleSidebar} close={closeSidebar}>
-      <Link href={"/admin"}>
-        <a>
-          <Toolbar
-            sx={{
-              my: 2,
-            }}
-          >
-            {toggleSidebar ? (
-              darkMode ? (
-                <Image src="/images/logo-white.png" alt="Logo" layout="fill" />
+      <Box>
+        <Link href={"/admin"}>
+          <a>
+            <LogoContainer open={toggleSidebar}>
+              {toggleSidebar ? (
+                darkMode ? (
+                  <Image
+                    src="/images/logo-white.png"
+                    alt="Logo"
+                    layout="fill"
+                    priority
+                  />
+                ) : (
+                  <Image
+                    src="/images/logo-dark.png"
+                    alt="Logo"
+                    layout="fill"
+                    priority
+                  />
+                )
               ) : (
                 <Image
-                  src="/images/logo-dark.png"
+                  src="/images/logo.png"
                   alt="Logo"
                   layout="fill"
-                  priority
+                  className="logoSmall"
                 />
-              )
-            ) : (
-              <Image src="/images/logo.png" alt="Logo" layout="fill" />
-            )}
-          </Toolbar>
-        </a>
-      </Link>
+              )}
+            </LogoContainer>
+          </a>
+        </Link>
+      </Box>
 
-      <List>{mainListItems}</List>
+      <List>
+        <MainList />
+      </List>
 
       <Box component="div" sx={{ flexGrow: 1 }} />
       <Button onClick={closeDrawer}>
