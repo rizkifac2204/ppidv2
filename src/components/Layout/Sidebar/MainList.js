@@ -1,8 +1,14 @@
 import { MenuItem } from "./ListItem";
-import routes from "components/routes";
+import { mainRoutes, settingRoutes, chartRoutes } from "components/routes";
 
-const MainList = () => {
-  return routes.map((item) => <MenuItem key={item.title} item={item} />);
+export const MainList = () => {
+  return mainRoutes.map((item) => <MenuItem key={item.title} item={item} />);
 };
 
-export default MainList;
+export const SettingList = () => {
+  return settingRoutes.map((item) => <MenuItem key={item.title} item={item} />);
+};
+
+export const ChartList = () => {
+  return chartRoutes.map((item) => <MenuItem key={item.title} item={item} />);
+};

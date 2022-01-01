@@ -15,7 +15,6 @@
     "@mui/styles": "^5.2.3",
     "axios": "^0.24.0",
     "bcrypt": "^5.0.1",
-    "chroma-js": "^2.1.2",
     "formik": "^2.2.9",
     "js-sha1": "^0.6.0",
     "knex": "^0.95.14",
@@ -28,7 +27,6 @@
     "prop-types": "^15.8.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-github-btn": "^1.2.1",
     "react-toastify": "^8.1.0",
     "yup": "^0.32.11"
   },

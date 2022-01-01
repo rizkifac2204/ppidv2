@@ -2,6 +2,7 @@ import MuiDrawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import {
@@ -12,7 +13,7 @@ import {
 } from "context";
 import Link from "next/link";
 import Image from "next/image";
-import MainList from "./MainList";
+import { MainList, SettingList, ChartList } from "./MainList";
 
 const openedMixin = (theme, close) => ({
   width: close ? 0 : drawerWidth,
@@ -117,6 +118,18 @@ function Sidebar() {
 
       <List>
         <MainList />
+      </List>
+
+      <Divider />
+
+      <List>
+        <SettingList />
+      </List>
+
+      <Divider />
+
+      <List>
+        <ChartList />
       </List>
 
       <Box component="div" sx={{ flexGrow: 1 }} />

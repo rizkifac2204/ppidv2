@@ -1,30 +1,134 @@
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import StarBorder from "@mui/icons-material/StarBorder";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
+import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
+import PanToolIcon from "@mui/icons-material/PanTool";
+import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
+import PeopleIcon from "@mui/icons-material/People";
+import HomeWorkIcon from "@mui/icons-material/HomeWork";
+import AutoDeleteIcon from "@mui/icons-material/AutoDelete";
+import BarChartIcon from "@mui/icons-material/BarChart";
 
-const routes = [
+export const mainRoutes = [
   {
     title: "Dashboard",
     path: "/admin",
     icon: <DashboardIcon />,
   },
   {
-    path: "/admin/two",
-    title: "Halaman 2",
-    icon: <ShoppingCartIcon />,
+    title: "Permohonan",
+    icon: <AutoAwesomeMotionIcon />,
     children: [
       {
-        path: "/admin/two",
-        title: "sub 1",
-        icon: <StarBorder />,
+        title: "Online",
+        path: "/admin/permohonan/online",
+        icon: <ArrowRightIcon />,
       },
       {
-        path: "/admin/two",
-        title: "sub 2",
-        icon: <StarBorder />,
+        title: "Offline",
+        icon: <ArrowRightIcon />,
+        children: [
+          {
+            title: "Data",
+            path: "/admin/permohonan/offline",
+            icon: null,
+          },
+          {
+            title: "Tambah",
+            path: "/admin/permohonan/offline/add",
+            icon: null,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Survey",
+    icon: <AnalyticsIcon />,
+    children: [
+      {
+        title: "Data",
+        path: "/admin/survey",
+        icon: <ArrowRightIcon />,
+      },
+      {
+        title: "Chart",
+        path: "/admin/survey/chart",
+        icon: <ArrowRightIcon />,
+      },
+    ],
+  },
+  {
+    title: "Keberatan",
+    path: "/admin/keberatan",
+    icon: <PanToolIcon />,
+  },
+  {
+    title: "Sahabat",
+    icon: <ConnectWithoutContactIcon />,
+    children: [
+      {
+        title: "Subscriber",
+        path: "/admin/sahabat/subsrciber",
+        icon: <ArrowRightIcon />,
+      },
+      {
+        title: "Buat Email",
+        path: "/admin/sahabat/email",
+        icon: <ArrowRightIcon />,
+      },
+      {
+        title: "Draft",
+        path: "/admin/sahabat/draft",
+        icon: <ArrowRightIcon />,
+      },
+      {
+        title: "Terkirim",
+        path: "/admin/sahabat/send",
+        icon: <ArrowRightIcon />,
       },
     ],
   },
 ];
 
-export default routes;
+export const settingRoutes = [
+  {
+    title: "Users",
+    icon: <PeopleIcon />,
+    children: [
+      {
+        title: "Data",
+        path: "/admin/setting/users",
+        icon: <ArrowRightIcon />,
+      },
+      {
+        title: "Tambah",
+        path: "/admin/setting/users/add",
+        icon: <ArrowRightIcon />,
+      },
+    ],
+  },
+  {
+    title: "Wilayah",
+    path: "/admin/setting/wilayah",
+    icon: <HomeWorkIcon />,
+  },
+  {
+    title: "Sampah",
+    path: "/admin/setting/trash",
+    icon: <AutoDeleteIcon />,
+  },
+];
+
+export const chartRoutes = [
+  {
+    title: "Layanan",
+    path: "/admin/chart/layanan",
+    icon: <BarChartIcon />,
+  },
+  {
+    title: "Unit",
+    path: "/admin/chart/unit",
+    icon: <BarChartIcon />,
+  },
+];

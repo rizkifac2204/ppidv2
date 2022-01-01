@@ -8,6 +8,7 @@ import List from "@mui/material/List";
 import Link from "next/link";
 import Tooltip from "@mui/material/Tooltip";
 import Collapse from "@mui/material/Collapse";
+import Box from "@mui/material/Box";
 
 export const SingleLevel = ({ item }) => {
   return (
@@ -27,7 +28,6 @@ export const MultiLevel = ({ item }) => {
   const handleClick = () => {
     setOpen((prev) => !prev);
   };
-
   return (
     <>
       <ListItem button onClick={handleClick}>
@@ -40,9 +40,9 @@ export const MultiLevel = ({ item }) => {
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           {item.children.map((child, key) => (
-            <ListItem key={key} sx={{ paddingLeft: 1, paddingY: 0 }}>
+            <Box key={key} sx={{ paddingLeft: 1, paddingY: 0 }}>
               <MenuItem item={child} />
-            </ListItem>
+            </Box>
           ))}
         </List>
       </Collapse>
