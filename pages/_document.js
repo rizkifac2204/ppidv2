@@ -15,7 +15,7 @@ class MyDocument extends Document {
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
           />
         </Head>
-        <body className="g-sidenav-show bg-gray-200">
+        <body>
           <Main />
           <NextScript />
         </body>
