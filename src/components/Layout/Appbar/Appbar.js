@@ -4,22 +4,15 @@ import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import Brightness4OutlinedIcon from "@mui/icons-material/Brightness4Outlined";
-import LogoutIcon from "@mui/icons-material/Logout";
 import Typography from "@mui/material/Typography";
-import {
-  useRizkiContext,
-  setToggleSidebar,
-  setCloseSidebar,
-  setDarkMode,
-  drawerWidth,
-} from "context";
-import { signOut } from "next-auth/react";
+// components
+import TopRight from "./TopRight";
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open" && prop !== "close",
-})(({ theme, open, close }) => ({
-  zIndex: theme.zIndex.drawer + 1,
+  shouldForwardProp: (prop) =>
+    prop !== "open" && prop !== "close" && prop !== "drawerWidth",
+})(({ theme, open, close, drawerWidth }) => ({
+  // zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -38,23 +31,20 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-function AppbarLayout() {
-  const [init, action] = useRizkiContext();
-  const { toggleSidebar, closeSidebar, darkMode } = init;
-
-  const toggleDrawer = () => {
-    setToggleSidebar(action, !toggleSidebar);
-    setCloseSidebar(action, false);
-  };
-
+function AppbarLayout(props) {
   return (
-    <AppBar position="absolute" open={toggleSidebar} close={closeSidebar}>
+    <AppBar
+      position="absolute"
+      open={props.toggleSidebar}
+      close={props.closeSidebar}
+      drawerWidth={props.drawerWidth}
+    >
       <Toolbar>
         <IconButton
           edge="start"
           color="inherit"
           aria-label="open drawer"
-          onClick={toggleDrawer}
+          onClick={props.toggleDrawer}
         >
           <MenuIcon />
         </IconButton>
@@ -68,15 +58,7 @@ function AppbarLayout() {
           Dashboard
         </Typography>
         <Box component="div" sx={{ flexGrow: 1 }} />
-        <IconButton
-          color="inherit"
-          onClick={() => setDarkMode(action, !darkMode)}
-        >
-          <Brightness4OutlinedIcon />
-        </IconButton>
-        <IconButton onClick={signOut} color="inherit">
-          <LogoutIcon />
-        </IconButton>
+        <TopRight toggleDrawerSetting={props.toggleDrawerSetting} />
       </Toolbar>
     </AppBar>
   );

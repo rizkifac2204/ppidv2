@@ -1,28 +1,87 @@
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Toolbar from "@mui/material/Toolbar";
-import { ThemeProvider } from "@mui/material/styles";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import PerfectScrollbar from "react-perfect-scrollbar";
+import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // components self
 import Sidebar from "./Sidebar/Sidebar";
 import Appbar from "./Appbar/Appbar";
-import { useRizkiContext, lightTheme, darkTheme } from "context";
+import DrawerSetting from "./Appbar/DrawerSetting";
+// CURTOM
+import {
+  useRizkiContext,
+  setToggleSidebar,
+  setCloseSidebar,
+  drawerWidth,
+  setToggleSetting,
+  setDarkMode,
+  getDesignTokens,
+  setPrimaryColor,
+} from "context";
 
 export default function Layout({ children }) {
-  const [controller, dispatch] = useRizkiContext();
-  const { darkMode } = controller;
+  const [init, action] = useRizkiContext();
+  const {
+    toggleSidebar,
+    closeSidebar,
+    darkMode,
+    toggleSetting,
+    primary,
+    secondary,
+  } = init;
+
+  const closeDrawer = () => {
+    setToggleSidebar(action, !toggleSidebar);
+    setCloseSidebar(action, true);
+  };
+
+  const toggleDrawer = () => {
+    setToggleSidebar(action, !toggleSidebar);
+    setCloseSidebar(action, false);
+  };
+
+  const toggleDrawerSetting = () => {
+    setToggleSetting(action, !toggleSetting);
+  };
+
+  const changeMode = () => {
+    setDarkMode(action, !darkMode);
+  };
+
+  const changePrimaryColor = (value) => {
+    setPrimaryColor(action, value);
+  };
+
+  const theme = createTheme(
+    getDesignTokens(darkMode ? "dark" : "light", primary, secondary)
+  );
+
   return (
-    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <Appbar />
-        <Sidebar />
+        <Appbar
+          toggleSidebar={toggleSidebar}
+          closeSidebar={closeSidebar}
+          toggleDrawer={toggleDrawer}
+          toggleDrawerSetting={toggleDrawerSetting}
+          drawerWidth={drawerWidth}
+        />
+
+        <Sidebar
+          toggleSidebar={toggleSidebar}
+          closeSidebar={closeSidebar}
+          darkMode={darkMode}
+          closeDrawer={closeDrawer}
+          drawerWidth={drawerWidth}
+        />
+
         <Box
           component="main"
           sx={{
-            p: 2,
+            p: 1,
             backgroundColor: (theme) =>
               theme.palette.mode === "light"
                 ? theme.palette.grey[100]
@@ -37,6 +96,13 @@ export default function Layout({ children }) {
             <Container maxWidth={false}>{children}</Container>
           </PerfectScrollbar>
         </Box>
+
+        <DrawerSetting
+          open={toggleSetting}
+          toggleDrawerSetting={toggleDrawerSetting}
+          changeMode={changeMode}
+          changePrimaryColor={changePrimaryColor}
+        />
       </Box>
     </ThemeProvider>
   );
