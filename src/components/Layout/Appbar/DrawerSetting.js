@@ -63,7 +63,7 @@ function DrawerSetting(props) {
       <Divider />
 
       <Stack spacing={2} mt={3} mb={3}>
-        <Link href="/admin/profile">
+        <Link href="/admin/profile" passHref={true}>
           <Button
             variant="outlined"
             size="small"
