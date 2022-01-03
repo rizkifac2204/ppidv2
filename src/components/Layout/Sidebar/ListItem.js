@@ -15,7 +15,7 @@ export const SingleLevel = ({ item }) => {
   const routes = useRouter();
   const isActive = () => routes.pathname === item.path;
   return (
-    <Link href={item.path}>
+    <Link href={item.path} passHref={true}>
       <ListItem
         button
         sx={{

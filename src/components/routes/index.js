@@ -8,6 +8,11 @@ import PeopleIcon from "@mui/icons-material/People";
 import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import AutoDeleteIcon from "@mui/icons-material/AutoDelete";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import DataArrayIcon from "@mui/icons-material/DataArray";
+import AddIcon from "@mui/icons-material/Add";
+import BubbleChartIcon from "@mui/icons-material/BubbleChart";
+import WifiIcon from "@mui/icons-material/Wifi";
+import SignalWifiConnectedNoInternet4Icon from "@mui/icons-material/SignalWifiConnectedNoInternet4";
 
 export const mainRoutes = [
   {
@@ -22,21 +27,21 @@ export const mainRoutes = [
       {
         title: "Online",
         path: "/admin/permohonan/online",
-        icon: <ArrowRightIcon />,
+        icon: <WifiIcon sx={{ fontSize: 12 }} />,
       },
       {
         title: "Offline",
-        icon: <ArrowRightIcon />,
+        icon: <SignalWifiConnectedNoInternet4Icon sx={{ fontSize: 12 }} />,
         children: [
           {
             title: "Data",
             path: "/admin/permohonan/offline",
-            icon: null,
+            icon: <DataArrayIcon sx={{ fontSize: 12 }} />,
           },
           {
             title: "Tambah",
             path: "/admin/permohonan/offline/add",
-            icon: null,
+            icon: <AddIcon sx={{ fontSize: 12 }} />,
           },
         ],
       },
@@ -49,12 +54,12 @@ export const mainRoutes = [
       {
         title: "Data",
         path: "/admin/survey",
-        icon: <ArrowRightIcon />,
+        icon: <DataArrayIcon sx={{ fontSize: 12 }} />,
       },
       {
         title: "Chart",
         path: "/admin/survey/chart",
-        icon: <ArrowRightIcon />,
+        icon: <BubbleChartIcon sx={{ fontSize: 12 }} />,
       },
     ],
   },
@@ -99,12 +104,12 @@ export const settingRoutes = [
       {
         title: "Data",
         path: "/admin/setting/users",
-        icon: <ArrowRightIcon />,
+        icon: <DataArrayIcon sx={{ fontSize: 12 }} />,
       },
       {
         title: "Tambah",
         path: "/admin/setting/users/add",
-        icon: <ArrowRightIcon />,
+        icon: <AddIcon sx={{ fontSize: 12 }} />,
       },
     ],
   },

@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-function Online() {
+function Survey() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     function fetch() {
       axios
-        .get(`/api/permohonan/online`)
+        .get(`/api/survey`)
         .then((res) => {
           setData(res.data);
         })
@@ -21,5 +21,5 @@ function Online() {
   return <>{JSON.stringify(data)}</>;
 }
 
-Online.auth = true;
-export default Online;
+Survey.auth = true;
+export default Survey;

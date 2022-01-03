@@ -12,16 +12,10 @@ import List from "@mui/material/List";
 import ListSubheader from "@mui/material/ListSubheader";
 import { styled } from "@mui/material/styles";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
-// CURTOM
-import {
-  useRizkiContext,
-  setToggleSidebar,
-  setCloseSidebar,
-  drawerWidth,
-} from "context";
+// LIST
 import { MainList, SettingList, ChartList } from "./MainList";
 
-const openedMixin = (theme, close) => ({
+const openedMixin = (theme, close, drawerWidth) => ({
   width: close ? 0 : drawerWidth,
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -46,16 +40,16 @@ const closedMixin = (theme, close) => ({
 });
 
 const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== "open" && prop !== "close",
-})(({ theme, open, close }) => ({
-  "& .MuiDrawer-paper": {},
+  shouldForwardProp: (prop) =>
+    prop !== "open" && prop !== "close" && prop !== "drawerWidth",
+})(({ theme, open, close, drawerWidth }) => ({
+  // "& .MuiDrawer-paper": {},
   position: "relative",
-  flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
   ...(open && {
-    ...openedMixin(theme, close),
-    "& .MuiDrawer-paper": openedMixin(theme, close),
+    ...openedMixin(theme, close, drawerWidth),
+    "& .MuiDrawer-paper": openedMixin(theme, close, drawerWidth),
   }),
   ...(!open && {
     ...closedMixin(theme, close),
@@ -79,22 +73,21 @@ const LogoContainer = styled("div", {
   }),
 }));
 
-function Sidebar() {
-  const [init, action] = useRizkiContext();
-  const { toggleSidebar, closeSidebar, darkMode } = init;
-  const closeDrawer = () => {
-    setToggleSidebar(action, !toggleSidebar);
-    setCloseSidebar(action, true);
-  };
-
+function Sidebar(props) {
   return (
-    <Drawer variant="permanent" open={toggleSidebar} close={closeSidebar}>
+    <Drawer
+      variant="permanent"
+      open={props.toggleSidebar}
+      close={props.closeSidebar}
+      drawerWidth={props.drawerWidth}
+      onClose={props.closeDrawer}
+    >
       <Box>
         <Link href={"/admin"}>
           <a>
-            <LogoContainer open={toggleSidebar}>
-              {toggleSidebar ? (
-                darkMode ? (
+            <LogoContainer open={props.toggleSidebar}>
+              {props.toggleSidebar ? (
+                props.darkMode ? (
                   <Image
                     src="/images/logo-white.png"
                     alt="Logo"
@@ -163,7 +156,7 @@ function Sidebar() {
       </PerfectScrollbar>
 
       <Box component="div" sx={{ flexGrow: 1 }} />
-      <Button onClick={closeDrawer}>
+      <Button onClick={props.closeDrawer}>
         <ArrowBackIosNewOutlinedIcon />
       </Button>
     </Drawer>
