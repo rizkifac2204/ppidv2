@@ -1,10 +1,12 @@
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { useEffect } from "react";
+// MUI
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-
 // components self
 import Sidebar from "./Sidebar/Sidebar";
 import Appbar from "./Appbar/Appbar";
@@ -19,9 +21,11 @@ import {
   setDarkMode,
   getDesignTokens,
   setPrimaryColor,
+  setSecondaryColor,
 } from "context";
 
 export default function Layout({ children }) {
+  const handleFullScreen = useFullScreenHandle();
   const [init, action] = useRizkiContext();
   const {
     toggleSidebar,
@@ -54,56 +58,65 @@ export default function Layout({ children }) {
     setPrimaryColor(action, value);
   };
 
+  const changeSecondaryColor = (value) => {
+    setSecondaryColor(action, value);
+  };
+
   const theme = createTheme(
     getDesignTokens(darkMode ? "dark" : "light", primary, secondary)
   );
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ display: "flex" }}>
-        <Appbar
-          toggleSidebar={toggleSidebar}
-          closeSidebar={closeSidebar}
-          toggleDrawer={toggleDrawer}
-          toggleDrawerSetting={toggleDrawerSetting}
-          drawerWidth={drawerWidth}
-        />
+      <FullScreen handle={handleFullScreen}>
+        <CssBaseline />
+        <Box sx={{ display: "flex" }}>
+          <Appbar
+            toggleSidebar={toggleSidebar}
+            closeSidebar={closeSidebar}
+            toggleDrawer={toggleDrawer}
+            toggleDrawerSetting={toggleDrawerSetting}
+            drawerWidth={drawerWidth}
+          />
 
-        <Sidebar
-          toggleSidebar={toggleSidebar}
-          closeSidebar={closeSidebar}
-          darkMode={darkMode}
-          closeDrawer={closeDrawer}
-          drawerWidth={drawerWidth}
-        />
+          <Sidebar
+            toggleSidebar={toggleSidebar}
+            closeSidebar={closeSidebar}
+            darkMode={darkMode}
+            closeDrawer={closeDrawer}
+            drawerWidth={drawerWidth}
+          />
 
-        <Box
-          component="main"
-          sx={{
-            p: 1,
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: "100vh",
-            overflow: "auto",
-          }}
-        >
-          <PerfectScrollbar options={{ suppressScrollX: true }}>
-            <Toolbar />
-            <Container maxWidth={false}>{children}</Container>
-          </PerfectScrollbar>
+          <Box
+            component="main"
+            sx={{
+              p: 1,
+              backgroundColor: (theme) =>
+                theme.palette.mode === "light"
+                  ? theme.palette.grey[100]
+                  : theme.palette.grey[900],
+              flexGrow: 1,
+              height: "100vh",
+              overflow: "auto",
+            }}
+          >
+            <PerfectScrollbar options={{ suppressScrollX: true }}>
+              <Toolbar />
+              <Container maxWidth={false}>{children}</Container>
+            </PerfectScrollbar>
+          </Box>
+
+          <DrawerSetting
+            open={toggleSetting}
+            toggleDrawerSetting={toggleDrawerSetting}
+            changeMode={changeMode}
+            changePrimaryColor={changePrimaryColor}
+            changeSecondaryColor={changeSecondaryColor}
+            darkMode={darkMode}
+            handleFullScreen={handleFullScreen}
+          />
         </Box>
-
-        <DrawerSetting
-          open={toggleSetting}
-          toggleDrawerSetting={toggleDrawerSetting}
-          changeMode={changeMode}
-          changePrimaryColor={changePrimaryColor}
-        />
-      </Box>
+      </FullScreen>
     </ThemeProvider>
   );
 }

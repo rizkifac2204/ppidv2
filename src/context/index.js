@@ -1,17 +1,17 @@
 import { createContext, useContext, useReducer, useRef } from "react";
 import { red } from "@mui/material/colors";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
-const getDesignTokens = (mode, p, s) => ({
+const getDesignTokens = (mode, primary, secondary) => ({
   palette: {
     mode: mode,
     primary: {
-      main: p,
+      main: primary,
     },
     secondary: {
-      main: s,
+      main: secondary,
     },
   },
 });
