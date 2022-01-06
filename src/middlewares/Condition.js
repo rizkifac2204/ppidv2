@@ -5,6 +5,20 @@ export const labelTingkat = (level) => {
   return null;
 };
 
+export const labelKepada = (level) => {
+  if (level <= 2) return "Bawaslu Republik Indonesia";
+  if (level === 3) return "Bawaslu Provinsi";
+  if (level === 4) return "Bawaslu";
+  return null;
+};
+
+export const createWill = (level, prov, kab) => {
+  if (level <= 2) return 0;
+  if (level === 3) return prov;
+  if (level === 4) return kab;
+  return null;
+};
+
 export const conditionMainDashboard = (builder, user) => {
   if (user.level <= 2) {
     builder.whereNot("level", 4);
