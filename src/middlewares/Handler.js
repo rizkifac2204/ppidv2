@@ -12,6 +12,7 @@ export default function Handler() {
     },
   }).use(async (req, res, next) => {
     req.session = await getSession({ req });
+    if (!req.session) return res.status(401).json({ message: "Siapa kamu?" });
     next();
   });
 }

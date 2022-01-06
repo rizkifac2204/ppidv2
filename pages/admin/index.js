@@ -1,43 +1,101 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
+import { useState, useEffect } from "react";
+import axios from "axios";
+// MUI
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
-
 function Index() {
+  const [main, setMain] = useState({});
+  const [status, setStatus] = useState({});
+  const [unresponse, setUnresponse] = useState({});
+
+  useEffect(() => {
+    function getMain() {
+      axios
+        .get(`api/dashboard/main`)
+        .then((res) => {
+          setMain(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    function getStatus() {
+      axios
+        .get(`api/dashboard/status`)
+        .then((res) => {
+          setStatus(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    function getUnresponse() {
+      axios
+        .get(`api/dashboard/unresponse`)
+        .then((res) => {
+          setUnresponse(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    getMain();
+    getStatus();
+    getUnresponse();
+  }, []);
   return (
     <>
-      <Card sx={{ minWidth: 275 }}>
+      <Card sx={{ minWidth: 275, mb: 2 }}>
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Word of the Day
+            Pemanggilan data sukses
           </Typography>
           <Typography variant="h5" component="div">
-            be{bull}nev{bull}o{bull}lent
-          </Typography>
-          <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            adjective
+            Tinggal Atur Tampilan
           </Typography>
           <Typography variant="body2">
-            well meaning and kindly.
-            <br />
-            {'"a benevolent smile"'}
+            Data API, Data AUTH, Data Validasi sudah selesai semua. <br />{" "}
+            Tinggal Olah Data Pada Tampilan
           </Typography>
         </CardContent>
-        <CardActions>
-          <Button size="small">Learn More</Button>
-        </CardActions>
+      </Card>
+      <Card sx={{ minWidth: 275, mb: 2, p: 2 }}>
+        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          Data Pada Header yang biasanya seperti Card
+        </Typography>
+        <CardContent>
+          <Typography variant="body2">
+            {JSON.stringify(Object.keys(main).length)} = {JSON.stringify(main)}
+          </Typography>
+        </CardContent>
+      </Card>
+      <Card sx={{ minWidth: 275, mb: 2, p: 2 }}>
+        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          Data Tabel dengan icon/progress <br />
+          Dibuat dengan 2 tampilan (online dan offline)
+        </Typography>
+        <CardContent>
+          <Typography variant="body2">
+            {JSON.stringify(Object.keys(status).length)} ={" "}
+            {JSON.stringify(status)}
+          </Typography>
+        </CardContent>
+      </Card>
+      <Card sx={{ minWidth: 275, mb: 2, p: 2 }}>
+        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          Data Tabel dengan icon/progress
+        </Typography>
+        <CardContent>
+          <Typography variant="body2">
+            {JSON.stringify(Object.keys(unresponse).length)} ={" "}
+            {JSON.stringify(unresponse)}
+          </Typography>
+        </CardContent>
       </Card>
     </>
   );
