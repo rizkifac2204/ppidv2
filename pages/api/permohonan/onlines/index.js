@@ -84,8 +84,6 @@ export default Handler()
       },
     ]);
 
-    console.log(proses);
-
     // failed
     if (!proses)
       return res.status(400).json({

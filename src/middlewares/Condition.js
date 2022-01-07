@@ -24,10 +24,10 @@ export const conditionMainDashboard = (builder, user) => {
     builder.whereNot("level", 4);
   }
   if (user.level === 3) {
-    builder.where("id_prov", "=", user.id_prov);
+    builder.where("id_prov", user.id_prov);
   }
   if (user.level === 4) {
-    builder.where("id_kabkot", "=", user.id_kabkot);
+    builder.where("id_kabkot", user.id_kabkot);
   }
 };
 
@@ -39,7 +39,7 @@ export const conditionWill = (db, builder, user) => {
     builder.where("id_will", "like", `${user.id_prov}%`);
   }
   if (user.level === 4) {
-    builder.where("id_will", "=", user.id_kabkot);
+    builder.where("id_will", user.id_kabkot);
   }
 };
 
