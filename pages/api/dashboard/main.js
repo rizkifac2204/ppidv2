@@ -4,6 +4,7 @@ import {
   labelTingkat,
   conditionWill,
   conditionMainDashboard,
+  conditionWillSpesific,
 } from "middlewares/Condition";
 
 export default Handler().get(async (req, res) => {
@@ -37,13 +38,28 @@ export default Handler().get(async (req, res) => {
     .modify((builder) => conditionWill(db, builder, req.session.user))
     .first();
 
+  // ambil jumlah keberatan
+  const keberatan = await db
+    .from("tbl_permohonan_keberatan")
+    .count("tbl_permohonan_keberatan.id", { as: "jumlah" })
+    .innerJoin(
+      "tbl_permohonan",
+      "tbl_permohonan_keberatan.id_permohonan",
+      "tbl_permohonan.id"
+    )
+    .modify((builder) =>
+      conditionWillSpesific(db, builder, req.session.user, "tbl_permohonan")
+    )
+    .first();
+
   // return hasil
-  res.status(200).json({
+  res.json({
     message: "Succes",
     tingkat: labelTingkat(req.session.user.level),
     jumlahUser: user.jumlah,
     jumlahOnline: online.jumlah,
     jumlahOffline: offline.jumlah,
     jumlahSurvey: survey.jumlah,
+    jumlahKeberatan: keberatan.jumlah,
   });
 });

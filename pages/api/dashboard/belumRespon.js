@@ -29,7 +29,7 @@ export default Handler().get(async (req, res) => {
     .limit(5);
 
   // return hasil
-  res.status(200).json({
+  res.json({
     message: "Success",
     result,
   });

@@ -2,6 +2,8 @@ import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { useEffect } from "react";
 // MUI
 import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
 import CssBaseline from "@mui/material/CssBaseline";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import Toolbar from "@mui/material/Toolbar";
@@ -23,6 +25,24 @@ import {
   setPrimaryColor,
   setSecondaryColor,
 } from "context";
+
+function Copyright(props) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <Link color="inherit" href="https://loremit.com">
+        Lorem IT
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
 
 export default function Layout({ children }) {
   const handleFullScreen = useFullScreenHandle();
@@ -103,6 +123,7 @@ export default function Layout({ children }) {
             <PerfectScrollbar options={{ suppressScrollX: true }}>
               <Toolbar />
               <Container maxWidth={false}>{children}</Container>
+              <Copyright sx={{ pt: 4 }} />
             </PerfectScrollbar>
           </Box>
 

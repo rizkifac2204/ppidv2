@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Link from "next/link";
+import { toast } from "react-toastify";
 // MUI
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -10,7 +12,6 @@ import IconButton from "@mui/material/IconButton";
 import CardActions from "@mui/material/CardActions";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Grid from "@mui/material/Grid";
-import Collapse from "@mui/material/Collapse";
 // ICON
 import PeopleIcon from "@mui/icons-material/People";
 import PanToolIcon from "@mui/icons-material/PanTool";
@@ -18,6 +19,12 @@ import DynamicFormIcon from "@mui/icons-material/DynamicForm";
 import WifiIcon from "@mui/icons-material/Wifi";
 import SignalWifiBadIcon from "@mui/icons-material/SignalWifiBad";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
+
+// Components
+import {
+  DashboardCollapse,
+  TableBelumRespon,
+} from "components/DashboardComponent";
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -35,10 +42,14 @@ function Index() {
   const [status, setStatus] = useState({});
   const [unresponse, setUnresponse] = useState({});
 
-  const [expanded, setExpanded] = useState(false);
+  const [expandedOnline, setExpandedOnline] = useState(false);
+  const [expandedOffline, setExpandedOffline] = useState(false);
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
+  const handleExpandOnlineClick = () => {
+    setExpandedOnline(!expandedOnline);
+  };
+  const handleExpandOfflineClick = () => {
+    setExpandedOffline(!expandedOffline);
   };
 
   useEffect(() => {
@@ -50,6 +61,7 @@ function Index() {
         })
         .catch((err) => {
           console.log(err);
+          toast.error("Terjadi Kesalahan");
         });
     }
 
@@ -61,23 +73,25 @@ function Index() {
         })
         .catch((err) => {
           console.log(err);
+          toast.error("Terjadi Kesalahan");
         });
     }
 
-    function getUnresponse() {
+    function getBelumRespon() {
       axios
-        .get(`api/dashboard/unresponse`)
+        .get(`api/dashboard/belumRespon`)
         .then((res) => {
           setUnresponse(res.data);
         })
         .catch((err) => {
           console.log(err);
+          toast.error("Terjadi Kesalahan");
         });
     }
 
-    // getMain();
-    // getStatus();
-    // getUnresponse();
+    getMain();
+    getStatus();
+    getBelumRespon();
   }, []);
 
   return (
@@ -93,16 +107,21 @@ function Index() {
             <Box>
               <CardContent>
                 <Typography component="div" variant="h5">
-                  28
+                  {main.jumlahUser}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
                   Pengguna
                 </Typography>
               </CardContent>
               <CardActions>
-                <IconButton aria-label="Detail">
-                  <SettingsSuggestIcon />
-                </IconButton>
+                <Link href="/admin/users">
+                  <a>
+                    <SettingsSuggestIcon
+                      color="secondary"
+                      sx={{ cursor: "pointer" }}
+                    />
+                  </a>
+                </Link>
               </CardActions>
             </Box>
             <Box
@@ -127,16 +146,21 @@ function Index() {
             <Box>
               <CardContent>
                 <Typography component="div" variant="h5">
-                  100
+                  {main.jumlahSurvey}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
                   Survey
                 </Typography>
               </CardContent>
               <CardActions>
-                <IconButton aria-label="Detail">
-                  <SettingsSuggestIcon />
-                </IconButton>
+                <Link href="/admin/survey">
+                  <a>
+                    <SettingsSuggestIcon
+                      color="secondary"
+                      sx={{ cursor: "pointer" }}
+                    />
+                  </a>
+                </Link>
               </CardActions>
             </Box>
             <Box
@@ -161,16 +185,21 @@ function Index() {
             <Box>
               <CardContent>
                 <Typography component="div" variant="h5">
-                  10
+                  {main.jumlahKeberatan}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
                   Keberatan
                 </Typography>
               </CardContent>
               <CardActions>
-                <IconButton aria-label="Detail">
-                  <SettingsSuggestIcon />
-                </IconButton>
+                <Link href="/admin/keberatan">
+                  <a>
+                    <SettingsSuggestIcon
+                      color="secondary"
+                      sx={{ cursor: "pointer" }}
+                    />
+                  </a>
+                </Link>
               </CardActions>
             </Box>
             <Box
@@ -186,24 +215,31 @@ function Index() {
         </Grid>
 
         <Grid item xs={12} lg={6}>
-          <Card sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Card
+            sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+          >
             <Box>
               <CardContent>
                 <Typography component="div" variant="h5">
-                  28
+                  {main.jumlahOnline}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
                   Pemohonan Online
                 </Typography>
               </CardContent>
               <CardActions disableSpacing>
-                <IconButton aria-label="Detail">
-                  <SettingsSuggestIcon />
-                </IconButton>
+                <Link href="/admin/permohonan/online">
+                  <a>
+                    <SettingsSuggestIcon
+                      color="secondary"
+                      sx={{ cursor: "pointer" }}
+                    />
+                  </a>
+                </Link>
                 <ExpandMore
-                  expand={expanded}
-                  onClick={handleExpandClick}
-                  aria-expanded={expanded}
+                  expand={expandedOnline}
+                  onClick={handleExpandOnlineClick}
+                  aria-expanded={expandedOnline}
                   aria-label="show more"
                 >
                   <ExpandMoreIcon />
@@ -220,60 +256,40 @@ function Index() {
               <WifiIcon color="success" sx={{ fontSize: 120 }} />
             </Box>
           </Card>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <CardContent>
-              <Typography paragraph>Method:</Typography>
-              <Typography paragraph>
-                Heat 1/2 cup of the broth in a pot until simmering, add saffron
-                and set aside for 10 minutes.
-              </Typography>
-              <Typography paragraph>
-                Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil.
-              </Typography>
-              <Typography paragraph>
-                Add rice and stir very gently to distribute. Top with artichokes
-                and peppers, and cook without stirring, until most of the liquid
-                is absorbed, 15 to 18 minutes. Reduce heat to medium-low, add
-                reserved shrimp and mussels, tucking them down into the rice,
-                and cook again without stirring, until mussels have opened and
-                rice is just tender, 5 to 7 minutes more. (Discard any mussels
-                that don’t open.)
-              </Typography>
-              <Typography>
-                Set aside off of the heat to let rest for 10 minutes, and then
-                serve.
-              </Typography>
-            </CardContent>
-          </Collapse>
+          <DashboardCollapse
+            expanded={expandedOnline}
+            arr={status.online}
+            jumlah={main.jumlahOnline}
+            diterima={true}
+          />
         </Grid>
 
         <Grid item xs={12} lg={6}>
-          <Card sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Card
+            sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+          >
             <Box>
               <CardContent>
                 <Typography component="div" variant="h5">
-                  28
+                  {main.jumlahOffline}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
-                  Pemohonan Online
+                  Pemohonan Offline
                 </Typography>
               </CardContent>
               <CardActions disableSpacing>
-                <IconButton aria-label="Detail">
-                  <SettingsSuggestIcon />
-                </IconButton>
+                <Link href="/admin/permohonan/offline">
+                  <a>
+                    <SettingsSuggestIcon
+                      color="secondary"
+                      sx={{ cursor: "pointer" }}
+                    />
+                  </a>
+                </Link>
                 <ExpandMore
-                  expand={expanded}
-                  onClick={handleExpandClick}
-                  aria-expanded={expanded}
+                  expand={expandedOffline}
+                  onClick={handleExpandOfflineClick}
+                  aria-expanded={expandedOffline}
                   aria-label="show more"
                 >
                   <ExpandMoreIcon />
@@ -290,46 +306,29 @@ function Index() {
               <SignalWifiBadIcon color="success" sx={{ fontSize: 120 }} />
             </Box>
           </Card>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <DashboardCollapse
+            expanded={expandedOffline}
+            arr={status.offline}
+            jumlah={main.jumlahOffline}
+            diterima={false}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Card>
             <CardContent>
-              <Typography paragraph>Method:</Typography>
-              <Typography paragraph>
-                Heat 1/2 cup of the broth in a pot until simmering, add saffron
-                and set aside for 10 minutes.
+              <Typography
+                sx={{ fontSize: 14 }}
+                color="text.secondary"
+                gutterBottom
+              >
+                Bawaslu Dengan Jumlah Permohonan Yang Belum Direspon Terbanyak
               </Typography>
-              <Typography paragraph>
-                Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil.
-              </Typography>
-              <Typography paragraph>
-                Add rice and stir very gently to distribute. Top with artichokes
-                and peppers, and cook without stirring, until most of the liquid
-                is absorbed, 15 to 18 minutes. Reduce heat to medium-low, add
-                reserved shrimp and mussels, tucking them down into the rice,
-                and cook again without stirring, until mussels have opened and
-                rice is just tender, 5 to 7 minutes more. (Discard any mussels
-                that don’t open.)
-              </Typography>
-              <Typography>
-                Set aside off of the heat to let rest for 10 minutes, and then
-                serve.
-              </Typography>
+              <TableBelumRespon arr={unresponse} />
             </CardContent>
-          </Collapse>
+          </Card>
         </Grid>
       </Grid>
-
-      {/* {JSON.stringify(Object.keys(main).length)} = {JSON.stringify(main)}
-      {JSON.stringify(Object.keys(status).length)} = {JSON.stringify(status)}
-      {JSON.stringify(Object.keys(unresponse).length)} ={" "}
-      {JSON.stringify(unresponse)} */}
     </>
   );
 }

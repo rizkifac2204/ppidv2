@@ -27,7 +27,7 @@ export default Handler().get(async (req, res) => {
     .groupBy("status");
 
   // return hasil
-  res.status(200).json({
+  res.json({
     message: "Success",
     online,
     offline,
