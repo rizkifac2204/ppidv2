@@ -14,3 +14,15 @@ a {
 * {
   box-sizing: border-box;
 }
+
+#nprogress {
+  position: relative;
+  z-index: 1501;
+}
+
+#nprogress .bar {
+  background: red !important;
+}
+#nprogress .spinner .spinner-icon {
+  border-left-color: rgb(255, 53, 3);
+}

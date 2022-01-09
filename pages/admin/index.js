@@ -334,4 +334,10 @@ function Index() {
 }
 
 Index.auth = true;
+Index.breadcrumb = [
+  {
+    path: "/admin",
+    title: "Home",
+  },
+];
 export default Index;

@@ -1,16 +1,22 @@
 import Typography from "@mui/material/Typography";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Link from "@mui/material/Link";
 import LinkNext from "next/link";
 
-export default function BasicBreadcrumbs() {
+export default function BreadcrumbsHead({ list }) {
   return (
-    <Breadcrumbs aria-label="breadcrumb" separator="›">
-      <LinkNext href="/admin">Home</LinkNext>
-      <LinkNext href="/admin/survey">
-        <a>Coba</a>
-      </LinkNext>
-      <Typography color="text.primary">Breadcrumbs</Typography>
+    <Breadcrumbs mb={3} ml={2} aria-label="breadcrumb" separator="›">
+      {list &&
+        list.map((item, idx, arr) =>
+          idx + 1 === arr.length ? (
+            <Typography key={idx} color="text.primary">
+              {item.title}
+            </Typography>
+          ) : (
+            <LinkNext key={idx} href={item.path}>
+              <a>{item.title}</a>
+            </LinkNext>
+          )
+        )}
     </Breadcrumbs>
   );
 }

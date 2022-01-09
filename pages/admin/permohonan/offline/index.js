@@ -41,4 +41,14 @@ function Offline() {
 }
 
 Offline.auth = true;
+Offline.breadcrumb = [
+  {
+    path: "/admin",
+    title: "Home",
+  },
+  {
+    path: "/admin/permohonan/offline",
+    title: "Permohonan Offline",
+  },
+];
 export default Offline;

@@ -41,4 +41,14 @@ function Online() {
 }
 
 Online.auth = true;
+Online.breadcrumb = [
+  {
+    path: "/admin",
+    title: "Home",
+  },
+  {
+    path: "/admin/permohonan/online",
+    title: "Permohonan Online",
+  },
+];
 export default Online;

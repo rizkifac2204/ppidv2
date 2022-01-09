@@ -1,6 +1,7 @@
 import db from "libs/db";
 import Handler from "middlewares/Handler";
 import bcrypt from "bcrypt";
+import sha1 from "js-sha1";
 
 export default Handler()
   .get(async (req, res) => {
@@ -24,16 +25,20 @@ export default Handler()
   })
   .put(async (req, res) => {
     const { id } = req.session.user;
-    const { nama, telp, alamat, username, password, passwordConfirm } =
+    const { nama, telp, email, alamat, username, password, passwordConfirm } =
       req.body;
 
     const salt = bcrypt.genSaltSync(10);
     const hashPasswordConfirm = bcrypt.hashSync(passwordConfirm, salt);
 
-    // jika password tidak sama
+    // // jika password tidak sama
+    const old = sha1(sha1(passwordConfirm));
     const match = await bcrypt.compare(hashPasswordConfirm, password);
-    if (!match)
-      return res.status(401).json({ message: "Password Lama Anda Salah" });
+
+    if (!match) {
+      if (old !== password)
+        return res.status(401).json({ message: "Password Anda Salah" });
+    }
 
     const proses = await db("tbl_users")
       .where("id", id)

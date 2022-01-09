@@ -22,11 +22,9 @@ const Handler = async (req, res) => {
 
   const user = {
     id: checkUser.id,
-    name: checkUser.nama,
     level: checkUser.level,
     id_prov: checkUser.id_prov,
     id_kabkot: checkUser.id_kabkot,
-    wilayah: checkUser.wilayah,
     email: checkUser.email,
   };
   res.json(user);
