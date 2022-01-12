@@ -7,6 +7,11 @@ module.exports = {
         destination: "/admin/permohonan/online",
         permanent: true,
       },
+      {
+        source: "/admin/setting",
+        destination: "/admin/setting/wilayah",
+        permanent: true,
+      },
     ];
   },
 };

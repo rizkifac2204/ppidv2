@@ -1,5 +1,6 @@
 import db from "libs/db";
 import Handler from "middlewares/Handler";
+import { createWill } from "middlewares/Condition";
 
 const conditionForThis = (builder, user) => {
   if (user.level <= 2) {
@@ -15,7 +16,6 @@ const conditionForThis = (builder, user) => {
 
 export default Handler()
   .get(async (req, res) => {
-    const { level, id_prov, id_kabkot } = req.session.user;
     const data = await db("tbl_data_bawaslu")
       .modify((builder) => conditionForThis(builder, req.session.user))
       .first();
@@ -23,21 +23,14 @@ export default Handler()
   })
   .post(async (req, res) => {
     const { level, id_prov, id_kabkot } = req.session.user;
-    const {
-      dataExist,
-      id_wilayah,
-      telp,
-      alamat,
-      kota,
-      email,
-      ppid,
-      fb,
-      tw,
-      yt,
-      ig,
-    } = req.body;
+    const id_wilayah = createWill(level, id_prov, id_kabkot);
+    const { telp, alamat, kota, email, ppid, fb, tw, yt, ig } = req.body;
 
-    if (dataExist) {
+    const cek = await db("tbl_data_bawaslu")
+      .modify((builder) => conditionForThis(builder, req.session.user))
+      .first();
+
+    if (cek) {
       // proses update
       const update = await db("tbl_data_bawaslu")
         .where("id_wilayah", id_wilayah)

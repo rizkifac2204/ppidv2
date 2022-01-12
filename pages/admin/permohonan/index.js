@@ -1,9 +1,7 @@
-import React from "react";
-
 function Permohonan() {
   return (
     <>
-      <h1>Halaman data Offline baru</h1>
+      <h1>Halaman Permohonan (Hanya Redirect)</h1>
     </>
   );
 }

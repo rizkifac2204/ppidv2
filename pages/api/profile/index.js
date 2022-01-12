@@ -42,7 +42,7 @@ export default Handler()
 
     const proses = await db("tbl_users")
       .where("id", id)
-      .update({ nama, telp, alamat, username, updated_at: db.fn.now() });
+      .update({ nama, telp, alamat, email, username, updated_at: db.fn.now() });
 
     // failed
     if (!proses) return req.status(400).json({ message: "Gagal Proses" });

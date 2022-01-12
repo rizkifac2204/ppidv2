@@ -28,5 +28,5 @@ export default Handler().put(async (req, res) => {
   if (!proses)
     return res.status(400).json({ message: "Gagal Merubah Password" });
   // success
-  res.json({ message: "Berhasil Menginput User", type: "success" });
+  res.json({ message: "Berhasil Merubah Password", type: "success" });
 });

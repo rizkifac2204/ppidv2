@@ -11,48 +11,43 @@ import {
   TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import WaitLoadingComponent from "./WaitLoadingComponent";
+
+const handleSubmit = (values) => {
+  const toastProses = toast.loading("Tunggu Sebentar...");
+  axios
+    .put(`/api/profile`, values)
+    .then((res) => {
+      toast.update(toastProses, {
+        render: res.data.message,
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    })
+    .catch((err) => {
+      console.log(err.response.data);
+      toast.update(toastProses, {
+        render: err.response.data.message,
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    });
+};
+
+const validationSchema = yup.object({
+  nama: yup.string("Masukan Nama").required("Harus Diisi"),
+  telp: yup.string("Masukan Telp/HP").required("Telp Harus Diisi"),
+  email: yup
+    .string("Masukan Email")
+    .email("Email Tidak Valid")
+    .required("Password Harus Diisi"),
+  alamat: yup.string().required("Alamat Harus Diisi"),
+  username: yup.string().required("Username Harus Diisi"),
+  passwordConfirm: yup.string().required("Password Harus Diisi"),
+});
 
 function ProfileForm({ profile }) {
-  // tunggu profile terbaca agar initialValues Formik Terbaca
-  if (Object.keys(profile).length === 0) return <WaitLoadingComponent />;
-
-  const handleSubmit = (values) => {
-    const toastProses = toast.loading("Tunggu Sebentar...");
-    axios
-      .put(`/api/profile`, values)
-      .then((res) => {
-        console.log(res.data);
-        toast.update(toastProses, {
-          render: res.data.message,
-          type: "success",
-          isLoading: false,
-          autoClose: 2000,
-        });
-      })
-      .catch((err) => {
-        console.log(err.response.data);
-        toast.update(toastProses, {
-          render: err.response.data.message,
-          type: "error",
-          isLoading: false,
-          autoClose: 2000,
-        });
-      });
-  };
-
-  const validationSchema = yup.object({
-    nama: yup.string("Masukan Nama").required("Harus Diisi"),
-    telp: yup.string("Masukan Telp/HP").required("Telp Harus Diisi"),
-    email: yup
-      .string("Masukan Email")
-      .email("Email Tidak Valid")
-      .required("Password Harus Diisi"),
-    alamat: yup.string().required("Alamat Harus Diisi"),
-    username: yup.string().required("Username Harus Diisi"),
-    passwordConfirm: yup.string().required("Password Harus Diisi"),
-  });
-
   const formik = useFormik({
     initialValues: { ...profile, passwordConfirm: "" },
     enableReinitialize: true,

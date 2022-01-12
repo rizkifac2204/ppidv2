@@ -6,10 +6,8 @@ import {
   Box,
   Grid,
 } from "@mui/material";
-import WaitLoadingComponent from "./WaitLoadingComponent";
 
 function ProfileCard({ profile }) {
-  if (Object.keys(profile).length === 0) return <WaitLoadingComponent />;
   return (
     <>
       <Card>
