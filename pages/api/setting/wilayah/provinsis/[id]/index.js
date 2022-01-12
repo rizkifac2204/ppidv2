@@ -3,14 +3,13 @@ import Handler from "middlewares/Handler";
 
 export default Handler().get(async (req, res) => {
   const { id } = req.query;
+  const data = await db("tbl_provinsi").where("id", id).first();
 
-  const data = await db.from("tbl_survey").where({ id }).first();
-
-  if (!data) return res.status(404).json({ message: "Tidak Ditemukan" });
+  const kabkot = await db("tbl_kabupaten").where("id_prov", id);
 
   const result = {
-    detail: data,
+    result: data,
+    kabkot: kabkot,
   };
-
   res.json(result);
 });

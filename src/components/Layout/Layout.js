@@ -11,6 +11,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Sidebar from "./Sidebar/Sidebar";
 import Appbar from "./Appbar/Appbar";
 import DrawerSetting from "./Appbar/DrawerSetting";
+import BreadcrumbsHead from "./Breadcrumb";
+import Footer from "./Footer";
 // CURTOM
 import {
   useRizkiContext,
@@ -102,7 +104,9 @@ export default function Layout({ children }) {
           >
             <PerfectScrollbar options={{ suppressScrollX: true }}>
               <Toolbar />
+              <BreadcrumbsHead list={children.type.breadcrumb} />
               <Container maxWidth={false}>{children}</Container>
+              <Footer />
             </PerfectScrollbar>
           </Box>
 

@@ -9,30 +9,13 @@ import Image from "next/image";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://loremit.com/">
-        Lorem IT
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import Footer from "components/Layout/Footer";
 
 export async function getServerSideProps(ctx) {
   const isUser = await getSession(ctx);
@@ -177,7 +160,7 @@ export default function Login() {
                   Sudah Daftar Email? Login Dengan Google
                 </Button>
               </Grid>
-              <Copyright sx={{ mt: 5 }} />
+              <Footer />
             </Box>
           </Box>
         </Grid>

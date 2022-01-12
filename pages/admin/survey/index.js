@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+// MUI
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
 
 function Survey() {
   const [data, setData] = useState([]);
@@ -8,7 +12,7 @@ function Survey() {
   useEffect(() => {
     function fetch() {
       axios
-        .get(`/api/survey`)
+        .get(`/api/surveys`)
         .then((res) => {
           setData(res.data);
         })
@@ -18,7 +22,22 @@ function Survey() {
     }
     fetch();
   }, []);
-  return <>{JSON.stringify(data)}</>;
+  return (
+    <>
+      <Card sx={{ minWidth: 275, mb: 2 }}>
+        <CardContent>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Pemanggilan data sukses
+          </Typography>
+          <Typography variant="h5" component="div">
+            DATA SURVEY
+          </Typography>
+          <Typography variant="body2">Data JSON Bisa Dibuat Table</Typography>
+        </CardContent>
+      </Card>
+      {JSON.stringify(data.length)} = {JSON.stringify(data)}
+    </>
+  );
 }
 
 Survey.auth = true;

@@ -58,7 +58,6 @@ export default NextAuth({
           user.level = newDataUser.level;
           user.id_prov = newDataUser.id_prov;
           user.id_kabkot = newDataUser.id_kabkot;
-          user.wilayah = newDataUser.wilayah;
           return true;
         } else {
           // jika gagal
@@ -69,14 +68,15 @@ export default NextAuth({
       // lewati kalau BUKAN login dengan google
       return true;
     },
-    // disini diatur data apa saja yang akan masuk ke sistem
+    // disini diatur data apa saja yang akan masuk ke JSON Web Token
     async jwt({ token, user }) {
+      // usert terbaca hanya after signin
       if (user) {
         token.id = user.id;
+        token.nama = user.nama;
         token.level = user.level;
         token.id_prov = user.id_prov;
         token.id_kabkot = user.id_kabkot;
-        token.wilayah = user.wilayah;
       }
       return token;
     },
@@ -86,7 +86,6 @@ export default NextAuth({
         session.user.level = token.level;
         session.user.id_prov = token.id_prov;
         session.user.id_kabkot = token.id_kabkot;
-        session.user.wilayah = token.wilayah;
       }
       return session;
     },
