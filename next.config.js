@@ -1,4 +1,7 @@
 module.exports = {
+  images: {
+    domains: ["picsum.photos"],
+  },
   reactStrictMode: true,
   async redirects() {
     return [

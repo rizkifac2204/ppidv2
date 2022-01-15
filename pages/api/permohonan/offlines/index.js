@@ -101,4 +101,14 @@ export default Handler()
 
     // success
     res.json({ message: "Berhasil Menginput Data", type: "success" });
+  })
+  .delete(async (req, res) => {
+    const arrID = req.body;
+    const proses = await db("tbl_permohonan_offline")
+      .whereIn("id", arrID)
+      .update("deleted_at", db.fn.now());
+
+    if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
+
+    res.json({ message: "Memindahkan Ke Sampah", type: "success" });
   });
