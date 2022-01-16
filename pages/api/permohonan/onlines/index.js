@@ -50,8 +50,11 @@ export default Handler()
       reg_number,
       tanggal,
       status,
-      alasan,
     } = req.body;
+    var alasan = req.body.alasan;
+    if (status !== "Diberikan Sebagian" || status === "Tidak Dapat Diberikan") {
+      alasan = null;
+    }
 
     // cek reg number sama
     const cek = await db("tbl_permohonan")
@@ -101,4 +104,14 @@ export default Handler()
 
     // success
     res.json({ message: "Berhasil Menginput Data", type: "success" });
+  })
+  .delete(async (req, res) => {
+    const arrID = req.body;
+    const proses = await db("tbl_permohonan")
+      .whereIn("id", arrID)
+      .update("deleted_at", db.fn.now());
+
+    if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
+
+    res.json({ message: "Memindahkan Ke Sampah", type: "success" });
   });

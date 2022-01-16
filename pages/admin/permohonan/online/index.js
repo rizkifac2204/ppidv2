@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
 // MUI
 import Card from "@mui/material/Card";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 // ICONS
@@ -189,6 +191,11 @@ function Online() {
   return (
     <>
       <Card height={630}>
+        <Link href="/admin/permohonan/online/add">
+          <Button variant="outlined" sx={{ mb: 2 }}>
+            Tambah Data Sebelumnya
+          </Button>
+        </Link>
         <DataGrid
           autoHeight
           rows={data}
