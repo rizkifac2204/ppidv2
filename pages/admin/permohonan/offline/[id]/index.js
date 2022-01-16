@@ -7,8 +7,10 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
 // ICONS
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import PrintIcon from "@mui/icons-material/Print";
@@ -21,19 +23,24 @@ function OfflineDetail() {
   const { id } = router.query;
 
   useEffect(() => {
-    const fetchDetail = () => {
-      axios
-        .get(`/api/permohonan/offlines/` + id)
-        .then((res) => {
-          setDetail(res.data);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-          setTimeout(() => router.push("/admin/permohonan/offline"), 2000);
-        });
+    if (id) {
+      const fetchDetail = () => {
+        axios
+          .get(`/api/permohonan/offlines/` + id)
+          .then((res) => {
+            setDetail(res.data);
+          })
+          .catch((err) => {
+            toast.error(err.response.data.message);
+            setTimeout(() => router.push("/admin/permohonan/offline"), 2000);
+          });
+      };
+      fetchDetail();
+    }
+    return () => {
+      // console.log("clear");
     };
-    if (id) fetchDetail();
-  }, [id]);
+  }, [id, router]);
 
   const handleDelete = () => {
     const ask = confirm("Yakin Hapus Data?");
@@ -64,6 +71,11 @@ function OfflineDetail() {
   const handlePrint = () => {
     console.log("Print Laporan ini");
   };
+
+  const actions = [
+    { icon: <PrintIcon />, name: "Print", action: handlePrint },
+    { icon: <DeleteIcon />, name: "Hapus", action: handleDelete },
+  ];
 
   return (
     <>
@@ -171,7 +183,7 @@ function OfflineDetail() {
                 Status
               </Grid>
               <Grid item xs={8}>
-                : {detail.status}
+                : {detail.status} {detail.alasan && `- ${detail.alasan}`}
               </Grid>
 
               <Grid item xs={4}>
@@ -182,38 +194,27 @@ function OfflineDetail() {
               </Grid>
             </Grid>
           </CardContent>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              p: 1,
-              bgcolor: "background.paper",
-              borderRadius: 1,
-            }}
-          >
+          <Box p={2}>
             <Typography variant="caption">
               Dibuat :{" "}
               {detail.created_at &&
                 new Date(detail.created_at).toISOString().split("T")[0]}
             </Typography>
-            <Box>
-              <Button
-                size="small"
-                variant="outlined"
-                startIcon={<DeleteIcon />}
-                onClick={handleDelete}
+            <Box sx={{ transform: "translateZ(0px)", flexGrow: 1 }}>
+              <SpeedDial
+                ariaLabel="SpeedDial basic example"
+                sx={{ position: "absolute", bottom: 0, right: 0 }}
+                icon={<SpeedDialIcon />}
               >
-                Hapus
-              </Button>
-              <Button
-                size="small"
-                variant="outlined"
-                sx={{ ml: 1 }}
-                startIcon={<PrintIcon />}
-                onClick={handlePrint}
-              >
-                Print
-              </Button>
+                {actions.map((action) => (
+                  <SpeedDialAction
+                    key={action.name}
+                    icon={action.icon}
+                    tooltipTitle={action.name}
+                    onClick={action.action}
+                  />
+                ))}
+              </SpeedDial>
             </Box>
           </Box>
         </Card>

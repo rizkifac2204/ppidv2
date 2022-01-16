@@ -55,8 +55,11 @@ export default Handler()
       reg_number,
       tanggal,
       status,
-      alasan,
     } = req.body;
+    var alasan = req.body.alasan;
+    if (status !== "Diberikan Sebagian" || status === "Tidak Dapat Diberikan") {
+      alasan = null;
+    }
 
     // cek reg number sama
     const cek = await db("tbl_permohonan_offline")

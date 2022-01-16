@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
@@ -243,13 +241,13 @@ function OnlineAdd() {
                   />
 
                   <FormControl
-                    sx={{ m: 3 }}
+                    sx={{ my: 3 }}
                     component="fieldset"
                     error={Boolean(formik.errors.cara_terima)}
                     variant="standard"
                   >
                     <FormLabel component="legend">
-                      Format Informasi Yang Diberikan
+                      Format Informasi Yang Diberikan *
                     </FormLabel>
                     <RadioGroup
                       aria-label="cara_terima"
@@ -272,13 +270,12 @@ function OnlineAdd() {
                   </FormControl>
 
                   <FormControl
-                    sx={{ m: 3 }}
                     component="fieldset"
                     error={Boolean(formik.errors.cara_dapat)}
                     variant="standard"
                   >
                     <FormLabel component="legend">
-                      Format Informasi Yang Diberikan
+                      Cara Memerikan Informasi *
                     </FormLabel>
                     <RadioGroup
                       aria-label="cara_dapat"
@@ -320,7 +317,7 @@ function OnlineAdd() {
                     sx={{ mb: 3 }}
                     error={Boolean(formik.errors.status)}
                   >
-                    <InputLabel>Status</InputLabel>
+                    <InputLabel>Status *</InputLabel>
                     <Select
                       name="status"
                       label="Status *"

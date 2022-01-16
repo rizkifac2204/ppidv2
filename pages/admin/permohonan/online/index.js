@@ -115,16 +115,51 @@ function Online() {
 
   const columns = [
     {
-      field: "registrasi",
+      field: "reg_number",
       headerName: "Nomor Registrasi",
       width: 300,
       renderCell: getFullReg,
-      sortComparator: (v1, v2) => v1.toString().localeCompare(v2.toString()),
+      valueFormatter: ({ value }) => `${value}`,
+    },
+    {
+      field: "tiket_number",
+      headerName: "Tiket",
+      minWidth: 180,
+      hide: true,
     },
     {
       field: "kepada",
       headerName: "Kepada",
       minWidth: 180,
+    },
+    {
+      field: "provinsi",
+      headerName: "Provinsi",
+      minWidth: 180,
+      hide: true,
+    },
+    {
+      field: "kabupaten",
+      headerName: "Kabupaten/Kota",
+      minWidth: 180,
+      hide: true,
+    },
+    {
+      field: "nama",
+      headerName: "Pemohon",
+      minWidth: 180,
+    },
+    {
+      field: "telp",
+      headerName: "Telp/HP",
+      minWidth: 130,
+      hide: true,
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      minWidth: 130,
+      hide: true,
     },
     {
       field: "tanggal",
@@ -145,6 +180,12 @@ function Online() {
       minWidth: 150,
       flex: 1,
       editable: true,
+    },
+    {
+      field: "alasan",
+      headerName: "Alasan",
+      minWidth: 180,
+      hide: true,
     },
     {
       field: "actions",
@@ -191,7 +232,7 @@ function Online() {
   return (
     <>
       <Card height={630}>
-        <Link href="/admin/permohonan/online/add">
+        <Link href="/admin/permohonan/online/add" passHref>
           <Button variant="outlined" sx={{ mb: 2 }}>
             Tambah Data Sebelumnya
           </Button>
@@ -202,7 +243,7 @@ function Online() {
           columns={columns}
           pageSize={pageSize}
           onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-          rowsPerPageOptions={[5, 10, 20]}
+          rowsPerPageOptions={[5, 10, 20, 50]}
           checkboxSelection
           disableSelectionOnClick
           onSelectionModelChange={(itm) => setSelected(itm)}
@@ -215,6 +256,7 @@ function Online() {
               handleDeleteSelected: handleDeleteSelected,
             },
           }}
+          columnBuffer={8}
         />
       </Card>
     </>

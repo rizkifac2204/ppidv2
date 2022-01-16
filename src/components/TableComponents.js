@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 // ICON
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+import HelpIcon from "@mui/icons-material/Help";
 import {
   GridToolbarContainer,
   GridToolbarColumnsButton,
@@ -25,6 +26,21 @@ const ButtonDeleteSelected = ({ selectedItem, handleDeleteSelected }) => {
   );
 };
 
+const CsvHelper = () => {
+  return (
+    <Button
+      variant="text"
+      size="small"
+      startIcon={<HelpIcon />}
+      onClick={() =>
+        window.open("https://www.youtube.com/watch?v=n2IgdWefn1Q", "_blank")
+      }
+    >
+      Bantuan CSV
+    </Button>
+  );
+};
+
 function CustomToolbar(props) {
   return (
     <GridToolbarContainer>
@@ -40,6 +56,9 @@ function CustomToolbar(props) {
         </Grid>
         <Grid item>
           <GridToolbarExport />
+        </Grid>
+        <Grid item>
+          <CsvHelper />
         </Grid>
         <Grid item>
           <ButtonDeleteSelected

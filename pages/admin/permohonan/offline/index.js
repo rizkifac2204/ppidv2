@@ -121,11 +121,47 @@ function Offline() {
         return new Date(params.row.tanggal).toISOString().split("T")[0];
       },
     },
+
+    {
+      field: "provinsi",
+      headerName: "Provinsi",
+      minWidth: 180,
+      hide: true,
+    },
+    {
+      field: "kabupaten",
+      headerName: "Kabupaten/Kota",
+      minWidth: 180,
+      hide: true,
+    },
+    {
+      field: "nama",
+      headerName: "Pemohon",
+      minWidth: 180,
+    },
+    {
+      field: "telp",
+      headerName: "Telp/HP",
+      minWidth: 130,
+      hide: true,
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      minWidth: 130,
+      hide: true,
+    },
     {
       field: "status",
       headerName: "Status",
       minWidth: 150,
       flex: 1,
+    },
+    {
+      field: "alasan",
+      headerName: "Alasan",
+      minWidth: 180,
+      hide: true,
     },
     {
       field: "actions",
