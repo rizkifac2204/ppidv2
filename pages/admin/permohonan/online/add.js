@@ -25,7 +25,7 @@ import AddTaskIcon from "@mui/icons-material/AddTask";
 const handleSubmit = (values) => {
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
-    .post(`/api/permohonan/offlines`, values)
+    .post(`/api/permohonan/onlines`, values)
     .then((res) => {
       console.log(res);
       toast.update(toastProses, {
@@ -49,8 +49,6 @@ const handleSubmit = (values) => {
 const validationSchema = yup.object({
   reg_number: yup.string().required("Harus Diisi"),
   nama: yup.string().required("Harus Diisi"),
-  identitas: yup.string().required("Harus Diisi"),
-  identitas_jenis: yup.string().required("Harus Diisi"),
   tanggal: yup.string().required("Harus Diisi"),
   telp: yup.string().required("Harus Diisi"),
   email: yup.string().email("Email Tidak Valid").required("Harus Diisi"),
@@ -71,12 +69,10 @@ const validationSchema = yup.object({
   }),
 });
 
-function OfflineAdd() {
+function OnlineAdd() {
   const initialValues = {
     reg_number: "",
     nama: "",
-    identitas: "",
-    identitas_jenis: "",
     tanggal: "",
     telp: "",
     email: "",
@@ -100,7 +96,7 @@ function OfflineAdd() {
       <Card>
         <CardContent>
           <Typography sx={{ fontSize: 14 }} gutterBottom>
-            Tambah Permohonan Offline
+            Tambah Permohonan Online Oleh Admin
           </Typography>
           <Box>
             <form onSubmit={formik.handleSubmit}>
@@ -151,49 +147,6 @@ function OfflineAdd() {
                     error={formik.touched.nama && Boolean(formik.errors.nama)}
                     helperText={formik.touched.nama && formik.errors.nama}
                   />
-
-                  <Grid container spacing={1} mt={3}>
-                    <Grid item xs={3}>
-                      <FormControl
-                        fullWidth
-                        error={Boolean(formik.errors.identitas_jenis)}
-                      >
-                        <InputLabel>Jenis Identitas *</InputLabel>
-                        <Select
-                          name="identitas_jenis"
-                          label="Jenis Identitas"
-                          value={formik.values.identitas_jenis}
-                          onChange={formik.handleChange}
-                        >
-                          <MenuItem value="KTP">KTP</MenuItem>
-                          <MenuItem value="SIM">SIM</MenuItem>
-                          <MenuItem value="KTM">KTM</MenuItem>
-                        </Select>
-                        <FormHelperText>
-                          {formik.errors.identitas_jenis}
-                        </FormHelperText>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <TextField
-                        fullWidth
-                        required
-                        label="Nomor Identitas"
-                        name="identitas"
-                        value={formik.values.identitas}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={
-                          formik.touched.identitas &&
-                          Boolean(formik.errors.identitas)
-                        }
-                        helperText={
-                          formik.touched.identitas && formik.errors.identitas
-                        }
-                      />
-                    </Grid>
-                  </Grid>
-
                   <TextField
                     fullWidth
                     required
@@ -252,8 +205,6 @@ function OfflineAdd() {
                     }
                     helperText={formik.touched.alamat && formik.errors.alamat}
                   />
-                </Grid>
-                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     required
@@ -270,6 +221,8 @@ function OfflineAdd() {
                     }
                     helperText={formik.touched.rincian && formik.errors.rincian}
                   />
+                </Grid>
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     required
@@ -425,19 +378,19 @@ function OfflineAdd() {
   );
 }
 
-OfflineAdd.auth = true;
-OfflineAdd.breadcrumb = [
+OnlineAdd.auth = true;
+OnlineAdd.breadcrumb = [
   {
     path: "/admin",
     title: "Home",
   },
   {
-    path: "/admin/permohonan/offline",
-    title: "Permohonan Offline",
+    path: "/admin/permohonan/online",
+    title: "Permohonan Online",
   },
   {
-    path: "/admin/permohonan/offline",
+    path: "/admin/permohonan/online",
     title: "Tambah",
   },
 ];
-export default OfflineAdd;
+export default OnlineAdd;

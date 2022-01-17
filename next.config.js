@@ -1,5 +1,7 @@
 module.exports = {
-  presets: ["next/babel"],
+  images: {
+    domains: ["picsum.photos"],
+  },
   reactStrictMode: true,
   async redirects() {
     return [
