@@ -19,6 +19,7 @@ import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import PrintIcon from "@mui/icons-material/Print";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
 //Component
 import WaitLoadingComponent from "components/WaitLoadingComponent";
 import { DataPermohonanOnline } from "components/PrintPage/DataPermohonanOnline";
@@ -27,8 +28,12 @@ function OnlineDetail() {
   const router = useRouter();
   const [detail, setDetail] = useState({});
   const [response, setResponse] = useState({});
+  const [profileBawaslu, setProfileBawaslu] = useState({});
   const { id } = router.query;
-  const componentPrintRef = useRef();
+  const src = "https://picsum.photos/id/237/200/300";
+
+  const printRef = useRef();
+  const printBuktiRef = useRef();
 
   useEffect(() => {
     if (id) {
@@ -91,8 +96,37 @@ function OnlineDetail() {
     console.log("response");
   };
 
-  const handlePrint = useReactToPrint({
-    content: () => componentPrintRef.current,
+  const fetchProfileBawaslu = () => {
+    const toastProses = toast.loading("Tunggu Sebentar...");
+    axios
+      .get(`/api/permohonan/profileBawaslu?id=` + detail.id_will)
+      .then((res) => {
+        setProfileBawaslu(res.data);
+        toast.update(toastProses, {
+          render: "Siap Cetak",
+          type: "success",
+          isLoading: false,
+          autoClose: 1000,
+        });
+        processPrint();
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.update(toastProses, {
+          render: "Terjadi Kesalahan",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      });
+  };
+  const handlePrint = () => {
+    const isNotReady = Object.keys(profileBawaslu).length === 0;
+    if (isNotReady) return fetchProfileBawaslu();
+    processPrint();
+  };
+  const processPrint = useReactToPrint({
+    content: () => printRef.current,
   });
 
   const formatedDate = (tanggal) => {
@@ -104,13 +138,16 @@ function OnlineDetail() {
       return "-";
     }
   };
-
   const actions = [
     { icon: <LocalLibraryIcon />, name: "Tanggapi", action: handleResponse },
-    { icon: <PrintIcon />, name: "Print", action: handlePrint },
+    {
+      icon: <FileCopyIcon />,
+      name: "Print Bukti Permohonan",
+      action: handlePrint,
+    },
+    { icon: <PrintIcon />, name: "Print Data Permohonan", action: handlePrint },
     { icon: <DeleteIcon />, name: "Hapus", action: handleDelete },
   ];
-  const src = "https://picsum.photos/id/237/200/300";
 
   return (
     <>
@@ -295,7 +332,11 @@ function OnlineDetail() {
               </Box>
             </Box>
           </Card>
-          <DataPermohonanOnline ref={componentPrintRef} detail={detail} />
+          <DataPermohonanOnline
+            ref={printRef}
+            detail={detail}
+            profileBawaslu={profileBawaslu}
+          />
         </>
       )}
     </>
