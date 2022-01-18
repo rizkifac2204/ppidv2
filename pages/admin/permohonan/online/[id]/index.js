@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useReactToPrint } from "react-to-print";
 // MUI
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -12,6 +13,7 @@ import Box from "@mui/material/Box";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
+
 // ICONS
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import PrintIcon from "@mui/icons-material/Print";
@@ -19,12 +21,14 @@ import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 //Component
 import WaitLoadingComponent from "components/WaitLoadingComponent";
+import { DataPermohonanOnline } from "components/PrintPage/DataPermohonanOnline";
 
 function OnlineDetail() {
   const router = useRouter();
   const [detail, setDetail] = useState({});
   const [response, setResponse] = useState({});
   const { id } = router.query;
+  const componentPrintRef = useRef();
 
   useEffect(() => {
     if (id) {
@@ -87,9 +91,9 @@ function OnlineDetail() {
     console.log("response");
   };
 
-  const handlePrint = () => {
-    console.log("Print Laporan ini");
-  };
+  const handlePrint = useReactToPrint({
+    content: () => componentPrintRef.current,
+  });
 
   const formatedDate = (tanggal) => {
     if (!tanggal) return;
@@ -106,7 +110,6 @@ function OnlineDetail() {
     { icon: <PrintIcon />, name: "Print", action: handlePrint },
     { icon: <DeleteIcon />, name: "Hapus", action: handleDelete },
   ];
-
   const src = "https://picsum.photos/id/237/200/300";
 
   return (
@@ -292,6 +295,7 @@ function OnlineDetail() {
               </Box>
             </Box>
           </Card>
+          <DataPermohonanOnline ref={componentPrintRef} detail={detail} />
         </>
       )}
     </>
