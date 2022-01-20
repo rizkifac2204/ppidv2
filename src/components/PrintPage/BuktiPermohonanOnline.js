@@ -12,7 +12,7 @@ import TableRow from "@mui/material/TableRow";
 // Components
 import { SetQRCode, CurrentDate } from "components/Attributes";
 
-const DataPermohonanOnline = React.forwardRef(
+const BuktiPermohonanOnline = React.forwardRef(
   ({ detail, profileBawaslu }, ref) => {
     return (
       <Card sx={{ display: "none", displayPrint: "block", p: 2 }} ref={ref}>
@@ -37,7 +37,7 @@ const DataPermohonanOnline = React.forwardRef(
         </Box>
 
         <Typography variant="h5" align="center">
-          DATA PERMOHONAN INFORMASI PUBLIK
+          TANDA BUKTI <br /> PERMOHONAN INFORMASI PUBLIK
         </Typography>
 
         <TableContainer>
@@ -55,45 +55,38 @@ const DataPermohonanOnline = React.forwardRef(
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Pekerjaan</TableCell>
-                <TableCell>
-                  : <b>{detail.pekerjaan}</b>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Telp</TableCell>
-                <TableCell>
-                  : <b>{detail.telp}</b>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Email</TableCell>
-                <TableCell>
-                  : <b>{detail.email}</b>
-                </TableCell>
-              </TableRow>
-              <TableRow>
                 <TableCell>Alamat</TableCell>
                 <TableCell>
                   : <b>{detail.alamat}</b>
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Tanggal Pemohonan</TableCell>
+                <TableCell>Tanggal penyerahan formulir permohonan</TableCell>
                 <TableCell>
                   : <b>{detail.tanggal}</b>
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Rincian</TableCell>
+                <TableCell>Nomor Registrasi Permohonan</TableCell>
                 <TableCell>
-                  : <b>{detail.rincian}</b>
+                  : <b>{detail.reg_number}</b>
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Tujuan</TableCell>
+                <TableCell colSpan={2}>
+                  Yang menerima formulir permohonan Informasi Publik:
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Nama</TableCell>
                 <TableCell>
-                  : <b>{detail.tujuan}</b>
+                  : <b>{profileBawaslu.nama}</b>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Jabatan</TableCell>
+                <TableCell>
+                  : <b>Andministrator PPID</b>
                 </TableCell>
               </TableRow>
               <TableRow sx={{ border: 0 }}>
@@ -105,22 +98,11 @@ const DataPermohonanOnline = React.forwardRef(
           </Table>
         </TableContainer>
 
-        <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
-          <Box>
-            <SetQRCode text={detail.reg_number} />
-            <Box sx={{ fontSize: 10, m: 1 }}>
-              (Kode merupakan bukti Sah dari Sistem PPID Bawaslu <br /> selama
-              dapat terbaca dan terscan dengan benar)
-            </Box>
-          </Box>
-          <Box sx={{ position: "relative", width: 100, height: 90, mr: 3 }}>
-            <Image
-              src={"/upload/" + detail.ktp}
-              alt="Logo"
-              layout="fill"
-              priority
-            />
-            <Box sx={{ fontSize: 10, m: 1 }}>Pemohon</Box>
+        <Box>
+          <SetQRCode text={detail.reg_number} />
+          <Box sx={{ fontSize: 10, m: 1 }}>
+            (Kode merupakan bukti Sah dari Sistem PPID Bawaslu <br /> selama
+            dapat terbaca dan terscan dengan benar)
           </Box>
         </Box>
       </Card>
@@ -128,5 +110,5 @@ const DataPermohonanOnline = React.forwardRef(
   }
 );
 
-DataPermohonanOnline.displayName = "DataPermohonanOnline";
-export default DataPermohonanOnline;
+BuktiPermohonanOnline.displayName = "BuktiPermohonanOnline";
+export default BuktiPermohonanOnline;

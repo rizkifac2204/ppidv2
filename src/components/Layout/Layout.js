@@ -102,12 +102,12 @@ export default function Layout({ children }) {
               overflow: "auto",
             }}
           >
-            <PerfectScrollbar options={{ suppressScrollX: true }}>
-              <Toolbar />
-              <BreadcrumbsHead list={children.type.breadcrumb} />
-              <Container maxWidth={false}>{children}</Container>
-              <Footer />
-            </PerfectScrollbar>
+            {/* <PerfectScrollbar options={{ suppressScrollX: true }}> */}
+            <Toolbar />
+            <BreadcrumbsHead list={children.type.breadcrumb} />
+            <Container maxWidth={false}>{children}</Container>
+            <Footer />
+            {/* </PerfectScrollbar> */}
           </Box>
 
           <DrawerSetting

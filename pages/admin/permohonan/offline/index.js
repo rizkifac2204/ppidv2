@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useReactToPrint } from "react-to-print";
 // MUI
 import Card from "@mui/material/Card";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
@@ -12,12 +13,17 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import PrintIcon from "@mui/icons-material/Print";
 // Components
 import { CustomToolbar } from "components/TableComponents";
+import BuktiPermohonanOnline from "components/PrintPage/BuktiPermohonanOnline";
 
 function Offline() {
   const router = useRouter();
   const [data, setData] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [selected, setSelected] = useState([]);
+  // for print
+  const [detail, setDetail] = useState({});
+  const [profileBawaslu, setProfileBawaslu] = useState({});
+  const printBuktiRef = useRef();
 
   const handleDeleteSelected = () => {
     const ask = confirm("Yakin Hapus Data Terpilih?");
@@ -75,8 +81,37 @@ function Offline() {
         });
     }
   };
-  const handlePrintClick = (id) => {
-    console.log("print " + id);
+
+  // function for print
+  const fetchProfileBawaslu = (id, callback) => {
+    const toastProses = toast.loading("Menyiapkan Format...");
+    axios
+      .get(`/api/permohonan/profileBawaslu?id=` + id)
+      .then((res) => {
+        setProfileBawaslu(res.data);
+        toast.dismiss(toastProses);
+        callback();
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.update(toastProses, {
+          render: "Terjadi Kesalahan",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      });
+  };
+  const processPrint = useReactToPrint({
+    content: () => printBuktiRef.current,
+  });
+  const handlePrintClick = (values) => {
+    setTimeout(() => {
+      setDetail((prev) => values);
+    });
+    fetchProfileBawaslu(values.id, () => {
+      processPrint();
+    });
   };
 
   useEffect(() => {
@@ -121,7 +156,6 @@ function Offline() {
         return new Date(params.row.tanggal).toISOString().split("T")[0];
       },
     },
-
     {
       field: "provinsi",
       headerName: "Provinsi",
@@ -169,35 +203,28 @@ function Offline() {
       headerName: "Actions",
       width: 200,
       cellClassName: "actions",
-      getActions: ({ id }) => {
+      getActions: (values) => {
         return [
           <GridActionsCellItem
             key="0"
             icon={<VisibilityIcon />}
             label="Detail"
-            onClick={() => router.push("/admin/permohonan/offline/" + id)}
-          />,
-          <GridActionsCellItem
-            key="1"
-            icon={<EditIcon />}
-            label="Edit"
             onClick={() =>
-              router.push("/admin/permohonan/offline/" + id + "/edit")
+              router.push("/admin/permohonan/offline/" + values.id)
             }
-            showInMenu
           />,
           <GridActionsCellItem
             key="2"
             icon={<PrintIcon />}
             label="Print"
-            onClick={() => handlePrintClick(id)}
+            onClick={() => handlePrintClick(values.row)}
             showInMenu
           />,
           <GridActionsCellItem
             key="3"
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => handleDeleteClick(id)}
+            onClick={() => handleDeleteClick(values.id)}
             showInMenu
           />,
         ];
@@ -229,6 +256,12 @@ function Offline() {
           }}
         />
       </Card>
+
+      <BuktiPermohonanOnline
+        ref={printBuktiRef}
+        detail={detail}
+        profileBawaslu={profileBawaslu}
+      />
     </>
   );
 }

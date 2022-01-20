@@ -1,20 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useReactToPrint } from "react-to-print";
 // MUI
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 // ICONS
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PrintIcon from "@mui/icons-material/Print";
+import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 // Components
 import { CustomToolbar } from "components/TableComponents";
+import ResponseDialog from "components/ResponseDialog";
+import DataPermohonanOnline from "components/PrintPage/DataPermohonanOnline";
 
 function getFullReg(params) {
   return (
@@ -35,6 +38,50 @@ function Online() {
   const [data, setData] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [selected, setSelected] = useState([]);
+  // proses response
+  const [detail, setDetail] = useState({});
+  const [openResponse, setOpenResponse] = useState(false);
+  const [response, setResponse] = useState({});
+  const [profileBawaslu, setProfileBawaslu] = useState({});
+  const printRef = useRef();
+  // call for response dan print
+  const fetchResponse = (id, callback) => {
+    const toastProses = toast.loading("Menyiapkan Format...");
+    axios
+      .get(`/api/permohonan/onlines/` + id + "/response")
+      .then((res) => {
+        setResponse(res.data);
+        callback();
+        toast.dismiss(toastProses);
+      })
+      .catch((err) => {
+        toast.update(toastProses, {
+          render: "Terjadi Kesalahan",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      });
+  };
+  const fetchProfileBawaslu = (id, callback) => {
+    const toastProses = toast.loading("Menyiapkan Format...");
+    axios
+      .get(`/api/permohonan/profileBawaslu?id=` + id)
+      .then((res) => {
+        setProfileBawaslu(res.data);
+        toast.dismiss(toastProses);
+        callback();
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.update(toastProses, {
+          render: "Terjadi Kesalahan",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      });
+  };
 
   const handleDeleteSelected = () => {
     const ask = confirm("Yakin Hapus Data Terpilih?");
@@ -92,8 +139,33 @@ function Online() {
         });
     }
   };
-  const handlePrintClick = (id) => {
-    console.log("print " + id);
+
+  const processPrint = useReactToPrint({
+    content: () => printRef.current,
+  });
+  const handlePrintClick = (values) => {
+    setTimeout(() => {
+      setDetail((prev) => values);
+    });
+    fetchProfileBawaslu(values.id, () => {
+      processPrint();
+    });
+  };
+
+  const handleOpenResponse = () => {
+    setOpenResponse(true);
+  };
+  const handleCloseResponse = () => {
+    setOpenResponse(false);
+  };
+
+  const hanldeResponse = (values) => {
+    setTimeout(() => {
+      setDetail((prev) => values);
+    });
+    fetchResponse(values.id, () => {
+      handleOpenResponse();
+    });
   };
 
   useEffect(() => {
@@ -193,35 +265,33 @@ function Online() {
       headerName: "Actions",
       width: 200,
       cellClassName: "actions",
-      getActions: ({ id }) => {
+      getActions: (value) => {
         return [
           <GridActionsCellItem
             key="0"
             icon={<VisibilityIcon />}
             label="Detail"
-            onClick={() => router.push("/admin/permohonan/online/" + id)}
+            onClick={() => router.push("/admin/permohonan/online/" + value.id)}
           />,
           <GridActionsCellItem
             key="1"
-            icon={<EditIcon />}
-            label="Edit"
-            onClick={() =>
-              router.push("/admin/permohonan/online/" + id + "/edit")
-            }
+            icon={<LocalLibraryIcon />}
+            label="Tanggapi"
+            onClick={() => hanldeResponse(value.row)}
             showInMenu
           />,
           <GridActionsCellItem
             key="2"
             icon={<PrintIcon />}
             label="Print"
-            onClick={() => handlePrintClick(id)}
+            onClick={() => handlePrintClick(value.row)}
             showInMenu
           />,
           <GridActionsCellItem
             key="3"
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => handleDeleteClick(id)}
+            onClick={() => handleDeleteClick(value.id)}
             showInMenu
           />,
         ];
@@ -259,6 +329,21 @@ function Online() {
           columnBuffer={8}
         />
       </Card>
+      {/* COMPONEN */}
+      <ResponseDialog
+        open={openResponse}
+        onClose={handleCloseResponse}
+        fullScreen={true}
+        detail={detail}
+        response={response}
+        setDetail={setDetail}
+        setResponse={setResponse}
+      />
+      <DataPermohonanOnline
+        ref={printRef}
+        detail={detail}
+        profileBawaslu={profileBawaslu}
+      />
     </>
   );
 }

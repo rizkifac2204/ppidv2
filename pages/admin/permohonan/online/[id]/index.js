@@ -13,24 +13,28 @@ import Box from "@mui/material/Box";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
-
+import Tooltip from "@mui/material/Tooltip";
 // ICONS
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import PrintIcon from "@mui/icons-material/Print";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
+import CancelScheduleSendIcon from "@mui/icons-material/CancelScheduleSend";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 //Component
 import WaitLoadingComponent from "components/WaitLoadingComponent";
-import { DataPermohonanOnline } from "components/PrintPage/DataPermohonanOnline";
+import { FormatedDate } from "components/Attributes";
+import DataPermohonanOnline from "components/PrintPage/DataPermohonanOnline";
+import BuktiPermohonanOnline from "components/PrintPage/BuktiPermohonanOnline";
+import ResponseDialog from "components/ResponseDialog";
 
 function OnlineDetail() {
   const router = useRouter();
   const [detail, setDetail] = useState({});
   const [response, setResponse] = useState({});
+  const [openResponse, setOpenResponse] = useState(false);
   const [profileBawaslu, setProfileBawaslu] = useState({});
   const { id } = router.query;
-  const src = "https://picsum.photos/id/237/200/300";
 
   const printRef = useRef();
   const printBuktiRef = useRef();
@@ -92,60 +96,67 @@ function OnlineDetail() {
         });
     }
   };
-  const handleResponse = () => {
-    console.log("response");
-  };
-
-  const fetchProfileBawaslu = () => {
-    const toastProses = toast.loading("Tunggu Sebentar...");
+  const fetchProfileBawaslu = (callback) => {
+    const toastProses = toast.loading("Menyiapkan Format...");
     axios
       .get(`/api/permohonan/profileBawaslu?id=` + detail.id_will)
       .then((res) => {
         setProfileBawaslu(res.data);
-        toast.update(toastProses, {
-          render: "Siap Cetak",
-          type: "success",
-          isLoading: false,
-          autoClose: 1000,
-        });
-        processPrint();
+        toast.dismiss(toastProses);
+        callback();
       })
       .catch((err) => {
         console.log(err);
         toast.update(toastProses, {
           render: "Terjadi Kesalahan",
-          type: "success",
+          type: "error",
           isLoading: false,
           autoClose: 2000,
         });
       });
   };
-  const handlePrint = () => {
+  const handlePrint = (param) => {
     const isNotReady = Object.keys(profileBawaslu).length === 0;
-    if (isNotReady) return fetchProfileBawaslu();
-    processPrint();
+    if (isNotReady)
+      return fetchProfileBawaslu(() => {
+        if (param === "bukti") {
+          processPrintBukti();
+        } else {
+          processPrint();
+        }
+      });
+    if (param === "bukti") {
+      processPrintBukti();
+    } else {
+      processPrint();
+    }
   };
   const processPrint = useReactToPrint({
     content: () => printRef.current,
   });
+  const processPrintBukti = useReactToPrint({
+    content: () => printBuktiRef.current,
+  });
 
-  const formatedDate = (tanggal) => {
-    if (!tanggal) return;
-    var date = new Date(tanggal);
-    if (date instanceof Date && !isNaN(date.valueOf())) {
-      return date.toISOString().split("T")[0];
-    } else {
-      return "-";
-    }
+  const handleResponse = () => {
+    setOpenResponse(true);
   };
+  const handleCloseResponse = () => {
+    setOpenResponse(false);
+  };
+
   const actions = [
     { icon: <LocalLibraryIcon />, name: "Tanggapi", action: handleResponse },
     {
       icon: <FileCopyIcon />,
       name: "Print Bukti Permohonan",
-      action: handlePrint,
+      action: () => handlePrint("bukti"),
     },
-    { icon: <PrintIcon />, name: "Print Data Permohonan", action: handlePrint },
+    {
+      icon: <PrintIcon />,
+      name: "Print Data Permohonan",
+      action: () => handlePrint("data"),
+    },
     { icon: <DeleteIcon />, name: "Hapus", action: handleDelete },
   ];
 
@@ -176,11 +187,11 @@ function OnlineDetail() {
                   }}
                 >
                   <Image
-                    src={src}
+                    src={"/upload/" + detail.ktp}
                     alt="KTP"
                     layout="fill"
-                    priority
                     objectFit="contain"
+                    priority
                   />
                 </Grid>
                 <Grid item xs={12} md={9}>
@@ -206,7 +217,7 @@ function OnlineDetail() {
                       Tanggal
                     </Grid>
                     <Grid item xs={8}>
-                      : {formatedDate(detail.tanggal)}
+                      : <FormatedDate tanggal={detail.tanggal} />
                     </Grid>
 
                     <Grid item xs={4}>
@@ -278,8 +289,17 @@ function OnlineDetail() {
                     <Grid item xs={8}>
                       : {response.status}{" "}
                       {response.alasan && `- ${response.alasan}`}
-                      {response.mailed && (
-                        <MarkEmailReadIcon fontSize="small" color="primary" />
+                      {response.mailed ? (
+                        <Tooltip title="Email Terkirim">
+                          <MarkEmailReadIcon fontSize="small" color="primary" />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="Email Tidak Terkirim">
+                          <CancelScheduleSendIcon
+                            fontSize="small"
+                            color="primary"
+                          />
+                        </Tooltip>
                       )}
                     </Grid>
 
@@ -316,7 +336,7 @@ function OnlineDetail() {
 
               <Box sx={{ transform: "translateZ(0px)", flexGrow: 1 }}>
                 <SpeedDial
-                  ariaLabel="SpeedDial basic example"
+                  ariaLabel="SpeedDial"
                   sx={{ position: "absolute", bottom: 0, right: 0 }}
                   icon={<SpeedDialIcon />}
                 >
@@ -326,14 +346,36 @@ function OnlineDetail() {
                       icon={action.icon}
                       tooltipTitle={action.name}
                       onClick={action.action}
+                      FabProps={{
+                        disabled: Boolean(
+                          action.name === "Print Bukti Permohonan" &&
+                            !detail.reg_number
+                        ),
+                      }}
                     />
                   ))}
                 </SpeedDial>
               </Box>
             </Box>
           </Card>
+
+          <ResponseDialog
+            open={openResponse}
+            onClose={handleCloseResponse}
+            fullScreen={true}
+            detail={detail}
+            response={response}
+            setDetail={setDetail}
+            setResponse={setResponse}
+          />
+
           <DataPermohonanOnline
             ref={printRef}
+            detail={detail}
+            profileBawaslu={profileBawaslu}
+          />
+          <BuktiPermohonanOnline
+            ref={printBuktiRef}
             detail={detail}
             profileBawaslu={profileBawaslu}
           />

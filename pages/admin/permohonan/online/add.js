@@ -27,7 +27,6 @@ const handleSubmit = (values) => {
   axios
     .post(`/api/permohonan/onlines`, values)
     .then((res) => {
-      console.log(res);
       toast.update(toastProses, {
         render: res.data.message,
         type: "success",
