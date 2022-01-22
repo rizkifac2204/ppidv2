@@ -1,9 +1,7 @@
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
-import { useEffect } from "react";
 // MUI
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
 import { ThemeProvider, createTheme } from "@mui/material/styles";

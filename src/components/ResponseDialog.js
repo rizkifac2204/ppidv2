@@ -20,16 +20,21 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 
 const handleSubmit = (values, props) => {
+  const postData = {
+    ...values,
+    email: props.detail.email,
+    tiket_number: props.detail.tiket_number,
+  };
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
-    .post(`/api/permohonan/onlines/${values.id_permohonan}/response`, values)
+    .post(`/api/permohonan/onlines/${values.id_permohonan}/response`, postData)
     .then((res) => {
       props.setDetail({ ...props.detail, reg_number: values.reg_number });
       props.setResponse({ ...props.response, ...values });
       setTimeout(() => props.onClose(), 2000);
       toast.update(toastProses, {
         render: res.data.message,
-        type: "success",
+        type: res.data.type,
         isLoading: false,
         autoClose: 2000,
       });
@@ -67,7 +72,7 @@ const validationSchema = yup.object({
 function ResponseDialog(props) {
   useEffect(() => {
     if (props.open) formik.resetForm();
-  }, [props.open]);
+  }, [props.open, formik]);
 
   const formik = useFormik({
     initialValues: {

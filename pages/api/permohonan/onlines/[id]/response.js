@@ -1,5 +1,6 @@
 import db from "libs/db";
 import Handler from "middlewares/Handler";
+import sendingMail, { mailOption, TextPerubahanStatus } from "services/Email";
 
 export default Handler()
   .get(async (req, res) => {
@@ -21,6 +22,8 @@ export default Handler()
       status,
       waktu,
       mailed,
+      email,
+      tiket_number,
     } = req.body;
     var alasan = req.body.alasan;
     if (status !== "Diberikan Sebagian" || status === "Tidak Dapat Diberikan") {
@@ -67,8 +70,6 @@ export default Handler()
       // failed
       if (!update)
         return res.status(400).json({ message: "Gagal Merubah Response" });
-
-      res.json({ message: "Berhasil Merubah Response", type: "success" });
     } else {
       const insert = await db("tbl_permohonan_response").insert({
         status,
@@ -82,34 +83,32 @@ export default Handler()
       // failed
       if (!insert)
         return res.status(400).json({ message: "Gagal Menginput Response" });
-
-      res.json({ message: "Berhasil Menginput Response", type: "success" });
     }
+
+    // setting email
+    const setMailOption = mailOption(
+      email,
+      "Perubahan Status Permohona Informasi",
+      TextPerubahanStatus(tiket_number, email, status, reg_number, response)
+    );
+
+    // jika harus kirim email
+    if (mailed) {
+      await sendingMail(setMailOption).then(async (resolve) => {
+        if (!resolve) {
+          // ubah email tidak terkirim jika gagal
+          await db("tbl_permohonan_response")
+            .where("id_permohonan", id_permohonan)
+            .update({
+              mailed: 0,
+            });
+        }
+      });
+    }
+
+    // success
+    res.json({
+      message: "Berhasil Memproses Response",
+      type: "success",
+    });
   });
-
-// if ($mailed) {
-//   // createMessage
-//   $messageToPemohon = "Salam Awas. <br/>
-//   <p>
-//     Permohonan Informasi yang anda ajukan kepada PPID Bawaslu dengan data
-//   </p>
-//   Nomor Tiket <b>".$tiket_number."</b> <br/>
-//   Email <b>".$email."</b><br/>
-//   <p>
-//      Telah ditanggapi oleh Admin. Status aktif Status aktif pada Permohonan Informasi tersebut sekarang adalah
-//   </p>
-//   <h3>".$status."</h3>
-//   Nomor Registrasi <b>".$reg_number."</b> <br/>
-//   Dengan pesan/response <b>".$response."</b><br/>
-
-//   <p>
-//     Anda Dapat Cek dan Cetak Bukti Permohonan Informasi Anda <a href='".$URLCekPermohonan."' target='_blank'>Disini</a> <br/>
-//     Atau anda dapat mengajukan keberatan dengan mengisi formulir Pengajuan Keberatan <a href='".$URLKeberatan."' target='_blank'>Disini</a>.
-//   </p>
-
-//   Terimakasih<br/>
-//   Bawaslu Terbuka, Pemilu Terpercaya<br/>
-//   --PPID Bawaslu";
-//   // proses kirim
-//   mail($email,"Perubahan Status Permohonan Informasi PPID Bawaslu",$messageToPemohon,$headermails);
-// }

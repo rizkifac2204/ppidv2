@@ -7,7 +7,6 @@ import { useReactToPrint } from "react-to-print";
 import Card from "@mui/material/Card";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 // ICONS
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PrintIcon from "@mui/icons-material/Print";
