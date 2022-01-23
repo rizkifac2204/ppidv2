@@ -18,6 +18,7 @@ import PrintIcon from "@mui/icons-material/Print";
 //Component
 import WaitLoadingComponent from "components/WaitLoadingComponent";
 import BuktiPermohonanOnline from "components/PrintPage/BuktiPermohonanOnline";
+import FileAction from "components/FileAction";
 
 function OfflineDetail() {
   const router = useRouter();
@@ -222,7 +223,13 @@ function OfflineDetail() {
                   File Pendukung
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.file}
+                  :{" "}
+                  <FileAction
+                    path="offline"
+                    response={detail}
+                    setResponse={setDetail}
+                    id_permohonan={detail.id}
+                  />
                 </Grid>
               </Grid>
             </CardContent>

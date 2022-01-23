@@ -35,3 +35,5 @@ yarn-error.log*
 
 #custom
 /public/upload
+/public/response
+/public/offline

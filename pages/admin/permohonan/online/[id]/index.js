@@ -27,6 +27,7 @@ import { FormatedDate } from "components/Attributes";
 import DataPermohonanOnline from "components/PrintPage/DataPermohonanOnline";
 import BuktiPermohonanOnline from "components/PrintPage/BuktiPermohonanOnline";
 import ResponseDialog from "components/ResponseDialog";
+import FileAction from "components/FileAction";
 
 function OnlineDetail() {
   const router = useRouter();
@@ -71,6 +72,7 @@ function OnlineDetail() {
     };
   }, [id, router]);
 
+  // ACTION NORMAL
   const handleDelete = () => {
     const ask = confirm("Yakin Hapus Data?");
     if (ask) {
@@ -115,6 +117,7 @@ function OnlineDetail() {
         });
       });
   };
+  // PRINT
   const handlePrint = (param) => {
     const isNotReady = Object.keys(profileBawaslu).length === 0;
     if (isNotReady)
@@ -137,14 +140,13 @@ function OnlineDetail() {
   const processPrintBukti = useReactToPrint({
     content: () => printBuktiRef.current,
   });
-
+  // RESPONSE
   const handleResponse = () => {
     setOpenResponse(true);
   };
   const handleCloseResponse = () => {
     setOpenResponse(false);
   };
-
   const actions = [
     { icon: <LocalLibraryIcon />, name: "Tanggapi", action: handleResponse },
     {
@@ -321,7 +323,13 @@ function OnlineDetail() {
                       File Pendukung
                     </Grid>
                     <Grid item xs={8}>
-                      : {response.file}
+                      :{" "}
+                      <FileAction
+                        path="response"
+                        response={response}
+                        setResponse={setResponse}
+                        id_permohonan={detail.id}
+                      />
                     </Grid>
                   </Grid>
                 </Grid>
