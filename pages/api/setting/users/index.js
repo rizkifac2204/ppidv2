@@ -1,23 +1,30 @@
 import db from "libs/db";
 import Handler from "middlewares/Handler";
 import bcrypt from "bcrypt";
-import { conditionMainDashboard } from "middlewares/Condition";
+import { conditionFilterUser } from "middlewares/Condition";
 
 export default Handler()
   .get(async (req, res) => {
     const result = await db
-      .select("tbl_users.*", "tbl_provinsi.provinsi", "tbl_kabupaten.kabupaten")
+      .select(
+        "tbl_users.*",
+        "tbl_provinsi.provinsi",
+        "tbl_kabupaten.kabupaten",
+        "tbl_level.nama_level",
+        db.raw(
+          `IF((${req.session.user.level} < tbl_users.level) OR false, true, false) as editable`
+        )
+      )
       .from("tbl_users")
+      .innerJoin("tbl_level", "tbl_users.level", "tbl_level.id")
       .leftJoin("tbl_provinsi", "tbl_users.id_prov", "tbl_provinsi.id")
       .leftJoin("tbl_kabupaten", "tbl_users.id_kabkot", "tbl_kabupaten.id")
-      .modify((builder) =>
-        conditionMainDashboard(db, builder, req.session.user, "tbl_users")
-      );
+      .modify((builder) => conditionFilterUser(builder, req.session.user))
+      .orderBy("tbl_users.level");
 
     res.json(result);
   })
   .post(async (req, res) => {
-    // const { level, id_prov, id_kabkot } = req.session.user;
     const { level, nama, telp, alamat, username, password } = req.body;
     var id_prov = req.body.id_prov;
     var id_kabkot = req.body.id_kabkot;
@@ -81,4 +88,14 @@ export default Handler()
 
     // success
     res.json({ message: "Berhasil Menginput User", type: "success" });
+  })
+  .delete(async (req, res) => {
+    const arrID = req.body;
+    const proses = await db("tbl_users")
+      .whereIn("id", arrID)
+      .update("deleted_at", db.fn.now());
+
+    if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
+
+    res.json({ message: "Berhasil Menghapus Data", type: "success" });
   });

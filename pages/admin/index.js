@@ -114,7 +114,7 @@ function Index() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Link href="/admin/users">
+                <Link href="/admin/setting/users">
                   <a>
                     <SettingsSuggestIcon
                       color="secondary"

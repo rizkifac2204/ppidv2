@@ -3,7 +3,7 @@ import Handler from "middlewares/Handler";
 import {
   labelTingkat,
   conditionWill,
-  conditionMainDashboard,
+  conditionFilterUser,
   conditionWillSpesific,
 } from "middlewares/Condition";
 
@@ -12,7 +12,7 @@ export default Handler().get(async (req, res) => {
   const user = await db
     .from("tbl_users")
     .count("id", { as: "jumlah" })
-    .modify((builder) => conditionMainDashboard(builder, req.session.user))
+    .modify((builder) => conditionFilterUser(builder, req.session.user))
     .first();
 
   // ambil jumlah permohonan

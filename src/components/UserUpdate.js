@@ -15,7 +15,7 @@ import EditIcon from "@mui/icons-material/Edit";
 const handleSubmit = (values) => {
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
-    .put(`/api/profile`, values)
+    .put(`/api/setting/users/${values.id}`, values)
     .then((res) => {
       toast.update(toastProses, {
         render: res.data.message,
@@ -44,12 +44,23 @@ const validationSchema = yup.object({
     .required("Email Harus Diisi"),
   alamat: yup.string().required("Alamat Harus Diisi"),
   username: yup.string().required("Username Harus Diisi"),
-  passwordConfirm: yup.string().required("Password Harus Diisi"),
+  passwordBaru: yup.string().required("Password Harus Diisi"),
+  passwordConfirm: yup
+    .string()
+    .required("Konfirmasi Password Harus Diisi")
+    .oneOf([yup.ref("passwordBaru"), null], "Passwords Tidak Sama"),
 });
 
-function ProfileForm({ profile }) {
+function UserUpdate({ profile, setDetail }) {
+  const isDisabled = Boolean(!profile.editable);
+  // email awalnya tidak ada jadi diberi kondisi
   const formik = useFormik({
-    initialValues: { ...profile, passwordConfirm: "" },
+    initialValues: {
+      ...profile,
+      email: profile.email ? profile.email : "",
+      passwordBaru: "",
+      passwordConfirm: "",
+    },
     enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: handleSubmit,
@@ -66,10 +77,10 @@ function ProfileForm({ profile }) {
           <Box>
             <form onSubmit={formik.handleSubmit}>
               <TextField
+                disabled={isDisabled}
                 fullWidth
                 required
                 margin="normal"
-                placeholder="Ganti Nama"
                 label="Nama"
                 name="nama"
                 value={formik.values.nama}
@@ -79,10 +90,10 @@ function ProfileForm({ profile }) {
                 helperText={formik.touched.nama && formik.errors.nama}
               />
               <TextField
+                disabled={isDisabled}
                 fullWidth
                 required
                 margin="normal"
-                placeholder="Telp"
                 label="HP / Telp"
                 name="telp"
                 value={formik.values.telp}
@@ -92,11 +103,11 @@ function ProfileForm({ profile }) {
                 helperText={formik.touched.telp && formik.errors.telp}
               />
               <TextField
+                disabled={isDisabled}
                 fullWidth
                 required
                 margin="normal"
                 type="email"
-                placeholder="Email"
                 label="Email"
                 name="email"
                 value={formik.values.email}
@@ -106,12 +117,12 @@ function ProfileForm({ profile }) {
                 helperText={formik.touched.email && formik.errors.email}
               />
               <TextField
+                disabled={isDisabled}
                 fullWidth
                 required
                 multiline
                 rows={3}
                 margin="normal"
-                placeholder="Alamat"
                 label="Alamat"
                 name="alamat"
                 value={formik.values.alamat}
@@ -121,10 +132,10 @@ function ProfileForm({ profile }) {
                 helperText={formik.touched.alamat && formik.errors.alamat}
               />
               <TextField
+                disabled={isDisabled}
                 fullWidth
                 required
                 margin="normal"
-                placeholder="Username"
                 label="Username"
                 name="username"
                 value={formik.values.username}
@@ -136,12 +147,31 @@ function ProfileForm({ profile }) {
                 helperText={formik.touched.username && formik.errors.username}
               />
               <TextField
+                disabled={isDisabled}
                 fullWidth
                 margin="normal"
                 required
                 type="password"
-                placeholder="Password Lama"
-                label="Password Lama"
+                label="Password"
+                name="passwordBaru"
+                value={formik.values.passwordBaru}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.passwordBaru &&
+                  Boolean(formik.errors.passwordBaru)
+                }
+                helperText={
+                  formik.touched.passwordBaru && formik.errors.passwordBaru
+                }
+              />
+              <TextField
+                disabled={isDisabled}
+                fullWidth
+                margin="normal"
+                required
+                type="password"
+                label="Konfirmasi Password"
                 name="passwordConfirm"
                 value={formik.values.passwordConfirm}
                 onChange={formik.handleChange}
@@ -155,9 +185,15 @@ function ProfileForm({ profile }) {
                   formik.errors.passwordConfirm
                 }
               />
-              <Button type="submit" variant="contained" endIcon={<EditIcon />}>
-                Update
-              </Button>
+              {!isDisabled && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  endIcon={<EditIcon />}
+                >
+                  Update
+                </Button>
+              )}
             </form>
           </Box>
         </CardContent>
@@ -166,4 +202,4 @@ function ProfileForm({ profile }) {
   );
 }
 
-export default ProfileForm;
+export default UserUpdate;

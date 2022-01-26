@@ -19,15 +19,15 @@ export const createWill = (level, prov, kab) => {
   return null;
 };
 
-export const conditionMainDashboard = (builder, user) => {
+export const conditionFilterUser = (builder, user) => {
   if (user.level <= 2) {
-    builder.whereNot("level", 4);
+    builder.whereNot("tbl_users.level", 4);
   }
   if (user.level === 3) {
-    builder.where("id_prov", user.id_prov);
+    builder.where("tbl_users.id_prov", user.id_prov);
   }
   if (user.level === 4) {
-    builder.where("id_kabkot", user.id_kabkot);
+    builder.where("tbl_users.id_kabkot", user.id_kabkot);
   }
 };
 

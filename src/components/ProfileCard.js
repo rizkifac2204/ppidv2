@@ -40,7 +40,7 @@ function ProfileCard({ profile }) {
               Unit
             </Grid>
             <Grid item xs={8}>
-              : {profile.provinsi} {profile.kabupaten} Bawaslu RI
+              : {profile.provinsi} {profile.kabupaten}
             </Grid>
 
             <Grid item xs={4}>
