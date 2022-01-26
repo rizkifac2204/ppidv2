@@ -68,6 +68,7 @@ function Online() {
     axios
       .get(`/api/permohonan/profileBawaslu?id=` + id)
       .then((res) => {
+        console.log(res.data);
         setProfileBawaslu(res.data);
         toast.dismiss(toastProses);
         callback();
@@ -147,7 +148,7 @@ function Online() {
     setTimeout(() => {
       setDetail((prev) => values);
     });
-    fetchProfileBawaslu(values.id, () => {
+    fetchProfileBawaslu(values.id_will, () => {
       processPrint();
     });
   };
@@ -265,33 +266,33 @@ function Online() {
       headerName: "Actions",
       width: 200,
       cellClassName: "actions",
-      getActions: (value) => {
+      getActions: (values) => {
         return [
           <GridActionsCellItem
             key="0"
             icon={<VisibilityIcon />}
             label="Detail"
-            onClick={() => router.push("/admin/permohonan/online/" + value.id)}
+            onClick={() => router.push("/admin/permohonan/online/" + values.id)}
           />,
           <GridActionsCellItem
             key="1"
             icon={<LocalLibraryIcon />}
             label="Tanggapi"
-            onClick={() => hanldeResponse(value.row)}
+            onClick={() => hanldeResponse(values.row)}
             showInMenu
           />,
           <GridActionsCellItem
             key="2"
             icon={<PrintIcon />}
             label="Print"
-            onClick={() => handlePrintClick(value.row)}
+            onClick={() => handlePrintClick(values.row)}
             showInMenu
           />,
           <GridActionsCellItem
             key="3"
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => handleDeleteClick(value.id)}
+            onClick={() => handleDeleteClick(values.id)}
             showInMenu
           />,
         ];

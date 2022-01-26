@@ -108,7 +108,7 @@ function Offline() {
     setTimeout(() => {
       setDetail((prev) => values);
     });
-    fetchProfileBawaslu(values.id, () => {
+    fetchProfileBawaslu(values.id_will, () => {
       processPrint();
     });
   };

@@ -11,8 +11,27 @@ export default Handler()
         "tbl_permohonan_keberatan.id",
         "tbl_permohonan_keberatan.kasus",
         "tbl_permohonan_keberatan.created_at",
+        "tbl_permohonan_keberatan.tanggal",
+        "tbl_permohonan_keberatan.alasan_a",
+        "tbl_permohonan_keberatan.alasan_b",
+        "tbl_permohonan_keberatan.alasan_c",
+        "tbl_permohonan_keberatan.alasan_d",
+        "tbl_permohonan_keberatan.alasan_e",
+        "tbl_permohonan_keberatan.alasan_f",
+        "tbl_permohonan_keberatan.alasan_g",
         "tbl_permohonan.tiket_number",
-        "tbl_permohonan.reg_number"
+        "tbl_permohonan.reg_number",
+        "tbl_permohonan.id_will",
+        "tbl_permohonan.nama",
+        "tbl_permohonan.pekerjaan",
+        "tbl_permohonan.telp",
+        "tbl_permohonan.email",
+        "tbl_permohonan.alamat",
+        "tbl_permohonan.rincian",
+        "tbl_permohonan.tujuan",
+        "tbl_permohonan.cara_terima",
+        "tbl_permohonan.cara_dapat",
+        "tbl_permohonan.ktp"
       )
       .from("tbl_permohonan_keberatan")
       .innerJoin(
