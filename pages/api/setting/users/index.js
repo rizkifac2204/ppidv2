@@ -12,7 +12,8 @@ export default Handler()
         "tbl_kabupaten.kabupaten",
         "tbl_level.nama_level",
         db.raw(
-          `IF((${req.session.user.level} < tbl_users.level) OR false, true, false) as editable`
+          `IF(${req.session.user.level} < tbl_users.level, true, false) as editable,
+          IF(${req.session.user.level} = tbl_users.id, true, false) as myself`
         )
       )
       .from("tbl_users")
@@ -25,7 +26,7 @@ export default Handler()
     res.json(result);
   })
   .post(async (req, res) => {
-    const { level, nama, telp, alamat, username, password } = req.body;
+    const { level, nama, telp, email, alamat, username, password } = req.body;
     var id_prov = req.body.id_prov;
     var id_kabkot = req.body.id_kabkot;
 
@@ -35,7 +36,7 @@ export default Handler()
       var id_kabkot = 0;
     }
     if (level === 3) {
-      if (id_prov)
+      if (!id_prov)
         return res.status(400).json({
           message: "Provinsi Harus Diisi",
           type: "error",
@@ -43,11 +44,11 @@ export default Handler()
       var id_kabkot = 0;
     }
     if (level === 4) {
-      if (id_prov)
+      if (!id_prov)
         return res
           .status(400)
           .json({ message: "Provinsi Harus Diisi", type: "error" });
-      if (id_kabkot)
+      if (!id_kabkot)
         return res
           .status(400)
           .json({ message: "Kabupaten/Kota Harus Diisi", type: "error" });
@@ -70,6 +71,7 @@ export default Handler()
         level,
         nama,
         telp,
+        email,
         alamat,
         username,
         password: hash,

@@ -8,7 +8,7 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 // ICONS
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 // Components
 import { CustomToolbar } from "components/TableComponents";
 
@@ -90,21 +90,23 @@ function Users() {
   };
 
   const actionColumn = (values) => {
+    if (values.row.myself) {
+      return [
+        <GridActionsCellItem
+          key="0"
+          icon={<ManageAccountsIcon />}
+          label="Profile"
+          onClick={() => router.push("/admin/profile")}
+        />,
+      ];
+    }
     if (values.row.editable) {
       return [
         <GridActionsCellItem
           key="0"
-          icon={<VisibilityIcon />}
-          label="Detail"
+          icon={<ManageAccountsIcon />}
+          label="Detail dan Edit"
           onClick={() => router.push("/admin/setting/users/" + values.id)}
-        />,
-        <GridActionsCellItem
-          key="1"
-          icon={<EditIcon />}
-          label="Edit"
-          onClick={() =>
-            router.push("/admin/setting/users/" + values.id + "/edit")
-          }
         />,
         <GridActionsCellItem
           key="2"

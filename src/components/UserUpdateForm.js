@@ -12,11 +12,12 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
-const handleSubmit = (values) => {
+const handleSubmit = (values, setDetail) => {
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
     .put(`/api/setting/users/${values.id}`, values)
     .then((res) => {
+      setDetail({ ...values });
       toast.update(toastProses, {
         render: res.data.message,
         type: "success",
@@ -63,7 +64,7 @@ function UserUpdate({ profile, setDetail }) {
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: handleSubmit,
+    onSubmit: (values) => handleSubmit(values, setDetail),
   });
 
   return (

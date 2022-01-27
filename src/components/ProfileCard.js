@@ -1,13 +1,13 @@
-import {
-  Card,
-  CardContent,
-  Typography,
-  Avatar,
-  Box,
-  Grid,
-} from "@mui/material";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import CardActions from "@mui/material/CardActions";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 
-function ProfileCard({ profile }) {
+function ProfileCard({ profile, handleDelete }) {
   return (
     <>
       <Card>
@@ -65,6 +65,13 @@ function ProfileCard({ profile }) {
             </Grid>
           </Grid>
         </CardContent>
+        <CardActions>
+          {handleDelete && Boolean(profile.editable) && (
+            <Button size="small" color="secondary" onClick={handleDelete}>
+              Hapus
+            </Button>
+          )}
+        </CardActions>
       </Card>
     </>
   );

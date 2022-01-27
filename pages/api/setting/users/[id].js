@@ -14,7 +14,8 @@ export default Handler()
         "tbl_kabupaten.kabupaten",
         "tbl_level.nama_level",
         db.raw(
-          `IF((${req.session.user.level} < tbl_users.level) OR false, true, false) as editable`
+          `IF(${req.session.user.level} < tbl_users.level, true, false) as editable, 
+          IF(${req.session.user.level} = tbl_users.id, true, false) as myself`
         )
       )
       .from("tbl_users")
