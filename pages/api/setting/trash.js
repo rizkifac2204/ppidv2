@@ -1,10 +1,7 @@
 import db from "libs/db";
 import Handler from "middlewares/Handler";
-import {
-  conditionWillSpesific,
-  labelKepada,
-  createWill,
-} from "middlewares/Condition";
+import { conditionWillSpesific } from "middlewares/Condition";
+import { DeleteUpload } from "services/UploadService";
 
 export default Handler()
   .get(async (req, res) => {
@@ -71,28 +68,6 @@ export default Handler()
     const result = online.concat(offline);
     res.json(result);
   })
-  .post(async (req, res) => {
-    const { id, jenis } = req.body;
-
-    // pisahkan id dengan param
-    const setID = id.split("-");
-
-    // proses simpan
-    const proses = await db(
-      jenis === "online" ? "tbl_permohonan" : "tbl_permohonan_offline"
-    )
-      .where("id", setID[1])
-      .del();
-
-    // failed
-    if (!proses)
-      return res.status(400).json({
-        message: "Gagal Hapus Data",
-      });
-
-    // success
-    res.json({ message: "Berhasil Hapus Data", type: "success" });
-  })
   .put(async (req, res) => {
     const { id, jenis } = req.body;
 
@@ -115,6 +90,52 @@ export default Handler()
     // success
     res.json({ message: "Berhasil Mengembalikan Data", type: "success" });
   })
+  // delete one by one
+  .post(async (req, res) => {
+    const { id, jenis } = req.body;
+
+    // pisahkan id dengan param
+    const setID = id.split("-");
+
+    const table =
+      jenis === "online" ? "tbl_permohonan" : "tbl_permohonan_offline";
+
+    // get detail untuk ambil nama file / ktp / response
+    const cek = await db(table)
+      .modify((q) => {
+        if (jenis === "online") {
+          q.select(table + ".*", "tbl_permohonan_response.file").innerJoin(
+            "tbl_permohonan_response",
+            "tbl_permohonan_response.id_permohonan",
+            table + ".id"
+          );
+        }
+      })
+      .where(table + ".id", setID[1])
+      .first();
+
+    // proses
+    const proses = await db(table).where("id", setID[1]).del();
+
+    // failed
+    if (!proses)
+      return res.status(400).json({
+        message: "Gagal Hapus Data",
+      });
+
+    if (jenis === "online") {
+      // console.log("hapus di folder upload dan response");
+      DeleteUpload("./public/response", cek.file);
+      DeleteUpload("./public/upload", cek.ktp);
+    } else {
+      // console.log("hapus di folder offline");
+      DeleteUpload("./public/offline", cek.file);
+    }
+
+    // success
+    res.json({ message: "Berhasil Hapus Data", type: "success" });
+  })
+  // delete selected
   .delete(async (req, res) => {
     const splitArrID = req.body.map((item) => {
       return item.split("-");
@@ -134,6 +155,30 @@ export default Handler()
       .map((item) => {
         return item[1];
       });
+
+    // get detail untuk ambil nama file / ktp / response
+    const cekOnline = await db("tbl_permohonan")
+      .select("tbl_permohonan.ktp", "tbl_permohonan_response.file")
+      .innerJoin(
+        "tbl_permohonan_response",
+        "tbl_permohonan_response.id_permohonan",
+        "tbl_permohonan.id"
+      )
+      .whereIn("tbl_permohonan.id", onlineID);
+    const offlineValues = await db("tbl_permohonan_offline")
+      .select({ filename: "file" })
+      .whereIn("id", offlineID);
+
+    const uploadValues = cekOnline.map(function (value) {
+      return value.ktp;
+    });
+    const responseValues = cekOnline.map(function (value) {
+      return value.file;
+    });
+
+    DeleteUpload("./public/upload", uploadValues);
+    DeleteUpload("./public/response", responseValues);
+    DeleteUpload("./public/offline", offlineValues);
 
     // proses hapus
     await db("tbl_permohonan").whereIn("id", onlineID).del();

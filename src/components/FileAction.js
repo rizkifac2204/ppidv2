@@ -120,7 +120,11 @@ function FileAction({ response, setResponse, id_permohonan, path }) {
     );
   return (
     <>
-      <a href={"/" + path + "/" + response.file} target="_blank">
+      <a
+        href={"/" + path + "/" + response.file}
+        target="_blank"
+        rel="noreferrer"
+      >
         {response.file}
       </a>
       <br />

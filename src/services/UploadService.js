@@ -37,11 +37,16 @@ export const Upload = () =>
 export const DeleteUpload = (path, files) => {
   try {
     if (Array.isArray(files)) {
-      files.forEach((value, index, array) => {
-        fs.unlinkSync(path + "/" + value.filename);
+      files.forEach((v) => {
+        if (typeof v === "object" && !Array.isArray(v) && v !== null) {
+          if (fs.existsSync(path + "/" + v.filename))
+            fs.unlinkSync(path + "/" + v.filename);
+        } else {
+          if (fs.existsSync(path + "/" + v)) fs.unlinkSync(path + "/" + v);
+        }
       });
     } else {
-      fs.unlinkSync(path + "/" + files);
+      if (fs.existsSync(path + "/" + files)) fs.unlinkSync(path + "/" + files);
     }
   } catch (err) {
     throw err;

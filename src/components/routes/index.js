@@ -69,27 +69,17 @@ export const mainRoutes = [
     icon: <PanToolIcon />,
   },
   {
-    title: "Sahabat",
+    title: "Subscriber",
     icon: <ConnectWithoutContactIcon />,
     children: [
       {
-        title: "Subscriber",
-        path: "/admin/sahabat/subsrciber",
+        title: "Data Subscriber",
+        path: "/admin/subscriber",
         icon: <ArrowRightIcon />,
       },
       {
-        title: "Buat Email",
-        path: "/admin/sahabat/email",
-        icon: <ArrowRightIcon />,
-      },
-      {
-        title: "Draft",
-        path: "/admin/sahabat/draft",
-        icon: <ArrowRightIcon />,
-      },
-      {
-        title: "Terkirim",
-        path: "/admin/sahabat/send",
+        title: "Email",
+        path: "/admin/subscriber/email",
         icon: <ArrowRightIcon />,
       },
     ],

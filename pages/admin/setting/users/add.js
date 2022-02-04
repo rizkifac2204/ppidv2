@@ -29,7 +29,6 @@ const handleSubmit = (values) => {
   axios
     .post(`/api/setting/users`, values)
     .then((res) => {
-      console.log(res);
       toast.update(toastProses, {
         render: res.data.message,
         type: "success",
@@ -116,7 +115,6 @@ function AddUsers() {
       .get(`/api/setting/wilayah/provinsis`)
       .then((res) => {
         setProvinsis(res.data);
-        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -128,7 +126,6 @@ function AddUsers() {
       .get(`/api/setting/wilayah/provinsis/` + formik.values.id_prov)
       .then((res) => {
         setKabkots(res.data.kabkot);
-        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -142,7 +139,6 @@ function AddUsers() {
           Tambah Permohonan Offline
         </Typography>
         <Box>
-          {JSON.stringify(formik.values, null, 4)}
           <form onSubmit={formik.handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
