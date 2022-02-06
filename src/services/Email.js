@@ -38,11 +38,11 @@ export const TextPerubahanStatus = (
     --PPID Bawaslu`;
 };
 
-export const mailOption = (to, status, text) => {
+export const mailOption = (to, subject, text) => {
   const option = {
     from: "ppid.bawaslu@go.id",
     to: to,
-    subject: status,
+    subject: subject,
     html: text,
   };
   return option;

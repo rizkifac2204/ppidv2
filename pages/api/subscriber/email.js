@@ -5,6 +5,23 @@ import {
   labelKepada,
   createWill,
 } from "middlewares/Condition";
+import sendingMail, { mailOption, TextPerubahanStatus } from "services/Email";
+
+async function kirim(setMailOption, id) {
+  await sendingMail(setMailOption).then(async (resolve) => {
+    if (!resolve) {
+      // ubah email tidak terkirim jika gagal
+      await db("tbl_email_send").where("id", id).update({
+        status: 0,
+        sended_at: null,
+      });
+      return res.json({
+        message: "Gagal Kirim, Memidahkan Ke Draft",
+        type: "info",
+      });
+    }
+  });
+}
 
 export default Handler()
   .get(async (req, res) => {
@@ -22,48 +39,118 @@ export default Handler()
         conditionWillSpesific(db, builder, req.session.user, "tbl_email_send")
       )
       .modify((builder) => {
-        if (status) {
-          if (status === "draft") builder.where("tbl_email_send.status", 0);
-          if (status === "send") builder.where("tbl_email_send.status", 1);
-        }
+        if (status) builder.where("tbl_email_send.status", status);
       })
       .orderBy("tbl_email_send.created_at", "desc");
 
     res.json(result);
   })
   .post(async (req, res) => {
-    console.log(req.body);
     const { level, id_prov, id_kabkot } = req.session.user;
-    const { penerima, subjek, isi } = req.body;
-    var daftar_penerima = req.body.daftar_penerima;
+    const { id, penerima, subjek, isi, send } = req.body;
+    const sended_at = send ? new Date() : null;
 
+    // persiapan value untuk kolom daftar penerima dan/atau list email
+    var listIDPenerima = [];
+    var listEmailPenerima = req.body.list_penerima;
+
+    // cek siapa penerima
+    // kalau select disiapkan List ID untuk kolom daftar_penerima
+    // kalau all disiapkan List Email untuk kirim email
     if (penerima === "Select") {
-      if (!daftar_penerima)
+      // klo select, cek kosong atau tidak
+      if (!listEmailPenerima)
         return res.status(400).json({
           message: "Daftar Penerima Tidak Terdeteksi",
         });
+      // jika ada, loop subscriber dan push id ke listIDPenerima
+      const getIDSubscriber = await db("tbl_email_subscribe")
+        .select("id")
+        .whereIn("email", listEmailPenerima);
+      getIDSubscriber.map((item) => {
+        listIDPenerima.push(item.id);
+      });
     } else {
-      daftar_penerima = null;
+      // klo bukan select, maka langsung listIDPenerima null
+      listIDPenerima = [];
+      // dan buat list email untuk kirim
+      const getEmailSubscriber = await db
+        .select("email")
+        .from("tbl_email_subscribe")
+        .modify((builder) => {
+          if (req.session.user.level <= 2) {
+            builder.where(`id_will`, "=", 0);
+          }
+          if (req.session.user.level === 3) {
+            builder.where(`id_will`, "=", id_prov);
+          }
+          if (req.session.user.level === 4) {
+            builder.where(`id_will`, "=", id_kabkot);
+          }
+        });
+      getEmailSubscriber.map((item) => {
+        listEmailPenerima.push(item.email);
+      });
     }
 
-    // proses simpan
-    const proses = await db("tbl_email_send").insert([
-      {
-        nama,
-        email,
-        kepada: labelKepada(level),
-        id_will: createWill(level, id_prov, id_kabkot),
-      },
-    ]);
+    // setting email
+    const setMailOption = mailOption(listEmailPenerima, subjek, isi);
 
-    // // failed
-    // if (!proses)
-    //   return res.status(400).json({
-    //     message: "Gagal Memproses Data",
-    //   });
+    if (id) {
+      // proses Edit
+      const proses = await db("tbl_email_send")
+        .where("id", id)
+        .update({
+          oleh: labelKepada(level),
+          id_will: createWill(level, id_prov, id_kabkot),
+          penerima,
+          daftar_penerima:
+            listIDPenerima.length === 0 ? null : `${listIDPenerima}`,
+          subjek,
+          isi,
+          status: send,
+          sended_at,
+        });
 
-    // // success
-    // res.json({ message: "Berhasil Memproses Data", type: "success" });
+      // failed
+      if (!proses)
+        return res.status(400).json({
+          message: "Gagal Memproses Data",
+        });
+
+      // jika harus kirim email
+      if (send) kirim(setMailOption, id);
+
+      // success
+      return res.json({ message: "Berhasil Update Data", type: "success" });
+    } else {
+      // proses simpan
+      const proses = await db("tbl_email_send").insert([
+        {
+          oleh: labelKepada(level),
+          id_will: createWill(level, id_prov, id_kabkot),
+          penerima,
+          daftar_penerima:
+            listIDPenerima.length === 0 ? null : `${listIDPenerima}`,
+          subjek,
+          isi,
+          status: send,
+          sended_at,
+        },
+      ]);
+
+      // failed
+      if (!proses)
+        return res.status(400).json({
+          message: "Gagal Memproses Data",
+        });
+
+      // jika harus kirim email
+      if (send) kirim(setMailOption, proses[0]);
+
+      // success
+      return res.json({ message: "Berhasil Insert Data", type: "success" });
+    }
   })
   // delete one by one
   .put(async (req, res) => {

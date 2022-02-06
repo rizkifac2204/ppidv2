@@ -21,7 +21,6 @@ function Subscriber() {
     axios
       .get(`/api/subscriber`)
       .then((res) => {
-        console.log(res.data);
         setData(res.data);
       })
       .catch((err) => {
