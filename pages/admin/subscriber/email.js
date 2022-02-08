@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { toast } from "react-toastify";
 // MUI
+import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 // ICONS
@@ -128,10 +129,6 @@ function Email() {
     setOpenForm(true);
   };
 
-  // useEffect(() => {
-  //   console.log(openForm, detail);
-  // }, [openForm]);
-
   const columns = [
     {
       field: "oleh",
@@ -190,7 +187,7 @@ function Email() {
   ];
 
   return (
-    <>
+    <Card>
       <Button
         variant="outlined"
         sx={{ mb: 2 }}
@@ -255,7 +252,7 @@ function Email() {
         subscriber={subscriber}
         fromDraft={detail}
       />
-    </>
+    </Card>
   );
 }
 
