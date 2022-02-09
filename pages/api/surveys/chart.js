@@ -4,23 +4,28 @@ import { conditionWillSpesific } from "middlewares/Condition";
 
 export default Handler()
   .get(async (req, res) => {
+    const { tahun, unit, prov, kab } = req.query;
     const result = await db
-      .count("tbl_survey.id", { as: "jumlah" })
-      .select(
-        "tbl_survey.satu",
-        "tbl_survey.id_will",
-        "tbl_survey.kepada",
-        "tbl_provinsi.provinsi",
-        "tbl_kabupaten.kabupaten"
-      )
+      .select("tbl_survey.*")
       .from("tbl_survey")
-      .leftJoin("tbl_provinsi", "tbl_survey.id_will", "tbl_provinsi.id")
-      .leftJoin("tbl_kabupaten", "tbl_survey.id_will", "tbl_kabupaten.id")
       .modify((builder) =>
         conditionWillSpesific(db, builder, req.session.user, "tbl_survey")
       )
-      .groupBy("tbl_survey.satu");
-
+      .modify((builder) => {
+        if (tahun) builder.whereRaw("YEAR(tbl_survey.created_at) = ?", [tahun]);
+      })
+      .modify((builder) => {
+        if (unit) builder.whereRaw("tbl_survey.kepada = ?", [unit]);
+      })
+      .modify((builder) => {
+        if (prov && !kab) {
+          builder.whereRaw("tbl_survey.id_will = ?", [prov]);
+        }
+        if (prov && kab) {
+          builder.whereRaw("tbl_survey.id_will = ?", [kab]);
+        }
+      })
+      .orderBy("tbl_survey.created_at", "desc");
     res.json(result);
   })
   .delete(async (req, res) => {

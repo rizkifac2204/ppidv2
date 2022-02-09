@@ -22,7 +22,7 @@ function getJumlah(arr, param) {
   if (!obj) return 0;
   const kosong = arr.find((o) => o.status === "");
   if (param === null) {
-    return obj.jumlah + kosong?.jumlah;
+    return obj.jumlah + (kosong ? kosong.jumlah : 0);
   } else {
     return obj.jumlah;
   }

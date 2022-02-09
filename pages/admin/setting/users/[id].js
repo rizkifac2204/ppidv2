@@ -13,7 +13,7 @@ function UsersDetail() {
   const router = useRouter();
   const { id } = router.query;
   const [detail, setDetail] = useState({});
-  const [render, setRender] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
@@ -22,12 +22,12 @@ function UsersDetail() {
           .get(`/api/setting/users/` + id)
           .then((res) => {
             setDetail(res.data);
-            setRender(true);
           })
           .catch((err) => {
             toast.error(err.response.data.message);
             setTimeout(() => router.push("/admin/setting/users"), 2000);
-          });
+          })
+          .then(() => setLoading(false));
       };
       fetchDetail();
     }
@@ -65,18 +65,14 @@ function UsersDetail() {
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} md={3}>
-        {!render ? (
-          <WaitLoadingComponent />
-        ) : (
+        <WaitLoadingComponent loading={loading} />
+        {!loading && (
           <ProfileCard profile={detail} handleDelete={handleDelete} />
         )}
       </Grid>
       <Grid item xs={12} md={9}>
-        {!render ? (
-          <WaitLoadingComponent />
-        ) : (
-          <UserUpdate profile={detail} setDetail={setDetail} />
-        )}
+        <WaitLoadingComponent loading={loading} />
+        {!loading && <UserUpdate profile={detail} setDetail={setDetail} />}
       </Grid>
     </Grid>
   );

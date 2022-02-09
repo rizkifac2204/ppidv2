@@ -11,8 +11,11 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
+import Alert from "@mui/material/Alert";
 // Rechartsjs
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+//Component
+import WaitLoadingComponent from "components/WaitLoadingComponent";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 const INITQUEST = [
@@ -88,15 +91,8 @@ const INITQUEST = [
   },
 ];
 
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-// PR
-// BUAT LOADING JIKA MEMUDAT CHART ATAU MEMUAT ULANG
-// TAMBAHKAN FILTER UNIT DAN PROVINSI JIKA YANG DILIHAT UNIT PROVINSI
-// SAMPAI KABUPATEN
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-const ChartArea = ({ item }) => {
-  if (!item) return;
+const ChartArea = ({ item, loading }) => {
+  if (loading) return <></>;
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart width={600} height={600}>
@@ -131,27 +127,68 @@ function groupByKey(array, key) {
 
 function SurveyChart() {
   const [data, setData] = useState([]);
+  const [provinsis, setProvinsis] = useState([]);
+  const [kabkots, setKabkots] = useState([]);
   const [quest, setQuest] = useState(INITQUEST);
+  const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState({
     tahun: "",
-    lain: "",
+    unit: "",
+    prov: "",
+    kab: "",
   });
 
-  const handleChangeFilter = (event) => {
-    const { name, value } = event.target;
-    setFilter((prev) => ({ ...filter, [name]: value }));
-  };
-
   function fetchingData() {
+    setLoading(true);
     axios
-      .get(`/api/surveys`, { params: filter })
+      .get(`/api/surveys/chart`, { params: filter })
       .then((res) => {
         setData((prevData) => res.data);
       })
       .catch((err) => {
         toast.error("Terjadi Kesalahan");
+      })
+      .then(() => {
+        setLoading(false);
       });
   }
+
+  const fetchProv = () => {
+    if (provinsis.length !== 0) return;
+    axios
+      .get(`/api/setting/wilayah/provinsis`)
+      .then((res) => {
+        setProvinsis(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const fetchKabkot = (id_prov) => {
+    setKabkots([]);
+    if (!id_prov) return;
+    axios
+      .get(`/api/setting/wilayah/provinsis/` + id_prov)
+      .then((res) => {
+        setKabkots(res.data.kabkot);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleChangeFilter = (event) => {
+    const { name, value } = event.target;
+    const prepareFilter = { ...filter, [name]: value };
+    if (name === "unit") {
+      prepareFilter = { ...prepareFilter, kab: "", prov: "" };
+    }
+    if (name === "prov") {
+      prepareFilter = { ...prepareFilter, kab: "" };
+    }
+    setFilter((prev) => prepareFilter);
+  };
 
   useEffect(() => {
     fetchingData();
@@ -170,7 +207,7 @@ function SurveyChart() {
         });
       });
     }
-    setQuest((prevValue) => tempData);
+    setQuest(tempData);
   }, [data]);
 
   return (
@@ -179,11 +216,11 @@ function SurveyChart() {
         <CardContent>
           <Typography>Filter</Typography>
           <Box>
-            <FormControl fullWidth>
-              <InputLabel>Tahun *</InputLabel>
+            <FormControl sx={{ mx: 1, my: 1, minWidth: 180 }}>
+              <InputLabel>Tahun</InputLabel>
               <Select
                 name="tahun"
-                label="Tahun *"
+                label="Tahun"
                 value={filter.tahun}
                 onChange={handleChangeFilter}
               >
@@ -191,6 +228,65 @@ function SurveyChart() {
                 <MenuItem value="2020">2020</MenuItem>
                 <MenuItem value="2021">2021</MenuItem>
                 <MenuItem value="2022">2022</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ mx: 1, my: 1, minWidth: 180 }}>
+              <InputLabel>Unit</InputLabel>
+              <Select
+                name="unit"
+                label="Unit"
+                value={filter.unit}
+                onChange={(e) => {
+                  handleChangeFilter(e);
+                  if (
+                    e.target.value === "Bawaslu Provinsi" ||
+                    e.target.value === "Bawaslu"
+                  ) {
+                    fetchProv();
+                  }
+                }}
+              >
+                <MenuItem value="">Semua</MenuItem>
+                <MenuItem value="Bawaslu Republik Indonesia">
+                  Bawaslu RI
+                </MenuItem>
+                <MenuItem value="Bawaslu Provinsi">Bawaslu/Provinsi</MenuItem>
+                <MenuItem value="Bawaslu">Bawaslu Kabupaten/Kota</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ mx: 1, my: 1, minWidth: 180 }}>
+              <InputLabel>Provinsi</InputLabel>
+              <Select
+                name="prov"
+                label="Provinsi"
+                value={filter.prov}
+                onChange={(e) => {
+                  handleChangeFilter(e);
+                  fetchKabkot(e.target.value);
+                }}
+              >
+                <MenuItem value="">Semua</MenuItem>
+                {provinsis.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.provinsi}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ mx: 1, my: 1, minWidth: 180 }}>
+              <InputLabel>Kabupaten/Kota</InputLabel>
+              <Select
+                name="kab"
+                label="Kabupaten/Kota"
+                value={filter.kab}
+                onChange={handleChangeFilter}
+              >
+                <MenuItem value="">Semua</MenuItem>
+                {kabkots.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.kabupaten}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
@@ -202,7 +298,11 @@ function SurveyChart() {
             <Card>
               <CardContent>
                 {item.no}. {item.quest}
-                <ChartArea item={item} />
+                <WaitLoadingComponent loading={loading} />
+                {!loading && item.chartData.length === 0 && (
+                  <Alert severity="info">Data Tidak Ditemukan</Alert>
+                )}
+                <ChartArea item={item} loading={loading} />
               </CardContent>
             </Card>
           </Grid>

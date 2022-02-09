@@ -37,7 +37,7 @@ function a11yProps(index) {
 function Profile() {
   const { data: session } = useSession();
   const [profile, setProfile] = useState({});
-  const [render, setRender] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [value, setValue] = useState(0);
   const handleChange = (event, newValue) => {
@@ -46,18 +46,20 @@ function Profile() {
 
   useEffect(() => {
     if (!session) return;
+    setLoading(true);
     function fetchProfile() {
       axios
         .get("/api/profile")
         .then((res) => {
           const merged = { ...res.data, ...session.user };
           setProfile(merged);
-          setRender(true);
+          setLoading(false);
         })
         .catch((err) => {
           console.log(err);
           toast.error(err.response.data);
-        });
+        })
+        .then(() => setLoading(false));
     }
     fetchProfile();
   }, [session]);
@@ -65,7 +67,8 @@ function Profile() {
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} md={3}>
-        {!render ? <WaitLoadingComponent /> : <ProfileCard profile={profile} />}
+        <WaitLoadingComponent loading={loading} />
+        <ProfileCard profile={profile} />
       </Grid>
       <Grid item xs={12} md={9}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -79,18 +82,12 @@ function Profile() {
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
-          {!render ? (
-            <WaitLoadingComponent />
-          ) : (
-            <ProfileForm profile={profile} />
-          )}
+          <WaitLoadingComponent loading={loading} />
+          {!loading && <ProfileForm profile={profile} />}
         </TabPanel>
         <TabPanel value={value} index={1}>
-          {!render ? (
-            <WaitLoadingComponent />
-          ) : (
-            <ProfilePassword profile={profile} />
-          )}
+          <WaitLoadingComponent loading={loading} />
+          {!loading && <ProfilePassword profile={profile} />}
         </TabPanel>
       </Grid>
     </Grid>

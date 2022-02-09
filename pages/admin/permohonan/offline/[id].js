@@ -111,9 +111,8 @@ function OfflineDetail() {
 
   return (
     <>
-      {Object.keys(detail).length == 0 ? (
-        <WaitLoadingComponent />
-      ) : (
+      <WaitLoadingComponent loading={Object.keys(detail).length == 0} />
+      {Object.keys(detail).length !== 0 && (
         <>
           <Card>
             <Typography
