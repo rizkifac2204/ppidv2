@@ -11,13 +11,10 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
-import Alert from "@mui/material/Alert";
-// Rechartsjs
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 //Component
 import WaitLoadingComponent from "components/WaitLoadingComponent";
+import { CustomPieChart } from "components/CustomChart";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 const INITQUEST = [
   {
     no: 1,
@@ -91,31 +88,6 @@ const INITQUEST = [
   },
 ];
 
-const ChartArea = ({ item, loading }) => {
-  if (loading) return <></>;
-  return (
-    <ResponsiveContainer width="100%" height={300}>
-      <PieChart width={600} height={600}>
-        <Pie
-          dataKey="value"
-          startAngle={360}
-          endAngle={0}
-          data={item.chartData}
-          cx="50%"
-          cy="50%"
-          outerRadius={100}
-          label={(i) => {
-            return `(${i.value}) ${i.name}`;
-          }}
-        >
-          {item.chartData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index]} />
-          ))}
-        </Pie>
-      </PieChart>
-    </ResponsiveContainer>
-  );
-};
 function groupByKey(array, key) {
   return array.reduce((hash, obj) => {
     if (obj[key] === undefined) return hash;
@@ -137,21 +109,6 @@ function SurveyChart() {
     prov: "",
     kab: "",
   });
-
-  function fetchingData() {
-    setLoading(true);
-    axios
-      .get(`/api/surveys/chart`, { params: filter })
-      .then((res) => {
-        setData((prevData) => res.data);
-      })
-      .catch((err) => {
-        toast.error("Terjadi Kesalahan");
-      })
-      .then(() => {
-        setLoading(false);
-      });
-  }
 
   const fetchProv = () => {
     if (provinsis.length !== 0) return;
@@ -191,6 +148,20 @@ function SurveyChart() {
   };
 
   useEffect(() => {
+    function fetchingData() {
+      setLoading(true);
+      axios
+        .get(`/api/surveys/chart`, { params: filter })
+        .then((res) => {
+          setData((prevData) => res.data);
+        })
+        .catch((err) => {
+          toast.error("Terjadi Kesalahan");
+        })
+        .then(() => {
+          setLoading(false);
+        });
+    }
     fetchingData();
   }, [filter]);
 
@@ -208,7 +179,7 @@ function SurveyChart() {
       });
     }
     setQuest(tempData);
-  }, [data]);
+  }, [data, quest]);
 
   return (
     <>
@@ -299,10 +270,7 @@ function SurveyChart() {
               <CardContent>
                 {item.no}. {item.quest}
                 <WaitLoadingComponent loading={loading} />
-                {!loading && item.chartData.length === 0 && (
-                  <Alert severity="info">Data Tidak Ditemukan</Alert>
-                )}
-                <ChartArea item={item} loading={loading} />
+                <CustomPieChart data={item.chartData} loading={loading} />
               </CardContent>
             </Card>
           </Grid>

@@ -13,11 +13,7 @@ export default Handler()
       )
       .modify((builder) => {
         if (tahun) builder.whereRaw("YEAR(tbl_survey.created_at) = ?", [tahun]);
-      })
-      .modify((builder) => {
         if (unit) builder.whereRaw("tbl_survey.kepada = ?", [unit]);
-      })
-      .modify((builder) => {
         if (prov && !kab) {
           builder.whereRaw("tbl_survey.id_will = ?", [prov]);
         }

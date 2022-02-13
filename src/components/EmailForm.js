@@ -103,7 +103,7 @@ function EmailForm(props) {
       formik.resetForm();
       // setEditorState(EditorState.createEmpty());
     }
-  }, [props.open]);
+  }, [props.open, formik]);
 
   // const onEditorStateChange = (editorState) => {
   //   setEditorState(editorState);

@@ -154,30 +154,28 @@ function Keberatan() {
   ];
 
   return (
-    <div style={{ height: 250, width: "100%" }}>
-      <Card>
-        <DataGrid
-          autoHeight
-          rows={data}
-          columns={columns}
-          pageSize={pageSize}
-          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-          rowsPerPageOptions={[5, 10, 20]}
-          checkboxSelection
-          disableSelectionOnClick
-          onSelectionModelChange={(itm) => setSelected(itm)}
-          components={{
-            Toolbar: CustomToolbar,
-          }}
-          componentsProps={{
-            toolbar: {
-              selectedItem: selected,
-              handleDeleteSelected: handleDeleteSelected,
-            },
-          }}
-        />
-      </Card>
-    </div>
+    <Card>
+      <DataGrid
+        autoHeight
+        rows={data}
+        columns={columns}
+        pageSize={pageSize}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        rowsPerPageOptions={[5, 10, 20]}
+        checkboxSelection
+        disableSelectionOnClick
+        onSelectionModelChange={(itm) => setSelected(itm)}
+        components={{
+          Toolbar: CustomToolbar,
+        }}
+        componentsProps={{
+          toolbar: {
+            selectedItem: selected,
+            handleDeleteSelected: handleDeleteSelected,
+          },
+        }}
+      />
+    </Card>
   );
 }
 
