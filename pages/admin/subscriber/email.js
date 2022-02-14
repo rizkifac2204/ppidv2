@@ -28,7 +28,6 @@ function Email() {
   const [detail, setDetail] = useState({});
 
   function fecthEmail(url) {
-    setData([]);
     axios
       .get(url)
       .then((res) => {
@@ -42,13 +41,19 @@ function Email() {
   }
 
   useEffect(() => {
+    let mounted = true;
+    setTimeout(() => {
+      setData((prev) => []);
+    });
     const { status } = router.query;
     if (!status) return fecthEmail(`/api/subscriber/email?status=1`);
     const url =
       status === "draft"
         ? `/api/subscriber/email?status=0`
         : `/api/subscriber/email?status=1`;
-    fecthEmail(url);
+    if (mounted) fecthEmail(url);
+
+    return () => (mounted = false);
   }, [router]);
 
   useEffect(() => {
@@ -125,8 +130,8 @@ function Email() {
   };
 
   const handleDraft = (detail) => {
-    setDetail(detail);
     setOpenForm(true);
+    setDetail((prev) => detail);
   };
 
   const columns = [
@@ -155,13 +160,13 @@ function Email() {
         if (values.row.status === 0) {
           return [
             <GridActionsCellItem
-              key="1"
+              key="0"
               icon={<EditIcon />}
               label="Tulis Ulang"
               onClick={() => handleDraft(values.row)}
             />,
             <GridActionsCellItem
-              key="2"
+              key="1"
               icon={<DeleteIcon />}
               label="Delete"
               onClick={() => handleDelete(values.id)}
@@ -176,7 +181,7 @@ function Email() {
             onClick={() => console.log("detail" + values.id)}
           />,
           <GridActionsCellItem
-            key="2"
+            key="1"
             icon={<DeleteIcon />}
             label="Delete"
             onClick={() => handleDelete(values.id)}
@@ -250,7 +255,8 @@ function Email() {
         open={openForm}
         onClose={handleFormClose}
         subscriber={subscriber}
-        fromDraft={detail}
+        detail={detail}
+        router={router}
       />
     </Card>
   );

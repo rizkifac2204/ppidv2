@@ -114,20 +114,21 @@ function Offline() {
   };
 
   useEffect(() => {
+    let mounted = true;
     const fetchData = () => {
       axios
         .get(`/api/permohonan/offlines`)
         .then((res) => {
-          setData(res.data);
+          setTimeout(() => {
+            setData((prev) => res.data);
+          });
         })
         .catch((err) => {
           toast.error("Terjadi Kesalahan");
         });
     };
-    fetchData();
-    return () => {
-      // console.log("clear");
-    };
+    if (mounted) fetchData();
+    return () => (mounted = false);
   }, []);
 
   const columns = [

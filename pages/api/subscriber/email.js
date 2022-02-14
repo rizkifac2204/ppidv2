@@ -59,7 +59,7 @@ export default Handler()
     // kalau all disiapkan List Email untuk kirim email
     if (penerima === "Select") {
       // klo select, cek kosong atau tidak
-      if (!listEmailPenerima)
+      if (listEmailPenerima.length === 0)
         return res.status(400).json({
           message: "Daftar Penerima Tidak Terdeteksi",
         });

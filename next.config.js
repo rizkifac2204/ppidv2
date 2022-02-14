@@ -1,4 +1,7 @@
 module.exports = {
+  env: {
+    tynimceAPI: "mgdq5xn0ze8c48b5urdackwvsitkys648xw6lvt5ea9s40qy",
+  },
   images: {
     domains: ["picsum.photos"],
   },

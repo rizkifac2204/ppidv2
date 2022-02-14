@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import axios from "axios";
-import dynamic from "next/dynamic";
 // MUI
-import { useTheme } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
@@ -19,39 +17,24 @@ import MenuItem from "@mui/material/MenuItem";
 import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
 import FormHelperText from "@mui/material/FormHelperText";
-// wysiwyg
-// import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-// import { EditorState, RichUtils, convertToRaw, convertFromRaw } from "draft-js";
-// const Editor = dynamic(
-//   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
-//   { ssr: false }
-// );
-
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: 48 * 4.5 + 8,
-      width: 250,
-    },
-  },
-};
-function getStyles(email, arr, theme) {
-  return {
-    fontWeight:
-      arr.indexOf(email) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
+// wysiwyg
+import { Editor } from "@tinymce/tinymce-react";
 
-const handleSubmit = (values, props) => {
+const handleSubmit = (values, props, editorRef) => {
+  const editor = editorRef.current.getContent();
+  if (!editor) return toast.info("Isi Email Masih Kosong");
+  values = { ...values, isi: editor };
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
     .post(`/api/subscriber/email`, values)
     .then((res) => {
       setTimeout(() => props.onClose(), 1000);
+      props.router.push({
+        pathname: props.router.pathname,
+        query: props.router.query,
+      });
       toast.update(toastProses, {
         render: res.data.message,
         type: res.data.type,
@@ -73,7 +56,6 @@ const handleSubmit = (values, props) => {
 const validationSchema = yup.object({
   penerima: yup.string().required("Harus Dipilih"),
   subjek: yup.string().required("Harus Diisi"),
-  isi: yup.string().required("Harus Diisi"),
   list_penerima: yup.array().when("penerima", {
     is: (penerima) => penerima === "Select",
     then: yup.array().min(1, "Minimal Pilih Salah Satu Penerima"),
@@ -82,34 +64,28 @@ const validationSchema = yup.object({
 });
 
 function EmailForm(props) {
-  const theme = useTheme();
-  // const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const editorRef = useRef(null);
+
+  useEffect(() => {
+    if (!props.open) {
+      formik.resetForm();
+    }
+  }, [props.open, formik]);
+
   const formik = useFormik({
     initialValues: {
-      id: props.fromDraft.id ? props.fromDraft.id : "",
-      penerima: props.fromDraft.penerima ? props.fromDraft.penerima : "",
-      subjek: props.fromDraft.subjek ? props.fromDraft.subjek : "",
-      isi: props.fromDraft.isi ? props.fromDraft.isi : "",
+      id: props.detail.id ? props.detail.id : "",
+      penerima: props.detail.penerima ? props.detail.penerima : "",
+      subjek: props.detail.subjek ? props.detail.subjek : "",
       list_penerima: [],
       send: false,
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: (values) => handleSubmit(values, props),
+    onSubmit: (values) => handleSubmit(values, props, editorRef),
   });
 
-  useEffect(() => {
-    if (!props.open) {
-      formik.resetForm();
-      // setEditorState(EditorState.createEmpty());
-    }
-  }, [props.open, formik]);
-
-  // const onEditorStateChange = (editorState) => {
-  //   setEditorState(editorState);
-  // };
-
-  function handleButtonClick(send, formik) {
+  function handleSubmitClick(send, formik) {
     formik.setFieldValue("send", send, formik.handleSubmit());
   }
 
@@ -125,10 +101,6 @@ function EmailForm(props) {
       </Dialog>
     );
   }
-
-  // useEffect(() => {
-  //   formik.setFieldValue("isi", convertToRaw(editorState.getCurrentContent()));
-  // }, [editorState]);
 
   return (
     <Dialog open={props.open} onClose={props.onClose} fullScreen={true}>
@@ -178,18 +150,17 @@ function EmailForm(props) {
                     ))}
                   </Box>
                 )}
-                MenuProps={MenuProps}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: 48 * 4.5 + 8,
+                      width: 250,
+                    },
+                  },
+                }}
               >
                 {props.subscriber.map((item) => (
-                  <MenuItem
-                    key={item.id}
-                    value={item.email}
-                    style={getStyles(
-                      item.email,
-                      formik.values.list_penerima,
-                      theme
-                    )}
-                  >
+                  <MenuItem key={item.id} value={item.email}>
                     <Checkbox
                       checked={
                         formik.values.list_penerima.indexOf(item.email) > -1
@@ -203,6 +174,7 @@ function EmailForm(props) {
             </FormControl>
           )}
           <TextField
+            sx={{ mb: 2 }}
             fullWidth
             required
             margin="normal"
@@ -214,39 +186,38 @@ function EmailForm(props) {
             error={formik.touched.subjek && Boolean(formik.errors.subjek)}
             helperText={formik.touched.subjek && formik.errors.subjek}
           />
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            required
-            margin="normal"
-            label="Isi"
-            name="isi"
-            value={formik.values.isi}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.isi && Boolean(formik.errors.isi)}
-            helperText={formik.touched.isi && formik.errors.isi}
+          <Editor
+            onInit={(evt, editor) => (editorRef.current = editor)}
+            apiKey={process.env.tynimceAPI}
+            initialValue={props.detail.isi ? props.detail.isi : ""}
+            init={{
+              height: 400,
+              // image_list: [
+              //   { title: "My page 1", value: "https://www.tiny.cloud" },
+              //   { title: "My page 2", value: "http://www.moxiecode.com" },
+              // ],
+              plugins: [
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table paste wordcount",
+              ],
+              toolbar:
+                "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+              content_style:
+                "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+            }}
           />
-          {/* <Editor
-            editorState={editorState}
-            toolbarClassName="toolbarClassName"
-            wrapperClassName="wrapperClassName"
-            editorClassName="editorClassName"
-            onEditorStateChange={onEditorStateChange}
-            placeholder="Tulis Email Disini ..."
-          /> */}
         </DialogContent>
         <DialogActions>
           <Button
             type="button"
-            onClick={(e) => handleButtonClick(true, formik)}
+            onClick={(e) => handleSubmitClick(true, formik)}
           >
             Kirim dan Tutup
           </Button>
           <Button
             type="button"
-            onClick={(e) => handleButtonClick(false, formik)}
+            onClick={(e) => handleSubmitClick(false, formik)}
           >
             Draft dan Tutup
           </Button>
