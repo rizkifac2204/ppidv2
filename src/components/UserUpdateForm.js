@@ -72,7 +72,7 @@ function UserUpdate({ profile, setDetail }) {
       <Card>
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Ganti Data Profile
+            Ganti Data User
           </Typography>
 
           <Box>

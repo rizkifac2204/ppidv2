@@ -167,6 +167,7 @@ function SurveyChart() {
 
   useEffect(() => {
     // masalah disini
+    // quest tidak dimasukan karena akan menyebabkan looping
     const tempData = [...quest];
     for (var i = 0, len = quest.length; i < len; i++) {
       tempData[i].chartData = [];
@@ -179,7 +180,7 @@ function SurveyChart() {
       });
     }
     setQuest(tempData);
-  }, [data, quest]);
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

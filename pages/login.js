@@ -93,8 +93,8 @@ export default function Login() {
               alignItems: "center",
             }}
           >
-            <Avatar sx={{ m: 1 }}>
-              <Image src="/images/logo-1.png" layout="fill" alt="PPID" />
+            <Avatar sx={{ m: 1, bgcolor: "white" }}>
+              <Image src="/images/logo.png" layout="fill" alt="PPID" />
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in PPID Bawaslu

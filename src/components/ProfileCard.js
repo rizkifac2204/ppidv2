@@ -58,7 +58,7 @@ function ProfileCard({ profile, handleDelete }) {
             </Grid>
 
             <Grid item xs={4}>
-              ALamat
+              Alamat
             </Grid>
             <Grid item xs={8}>
               : {profile.alamat}

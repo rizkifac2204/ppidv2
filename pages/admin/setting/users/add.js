@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 // MUI
 import Box from "@mui/material/Box";
@@ -103,7 +103,6 @@ function AddUsers() {
     axios
       .get(`/api/setting/wilayah/provinsis`)
       .then((res) => {
-        console.log("ini");
         setProvinsis(res.data);
       })
       .catch((err) => {
@@ -134,19 +133,19 @@ function AddUsers() {
     formik.setFieldValue("id_prov", "");
     formik.setFieldValue("id_kabkot", "");
     if (formik.values.level > 2 && provinsis.length === 0) fetchProv();
-  }, [formik.values.level]);
+  }, [formik.values.level]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     formik.setFieldValue("id_kabkot", "");
     if (!formik.values.id_prov) return;
     if (formik.values.level === 4) fetchKabkot(formik.values.id_prov);
-  }, [formik.values.id_prov]);
+  }, [formik.values.id_prov]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Card>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} gutterBottom>
-          Tambah Permohonan Offline
+          Tambah User Baru
         </Typography>
         <Box>
           <form onSubmit={formik.handleSubmit}>
@@ -155,7 +154,7 @@ function AddUsers() {
                 <FormControl
                   fullWidth
                   sx={{ mt: 2 }}
-                  error={Boolean(formik.errors.level)}
+                  error={formik.touched.level && Boolean(formik.errors.level)}
                 >
                   <InputLabel>Level *</InputLabel>
                   <Select
@@ -165,6 +164,7 @@ function AddUsers() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   >
+                    <MenuItem value="">Pilih</MenuItem>
                     {levels.length !== 0 &&
                       levels.map((item) => {
                         if (item.id > session.user.level)
@@ -175,7 +175,9 @@ function AddUsers() {
                           );
                       })}
                   </Select>
-                  <FormHelperText>{formik.errors.level}</FormHelperText>
+                  <FormHelperText>
+                    {formik.touched.level && formik.errors.level}
+                  </FormHelperText>
                 </FormControl>
 
                 <TextField
@@ -235,7 +237,9 @@ function AddUsers() {
                   <FormControl
                     fullWidth
                     sx={{ mt: 2 }}
-                    error={Boolean(formik.errors.id_prov)}
+                    error={
+                      formik.touched.id_prov && Boolean(formik.errors.id_prov)
+                    }
                   >
                     <InputLabel>Provinsi *</InputLabel>
                     <Select
@@ -253,7 +257,9 @@ function AddUsers() {
                           </MenuItem>
                         ))}
                     </Select>
-                    <FormHelperText>{formik.errors.id_prov}</FormHelperText>
+                    <FormHelperText>
+                      {formik.touched.id_prov && formik.errors.id_prov}
+                    </FormHelperText>
                   </FormControl>
                 )}
 
@@ -261,7 +267,10 @@ function AddUsers() {
                   <FormControl
                     fullWidth
                     sx={{ mt: 2 }}
-                    error={Boolean(formik.errors.id_kabkot)}
+                    error={
+                      formik.touched.id_kabkot &&
+                      Boolean(formik.errors.id_kabkot)
+                    }
                   >
                     <InputLabel>Kabupaten/Kota *</InputLabel>
                     <Select
@@ -277,7 +286,9 @@ function AddUsers() {
                           </MenuItem>
                         ))}
                     </Select>
-                    <FormHelperText>{formik.errors.id_kabkot}</FormHelperText>
+                    <FormHelperText>
+                      {formik.touched.id_kabkot && formik.errors.id_kabkot}
+                    </FormHelperText>
                   </FormControl>
                 )}
 
