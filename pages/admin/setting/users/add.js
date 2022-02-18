@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useFormik, getIn, useFormikContext } from "formik";
+import { useFormik } from "formik";
 import * as yup from "yup";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
@@ -12,11 +12,7 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -103,17 +99,11 @@ function AddUsers() {
     fetchLevel();
   }, []);
 
-  const formik = useFormik({
-    initialValues: initialValues,
-    validationSchema: validationSchema,
-    enableReinitialize: true,
-    onSubmit: handleSubmit,
-  });
-
   const fetchProv = () => {
     axios
       .get(`/api/setting/wilayah/provinsis`)
       .then((res) => {
+        console.log("ini");
         setProvinsis(res.data);
       })
       .catch((err) => {
@@ -121,9 +111,9 @@ function AddUsers() {
       });
   };
 
-  const fetchKabkot = () => {
+  const fetchKabkot = (id) => {
     axios
-      .get(`/api/setting/wilayah/provinsis/` + formik.values.id_prov)
+      .get(`/api/setting/wilayah/provinsis/` + id)
       .then((res) => {
         setKabkots(res.data.kabkot);
       })
@@ -131,6 +121,26 @@ function AddUsers() {
         console.log(err);
       });
   };
+
+  const formik = useFormik({
+    initialValues: initialValues,
+    validationSchema: validationSchema,
+    enableReinitialize: true,
+    onSubmit: handleSubmit,
+  });
+
+  useEffect(() => {
+    if (!formik.values.level) return;
+    formik.setFieldValue("id_prov", "");
+    formik.setFieldValue("id_kabkot", "");
+    if (formik.values.level > 2 && provinsis.length === 0) fetchProv();
+  }, [formik.values.level]);
+
+  useEffect(() => {
+    formik.setFieldValue("id_kabkot", "");
+    if (!formik.values.id_prov) return;
+    if (formik.values.level === 4) fetchKabkot(formik.values.id_prov);
+  }, [formik.values.id_prov]);
 
   return (
     <Card>
@@ -144,28 +154,22 @@ function AddUsers() {
               <Grid item xs={12} md={6}>
                 <FormControl
                   fullWidth
-                  sx={{ mt: 1 }}
-                  error={formik.touched.level && Boolean(formik.errors.level)}
+                  sx={{ mt: 2 }}
+                  error={Boolean(formik.errors.level)}
                 >
                   <InputLabel>Level *</InputLabel>
                   <Select
                     name="level"
                     label="Level *"
                     value={formik.values.level}
-                    onChange={(e) => {
-                      formik.handleChange(e);
-                      formik.setFieldValue("id_prov", "");
-                      formik.setFieldValue("id_kabkot", "");
-                      if (e.target.value > 2 && provinsis.length === 0) {
-                        fetchProv();
-                      }
-                    }}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   >
                     {levels.length !== 0 &&
-                      levels.map((item, idx) => {
+                      levels.map((item) => {
                         if (item.id > session.user.level)
                           return (
-                            <MenuItem key={idx} value={item.id}>
+                            <MenuItem key={item.id} value={item.id}>
                               {item.nama_level}
                             </MenuItem>
                           );
@@ -186,7 +190,6 @@ function AddUsers() {
                   error={formik.touched.nama && Boolean(formik.errors.nama)}
                   helperText={formik.touched.nama && formik.errors.nama}
                 />
-
                 <TextField
                   fullWidth
                   required
@@ -199,7 +202,6 @@ function AddUsers() {
                   error={formik.touched.telp && Boolean(formik.errors.telp)}
                   helperText={formik.touched.telp && formik.errors.telp}
                 />
-
                 <TextField
                   fullWidth
                   required
@@ -212,7 +214,6 @@ function AddUsers() {
                   error={formik.touched.email && Boolean(formik.errors.email)}
                   helperText={formik.touched.email && formik.errors.email}
                 />
-
                 <TextField
                   fullWidth
                   required
@@ -233,23 +234,16 @@ function AddUsers() {
                 {formik.values.level > 2 && (
                   <FormControl
                     fullWidth
-                    sx={{ mt: 1 }}
-                    error={
-                      formik.touched.id_prov && Boolean(formik.errors.id_prov)
-                    }
+                    sx={{ mt: 2 }}
+                    error={Boolean(formik.errors.id_prov)}
                   >
                     <InputLabel>Provinsi *</InputLabel>
                     <Select
                       name="id_prov"
                       label="Provinsi *"
                       value={formik.values.id_prov}
-                      onChange={(e) => {
-                        formik.handleChange(e);
-                        formik.setFieldValue("id_kabkot", "");
-                        if (formik.values.level > 3) {
-                          fetchKabkot();
-                        }
-                      }}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                     >
                       <MenuItem value="">--Pilih--</MenuItem>
                       {provinsis.length !== 0 &&
@@ -266,11 +260,8 @@ function AddUsers() {
                 {formik.values.level > 3 && (
                   <FormControl
                     fullWidth
-                    sx={{ mt: 1 }}
-                    error={
-                      formik.touched.id_kabkot &&
-                      Boolean(formik.errors.id_kabkot)
-                    }
+                    sx={{ mt: 2 }}
+                    error={Boolean(formik.errors.id_kabkot)}
                   >
                     <InputLabel>Kabupaten/Kota *</InputLabel>
                     <Select
@@ -280,8 +271,8 @@ function AddUsers() {
                       onChange={formik.handleChange}
                     >
                       {kabkots.length !== 0 &&
-                        kabkots.map((item, idx) => (
-                          <MenuItem key={idx} value={item.id}>
+                        kabkots.map((item) => (
+                          <MenuItem key={item.id} value={item.id}>
                             {item.kabupaten}
                           </MenuItem>
                         ))}

@@ -104,7 +104,6 @@ function Survey() {
       field: "kepada",
       headerName: "Kepada",
       minWidth: 300,
-      flex: 1,
       valueGetter: (params) => {
         return `${params.row.kepada || ""} ${params.row.provinsi || ""} ${
           params.row.kabupaten || ""
@@ -128,6 +127,7 @@ function Survey() {
       field: "nama",
       headerName: "Nama",
       minWidth: 180,
+      flex: 1,
     },
     {
       field: "pendidikan",

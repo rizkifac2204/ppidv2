@@ -173,7 +173,7 @@ function Online() {
     let mounted = true;
     const fetchData = () => {
       axios
-        .get(`/api/permohonan/offlines`)
+        .get(`/api/permohonan/onlines`)
         .then((res) => {
           setTimeout(() => {
             setData((prev) => res.data);
