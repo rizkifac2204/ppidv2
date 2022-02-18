@@ -1,11 +1,27 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  // service: "gmail",
+  // auth: {
+  //   user: process.env.EMAIL,
+  //   pass: process.env.EMAIL_PASS,
+  // },
+  pool: true,
+  host: process.env.EMAIL_HOST,
+  port: 465,
+  secure: true, // upgrade later with STARTTLS
   auth: {
-    user: process.env.EMAIL,
+    user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+});
+
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log(error);
+  } else {
+    // console.log("Server is ready to take our messages");
+  }
 });
 
 export const TextPerubahanStatus = (
@@ -40,7 +56,7 @@ export const TextPerubahanStatus = (
 
 export const mailOption = (to, subject, text) => {
   const option = {
-    from: "ppid.bawaslu@go.id",
+    from: process.env.EMAIL_USER,
     to: to,
     subject: subject,
     html: text,

@@ -30,7 +30,7 @@ const handleSubmit = (values, props, editorRef) => {
   axios
     .post(`/api/subscriber/email`, values)
     .then((res) => {
-      setTimeout(() => props.onClose(), 1000);
+      setTimeout(() => props.onClose(), 2000);
       props.router.push({
         pathname: props.router.pathname,
         query: props.router.query,
@@ -70,7 +70,7 @@ function EmailForm(props) {
     if (!props.open) {
       formik.resetForm();
     }
-  }, [props.open, formik]);
+  }, [props.open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const formik = useFormik({
     initialValues: {
@@ -89,6 +89,10 @@ function EmailForm(props) {
     formik.setFieldValue("send", send, formik.handleSubmit());
   }
 
+  useEffect(() => {
+    formik.setFieldValue("list_penerima", []);
+  }, [formik.values.penerima]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (props.subscriber.length === 0) {
     return (
       <Dialog open={props.open} onClose={props.onClose} fullScreen={false}>
@@ -106,19 +110,24 @@ function EmailForm(props) {
     <Dialog open={props.open} onClose={props.onClose} fullScreen={true}>
       <form onSubmit={formik.handleSubmit}>
         <DialogContent>
-          <FormControl fullWidth error={Boolean(formik.errors.penerima)}>
+          <FormControl
+            fullWidth
+            error={formik.touched.penerima && Boolean(formik.errors.penerima)}
+          >
             <InputLabel>Penerima *</InputLabel>
             <Select
               name="penerima"
               label="Penerima *"
               value={formik.values.penerima}
               onChange={formik.handleChange}
-              onBlur={(e) => formik.setFieldValue("list_penerima", [])}
+              onBlur={formik.handleBlur}
             >
               <MenuItem value="All">Semua Subscriber</MenuItem>
               <MenuItem value="Select">Pilih Dari Daftar</MenuItem>
             </Select>
-            <FormHelperText>{formik.errors.penerima}</FormHelperText>
+            <FormHelperText>
+              {formik.touched.penerima && formik.errors.penerima}
+            </FormHelperText>
           </FormControl>
           {formik.values.penerima === "Select" && (
             <Chip label={formik.values.list_penerima.length + ` Penerima`} />
@@ -130,7 +139,10 @@ function EmailForm(props) {
             <FormControl
               fullWidth
               sx={{ mt: 2 }}
-              error={Boolean(formik.errors.list_penerima)}
+              error={
+                formik.touched.list_penerima &&
+                Boolean(formik.errors.list_penerima)
+              }
             >
               <InputLabel id="demo-multiple-chip-label">
                 Pilih Penerima *
@@ -143,6 +155,7 @@ function EmailForm(props) {
                 label="Pilih Penerima *"
                 value={formik.values.list_penerima}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 renderValue={(selected) => (
                   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                     {selected.map((value) => (
@@ -170,7 +183,9 @@ function EmailForm(props) {
                   </MenuItem>
                 ))}
               </Select>
-              <FormHelperText>{formik.errors.list_penerima}</FormHelperText>
+              <FormHelperText>
+                {formik.touched.list_penerima && formik.errors.list_penerima}
+              </FormHelperText>
             </FormControl>
           )}
           <TextField

@@ -1,5 +1,4 @@
 import nextConnect from "next-connect";
-import db from "libs/db";
 
 function Handler() {
   return nextConnect({

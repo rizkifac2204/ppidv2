@@ -5,22 +5,21 @@ import {
   labelKepada,
   createWill,
 } from "middlewares/Condition";
-import sendingMail, { mailOption, TextPerubahanStatus } from "services/Email";
+import sendingMail, { mailOption } from "services/Email";
 
-async function kirim(setMailOption, id) {
-  await sendingMail(setMailOption).then(async (resolve) => {
-    if (!resolve) {
-      // ubah email tidak terkirim jika gagal
-      await db("tbl_email_send").where("id", id).update({
-        status: 0,
-        sended_at: null,
-      });
-      return res.json({
-        message: "Gagal Kirim, Memidahkan Ke Draft",
-        type: "info",
-      });
-    }
-  });
+async function kirim(send, setMailOption, id) {
+  if (send) {
+    await sendingMail(setMailOption).then(async (resolve) => {
+      if (!resolve) {
+        // ubah email tidak terkirim jika gagal
+        await db("tbl_email_send").where("id", id).update({
+          status: 0,
+          sended_at: null,
+        });
+        throw new Error("Email Tidak Terkirim, Menyimpan Ke Draft");
+      }
+    });
+  }
 }
 
 export default Handler()
@@ -119,10 +118,7 @@ export default Handler()
         });
 
       // jika harus kirim email
-      if (send) kirim(setMailOption, id);
-
-      // success
-      return res.json({ message: "Berhasil Update Data", type: "success" });
+      await kirim(send, setMailOption, id);
     } else {
       // proses simpan
       const proses = await db("tbl_email_send").insert([
@@ -146,20 +142,11 @@ export default Handler()
         });
 
       // jika harus kirim email
-      if (send) kirim(setMailOption, proses[0]);
-
-      // success
-      return res.json({ message: "Berhasil Insert Data", type: "success" });
+      await kirim(send, setMailOption, proses[0]);
     }
-  })
-  // delete one by one
-  .put(async (req, res) => {
-    const { id } = req.body;
-    const proses = await db("tbl_email_send").where("id", id).del();
 
-    if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
-
-    res.json({ message: "Berhasil Hapus", type: "success" });
+    // success
+    res.json({ message: "Berhasil Proses Data", type: "success" });
   })
   // proses hapus data terpilih
   .delete(async (req, res) => {

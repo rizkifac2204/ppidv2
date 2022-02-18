@@ -77,7 +77,7 @@ function Email() {
     if (ask) {
       const toastProses = toast.loading("Tunggu Sebentar...");
       axios
-        .put(`/api/subscriber/email`, { id })
+        .delete(`/api/subscriber/email/${id}`)
         .then((res) => {
           setTimeout(() => {
             setData((prev) => prev.filter((row) => row.id != id));
@@ -149,6 +149,7 @@ function Email() {
       field: "subjek",
       headerName: "Subjek",
       minWidth: 180,
+      flex: 1,
     },
     {
       field: "actions",
@@ -178,7 +179,7 @@ function Email() {
             key="0"
             icon={<VisibilityIcon />}
             label="Detail"
-            onClick={() => console.log("detail" + values.id)}
+            onClick={() => router.push("/admin/subscriber/email/" + values.id)}
           />,
           <GridActionsCellItem
             key="1"
