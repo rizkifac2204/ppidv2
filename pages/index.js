@@ -1,34 +1,17 @@
-import Link from "next/link";
-import { useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
-
 const Begin = () => {
-  const { data: session } = useSession();
   return (
     <>
-      <h1>Halaman Awal</h1>
-      Halaman ini belum ditentukan untuk apa
-      <ul>
-        <li>1. Tampilan selamat datang; atau </li>
-        <li>2. Tampilan Formulir dan pencarian data semua Bawaslu; atau</li>
-        <li>3. dll woy</li>
-      </ul>
-      {JSON.stringify(session)}
-      {session ? (
-        <>
-          <Link href="/admin">
-            <a>Ke Halaman Admin</a>
-          </Link>
-          <button onClick={() => signOut()}>Logout</button>
-        </>
-      ) : (
-        <Link href="/login">
-          <a>Ke Halaman Login Admin</a>
-        </Link>
-      )}
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+        mollit anim id est laborum
+      </p>
     </>
   );
 };
 
-Begin.auth = false;
 export default Begin;

@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Layout from "components/Layout/Layout";
+import PublicLayout from "components/Layout/PublicLayout";
 import "../styles/globals.css";
 import "react-perfect-scrollbar/dist/css/styles.css";
 
@@ -42,7 +43,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
             </ContextProvider>
           </Auth>
         ) : (
-          <Component {...pageProps} />
+          <PublicLayout>
+            <Component {...pageProps} />
+          </PublicLayout>
         )}
       </SessionProvider>
     </>
