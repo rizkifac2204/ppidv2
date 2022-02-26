@@ -9,7 +9,7 @@ const storage = () => {
       cb(null, dir);
     },
     filename: (req, file, cb) => {
-      cb(null, file.originalname);
+      cb(null, Date.now() + "-" + file.originalname);
     },
   });
 };
@@ -34,19 +34,42 @@ export const Upload = () =>
     // limits: { fileSize: 1048576 }, // hanya dibatasi 1mb
   });
 
+export const UploadPublic = () =>
+  multer({
+    storage: storage(),
+    fileFilter: filterFile,
+    limits: { fileSize: 1048576 }, // hanya dibatasi 1mb
+  });
+
+function prosesDelete(path, file) {
+  if (fs.existsSync(path + "/" + file)) fs.unlinkSync(path + "/" + file);
+}
+
 export const DeleteUpload = (path, files) => {
+  if (!files) return;
   try {
-    if (Array.isArray(files)) {
-      files.forEach((v) => {
-        if (typeof v === "object" && !Array.isArray(v) && v !== null) {
-          if (fs.existsSync(path + "/" + v.filename))
-            fs.unlinkSync(path + "/" + v.filename);
+    if (typeof files === "object") {
+      if (Array.isArray(files)) {
+        files.forEach((v) => {
+          if (typeof v === "object" && !Array.isArray(v) && v !== null) {
+            prosesDelete(path, v.filename);
+          } else {
+            prosesDelete(path, v);
+          }
+        });
+      } else {
+        if (
+          typeof files === "object" &&
+          !Array.isArray(files) &&
+          files !== null
+        ) {
+          prosesDelete(path, files.filename);
         } else {
-          if (fs.existsSync(path + "/" + v)) fs.unlinkSync(path + "/" + v);
+          prosesDelete(path, files);
         }
-      });
+      }
     } else {
-      if (fs.existsSync(path + "/" + files)) fs.unlinkSync(path + "/" + files);
+      prosesDelete(path, files);
     }
   } catch (err) {
     throw err;

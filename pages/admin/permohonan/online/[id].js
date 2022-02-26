@@ -353,12 +353,14 @@ function OnlineDetail() {
                       icon={action.icon}
                       tooltipTitle={action.name}
                       onClick={action.action}
-                      FabProps={{
-                        disabled: Boolean(
-                          action.name === "Print Bukti Permohonan" &&
-                            !detail.reg_number
-                        ),
-                      }}
+                      FabProps={
+                        {
+                          // disabled: Boolean(
+                          //   action.name === "Print Bukti Permohonan" &&
+                          //     !detail.reg_number
+                          // ),
+                        }
+                      }
                     />
                   ))}
                 </SpeedDial>

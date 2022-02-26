@@ -104,7 +104,7 @@ export default Handler()
     const cek = await db(table)
       .modify((q) => {
         if (jenis === "online") {
-          q.select(table + ".*", "tbl_permohonan_response.file").innerJoin(
+          q.select(table + ".*", "tbl_permohonan_response.file").leftJoin(
             "tbl_permohonan_response",
             "tbl_permohonan_response.id_permohonan",
             table + ".id"
@@ -159,7 +159,7 @@ export default Handler()
     // get detail untuk ambil nama file / ktp / response
     const cekOnline = await db("tbl_permohonan")
       .select("tbl_permohonan.ktp", "tbl_permohonan_response.file")
-      .innerJoin(
+      .leftJoin(
         "tbl_permohonan_response",
         "tbl_permohonan_response.id_permohonan",
         "tbl_permohonan.id"

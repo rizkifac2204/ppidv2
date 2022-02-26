@@ -7,7 +7,7 @@ export default function Handler() {
       console.error(err.stack);
       res.status(500).json({ message: err.toString(), type: "error" });
     },
-    onNoMatch: () => {
+    onNoMatch: (req, res) => {
       res.status(404).json({ message: "Not found", type: "error" });
     },
   }).use(async (req, res, next) => {

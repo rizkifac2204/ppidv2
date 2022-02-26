@@ -1,3 +1,4 @@
+import Link from "next/link";
 // ICON
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
@@ -115,24 +116,24 @@ const Template = ({ children }) => {
           <h4>Layanan Terkait</h4>
           <ul>
             <li>
-              <a className="phone-mail-link" ng-href="#">
-                Formulir Pemohonan Informasi
-              </a>
+              <Link href="/">
+                <a className="phone-mail-link">Formulir Pemohonan Informasi</a>
+              </Link>
             </li>
             <li>
-              <a className="phone-mail-link" ng-href="#">
-                Cek Pemohonan Informasi
-              </a>
+              <Link href="/cek">
+                <a className="phone-mail-link">Cek Pemohonan Informasi</a>
+              </Link>
             </li>
             <li>
-              <a className="phone-mail-link" ng-href="#">
-                Survey Layanan
-              </a>
+              <Link href="/survey">
+                <a className="phone-mail-link">Survey Layanan</a>
+              </Link>
             </li>
             <li>
-              <a className="phone-mail-link" ng-href="#">
-                Pengajuan Keberatan
-              </a>
+              <Link href="/keberatan">
+                <a className="phone-mail-link">Pengajuan Keberatan</a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -187,23 +188,3 @@ const Template = ({ children }) => {
 };
 
 export default Template;
-
-{
-  /* <h1>Halaman Awal</h1>
-      Halaman ini belum ditentukan untuk apa
-      <ul>
-        <li>1. Tampilan selamat datang; atau </li>
-        <li>2. Tampilan Formulir dan pencarian data semua Bawaslu; atau</li>
-        <li>3. dll</li>
-      </ul>
-      {session ? (
-        <>
-          <button onClick={() => router.push(`/admin`)}>Admin</button>
-          <button onClick={() => signOut()}>Logout</button>
-        </>
-      ) : (
-        <Link href="/login">
-          <a>Ke Halaman Login Admin</a>
-        </Link>
-      )} */
-}

@@ -52,7 +52,7 @@ export default Handler()
   })
   .delete(async (req, res) => {
     const { id } = req.query;
-    const proses = await db("tbl_survey").where("id", id).del();
+    const proses = await db("tbl_permohonan_keberatan").where("id", id).del();
 
     if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
 

@@ -21,6 +21,9 @@ const themeLight = createTheme({
 
 const BuktiPermohonanOnline = React.forwardRef(
   ({ detail, profileBawaslu }, ref) => {
+    const textForQrCode = detail.reg_number
+      ? detail.reg_number
+      : detail.tiket_number;
     return (
       <ThemeProvider theme={themeLight}>
         <Card sx={{ display: "none", displayPrint: "block", p: 2 }} ref={ref}>
@@ -77,7 +80,12 @@ const BuktiPermohonanOnline = React.forwardRef(
                 <TableRow>
                   <TableCell>Nomor Registrasi Permohonan</TableCell>
                   <TableCell>
-                    : <b>{detail.reg_number}</b>
+                    :{" "}
+                    {detail.reg_number ? (
+                      <b>{detail.reg_number}</b>
+                    ) : (
+                      "Belum Tersedia"
+                    )}
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -107,7 +115,7 @@ const BuktiPermohonanOnline = React.forwardRef(
           </TableContainer>
 
           <Box>
-            <SetQRCode text={detail.reg_number} />
+            <SetQRCode text={textForQrCode} />
             <Box sx={{ fontSize: 10, m: 1 }}>
               (Kode merupakan bukti Sah dari Sistem PPID Bawaslu <br /> selama
               dapat terbaca dan terscan dengan benar)

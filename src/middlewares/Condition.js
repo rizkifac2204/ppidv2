@@ -45,10 +45,10 @@ export const conditionWill = (db, builder, user) => {
 
 export const conditionWillSpesific = (db, builder, user, table) => {
   if (user.level <= 2) {
-    builder.whereNotIn(
-      `${table}.id_will`,
-      db.from("tbl_kabupaten").select("id")
-    );
+    // builder.whereNotIn(
+    //   `${table}.id_will`,
+    //   db.from("tbl_kabupaten").select("id")
+    // );
   }
   if (user.level === 3) {
     builder.where(`${table}.id_will`, "like", `${user.id_prov}%`);

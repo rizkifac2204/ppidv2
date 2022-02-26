@@ -36,10 +36,11 @@ export default function PublicLayout({ children }) {
         "ui/js/dialogFx.js",
         "ui/js/fss.js",
         "ui/js/custom-fss.js",
+        "ui/js/main.js",
       ],
       function () {
         const script = document.createElement("script");
-        script.src = "ui/js/main.js";
+        script.src = "ui/js/custom.js";
         script.async = true;
         document.body.appendChild(script);
         return () => {
@@ -55,31 +56,6 @@ export default function PublicLayout({ children }) {
 
       <style jsx global>
         {`
-          /*
-        * OPAL - Exclusive Coming Soon Template
-        * Build Date: April 2016
-        * Last Update: July 2016
-        * Author: Madeon08
-        * Copyright (C) 2016 Madeon08
-        * This is a premium product available exclusively here : http://themeforest.net/user/Madeon08/portfolio
-        */
-          /*  TABLE OF CONTENTS
-            ---------------------------
-            *. @Import & Reset
-            1. Generic styles
-            2. Home
-            3. More Informations
-            4. Newsletter
-            5. Contact
-            6. Social Icons
-            7. Footer/Copyright
-            8. Media Queries
-        */
-          /* ------------------------------------- */
-          /* *. @Import & Reset .................. */
-          /* ------------------------------------- */
-
-          /* custom CSS files */
           @import url(ui/css/font-awesome.min.css);
           @import url(ui/css/ionicons.min.css);
           @import url(ui/css/bootstrap.min.css);
@@ -88,14 +64,8 @@ export default function PublicLayout({ children }) {
           @import url(ui/css/default-skin/default-skin.css);
           @import url(ui/css/jquery.mCustomScrollbar.css);
           @import url(ui/css/vegas.css);
-          /* Google Fonts */
-          @import url(ui/css/"https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700");
-          @import url(ui/css/"https://fonts.googleapis.com/css?family=Raleway:300,400,500,700");
-          /*
-        * http://meyerweb.com/eric/tools/css/reset/ 
-        * v2.0 | 20110126
-        * License: none (public domain)
-        */
+          @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700");
+          @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,500,700");
           html,
           body,
           div,
@@ -634,7 +604,7 @@ export default function PublicLayout({ children }) {
             position: absolute;
             left: 10%;
             top: 5%;
-            max-width: 150px;
+            max-width: 300px;
           }
 
           .outer-home {
@@ -1578,10 +1548,10 @@ export default function PublicLayout({ children }) {
             font-weight: bold;
           }
 
-          #contact-form {
+          .contact-form {
             margin-top: 40px;
           }
-          #contact-form .form-control {
+          .contact-form .form-control {
             background: #ffffff;
             border: 1px solid rgba(0, 0, 0, 0.1);
             -webkit-border-radius: 3px;
@@ -1605,27 +1575,30 @@ export default function PublicLayout({ children }) {
             transition: all 0.2s ease-in-out;
             text-align: left;
           }
-          #contact-form .form-control:hover,
-          #contact-form .form-control:focus {
+          .contact-form label {
+            color: #666666;
+          }
+          .contact-form .form-control:hover,
+          .contact-form .form-control:focus {
             box-shadow: none;
             border-color: rgba(0, 0, 0, 0.2);
           }
-          #contact-form .form-control::-webkit-input-placeholder {
+          .contact-form .form-control::-webkit-input-placeholder {
             color: #666666 !important;
           }
-          #contact-form .form-control::-moz-placeholder {
+          .contact-form .form-control::-moz-placeholder {
             color: #666666 !important;
           }
-          #contact-form .form-control:-moz-placeholder {
+          .contact-form .form-control:-moz-placeholder {
             color: #666666 !important;
           }
-          #contact-form .form-control:-ms-input-placeholder {
+          .contact-form .form-control:-ms-input-placeholder {
             color: #666666 !important;
           }
-          #contact-form textarea.form-control {
+          .contact-form textarea.form-control {
             min-height: 150px;
           }
-          #contact-form button#valid-form {
+          .contact-form button#valid-form {
             padding: 1.3rem 2.5rem;
             font-size: 1.4rem;
             display: block;
@@ -1639,12 +1612,12 @@ export default function PublicLayout({ children }) {
             font-weight: 600;
             width: auto;
           }
-          #contact-form button#valid-form:hover {
+          .contact-form button#valid-form:hover {
             background: #00af94;
             color: #ffffff;
           }
 
-          #block-answer {
+          .block-answer {
             min-height: 60px;
             margin-top: 1em;
             text-align: center;
