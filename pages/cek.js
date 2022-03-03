@@ -166,7 +166,7 @@ function Cek() {
 
           <div className="col-xs-6 col-sm-6">
             <ReCAPTCHA
-              sitekey="6LdjOSEbAAAAAPpiQx4CHHjm1LL_oB3BYx7FTeJR"
+              sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
               ref={recaptchaRef}
               onChange={captchaChange}
             />

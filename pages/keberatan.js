@@ -460,7 +460,7 @@ function Keberatan() {
             </div>
             <div>
               <ReCAPTCHA
-                sitekey="6LdjOSEbAAAAAPpiQx4CHHjm1LL_oB3BYx7FTeJR"
+                sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
                 ref={recaptchaRef}
                 onChange={capchaChange}
               />

@@ -62,7 +62,7 @@ const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
       });
     })
     .catch((err) => {
-      console.log(err.response.data);
+      console.log(err);
       toast.update(toastProses, {
         render: err.response.data.message,
         type: "error",
@@ -579,7 +579,7 @@ const Permohonan = () => {
 
             <div>
               <ReCAPTCHA
-                sitekey="6LdjOSEbAAAAAPpiQx4CHHjm1LL_oB3BYx7FTeJR"
+                sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
                 ref={recaptchaRef}
                 onChange={capchaChange}
               />
