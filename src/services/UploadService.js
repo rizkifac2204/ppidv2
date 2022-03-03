@@ -9,7 +9,7 @@ const storage = () => {
       cb(null, dir);
     },
     filename: (req, file, cb) => {
-      cb(null, Date.now() + "-" + file.originalname);
+      cb(null, file.originalname);
     },
   });
 };

@@ -299,7 +299,6 @@ export default function PublicLayout({ children }) {
             background: #20232d;
             font-family: "Open Sans", "Helvetica Neue", "Lucida Grande", Arial,
               Verdana, sans-serif;
-            color: #ffffff;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             font-weight: normal;
@@ -355,7 +354,6 @@ export default function PublicLayout({ children }) {
           a:focus {
             outline: none !important;
             text-decoration: none !important;
-            color: #ffffff;
           }
 
           button {

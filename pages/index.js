@@ -32,12 +32,13 @@ const config = {
   },
 };
 
-const handleSubmit = (values, recaptchaRef, afterSubmit) => {
-  // const recaptchaValue = recaptchaRef.current.getValue();
-  // if (!recaptchaValue) {
-  //   toast.info("Mohon Validasi");
-  //   return;
-  // }
+const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
+  const recaptchaValue = recaptchaRef.current.getValue();
+  if (!recaptchaValue) {
+    toast.info("Mohon Validasi");
+    return;
+  }
+  setCurData(() => {});
 
   const form = new FormData();
   for (var key in values) {
@@ -70,7 +71,7 @@ const handleSubmit = (values, recaptchaRef, afterSubmit) => {
       });
     })
     .then(() => {
-      // recaptchaRef.current.reset();
+      if (recaptchaRef.current) recaptchaRef.current.reset();
     });
 };
 
@@ -178,11 +179,12 @@ const Permohonan = () => {
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: (values) => handleSubmit(values, recaptchaRef, afterSubmit),
+    onSubmit: (values) =>
+      handleSubmit(values, recaptchaRef, afterSubmit, setCurData),
   });
 
   const capchaChange = () => {
-    // console.log("change");
+    toast.dismiss();
   };
 
   const afterSubmit = (data) => {
@@ -207,28 +209,31 @@ const Permohonan = () => {
       provinsis.length === 0
     )
       fetchProv();
-  }, [formik.values.kepada]);
+  }, [formik.values.kepada]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     formik.setFieldValue("id_kabkot", "");
     if (!formik.values.id_prov) return;
     if (formik.values.kepada === "Bawaslu") fetchKabkot(formik.values.id_prov);
-  }, [formik.values.id_prov]);
+  }, [formik.values.id_prov]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div id="block-form">
-      <div>
-        <h2>Formulir Pengajuan Keberatan</h2>
+      <div
+        style={{
+          display:
+            curData && Object.keys(curData).length === 0 ? "block" : "none",
+        }}
+      >
+        <h2>Formulir Pengajuan Permohonan Informasi</h2>
 
         <p>
-          Isi Formulir untuk melakukan Pengajuan Keberatan <br />
+          Isi Formulir untuk melakukan Permohonan Informasi <br />
           <strong>Pelayanan Kantor</strong> pukul 08:00 AM s.d 16:00 PM. Kamu
           juga dapat melakukan permohonan dengan menghubungi 08777.
-          <br />
-          <br />
         </p>
 
-        <div>
+        <div style={{ marginTop: "20px" }}>
           <form onSubmit={formik.handleSubmit}>
             <div className="row">
               {/* kepada */}
@@ -264,6 +269,7 @@ const Permohonan = () => {
               {formik.values.kepada !== "Bawaslu Republik Indonesia" && (
                 <div className="col-xs-12 col-sm-6">
                   <FormControl
+                    required
                     sx={{ mt: 2 }}
                     fullWidth
                     error={
@@ -298,6 +304,7 @@ const Permohonan = () => {
               {formik.values.kepada === "Bawaslu" && (
                 <div className="col-xs-12 col-sm-6">
                   <FormControl
+                    required
                     sx={{ mt: 2 }}
                     fullWidth
                     error={
@@ -584,6 +591,7 @@ const Permohonan = () => {
           </form>
         </div>
       </div>
+
       <div id="block-answer" ref={answerRef}>
         {curData && Object.keys(curData).length !== 0 && (
           <ResponsePermohonan curData={curData} handlePrint={handlePrint} />
@@ -609,11 +617,13 @@ const Permohonan = () => {
         </div>
       </div>
 
-      <BuktiPermohonanOnline
-        ref={printBuktiRef}
-        detail={curData}
-        profileBawaslu={profileBawaslu}
-      />
+      {curData && Object.keys(curData).length !== 0 && (
+        <BuktiPermohonanOnline
+          ref={printBuktiRef}
+          detail={curData}
+          profileBawaslu={profileBawaslu}
+        />
+      )}
     </div>
   );
 };
