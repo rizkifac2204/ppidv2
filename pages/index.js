@@ -183,7 +183,7 @@ const Permohonan = () => {
       handleSubmit(values, recaptchaRef, afterSubmit, setCurData),
   });
 
-  const capchaChange = () => {
+  const captchaChange = () => {
     toast.dismiss();
   };
 
@@ -577,16 +577,23 @@ const Permohonan = () => {
               </div>
             </div>
 
-            <div>
-              <ReCAPTCHA
-                sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
-                ref={recaptchaRef}
-                onChange={capchaChange}
-              />
-
-              <Button type="submit" variant="contained">
-                Kirim
-              </Button>
+            <div className="row">
+              <div className="col-xs-12 col-sm-6">
+                <ReCAPTCHA
+                  sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
+                  ref={recaptchaRef}
+                  onChange={captchaChange}
+                />
+              </div>
+              <div className="col-xs-12 col-sm-6">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className="btn btn-info"
+                >
+                  Kirim
+                </Button>
+              </div>
             </div>
           </form>
         </div>
@@ -628,4 +635,5 @@ const Permohonan = () => {
   );
 };
 
+Permohonan.public = true;
 export default Permohonan;

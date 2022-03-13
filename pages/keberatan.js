@@ -72,7 +72,7 @@ const validationSchema = yup.object({
   kasus: yup.string().required("Harus Diisi"),
 });
 
-function Keberatan() {
+function Keberatan({ isUser = "Kosong" }) {
   const [data, setData] = useState({});
   const [curData, setCurData] = useState({});
   const [regNumber, setRegNumber] = useState("");
@@ -106,7 +106,7 @@ function Keberatan() {
       });
   };
 
-  const capchaChange = () => {
+  const captchaChange = () => {
     toast.dismiss();
   };
 
@@ -458,16 +458,23 @@ function Keberatan() {
                 />
               </div>
             </div>
-            <div>
-              <ReCAPTCHA
-                sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
-                ref={recaptchaRef}
-                onChange={capchaChange}
-              />
-
-              <Button type="submit" variant="contained">
-                Kirim
-              </Button>
+            <div className="row">
+              <div className="col-xs-12 col-sm-6">
+                <ReCAPTCHA
+                  sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
+                  ref={recaptchaRef}
+                  onChange={captchaChange}
+                />
+              </div>
+              <div className="col-xs-12 col-sm-6">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className="btn btn-info"
+                >
+                  Kirim
+                </Button>
+              </div>
             </div>
           </form>
         )}
@@ -510,4 +517,5 @@ function Keberatan() {
   );
 }
 
+Keberatan.public = true;
 export default Keberatan;

@@ -28,8 +28,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     <>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
-        <meta name="description" content="Rizki New PPID v.2"></meta>
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <title>PPID</title>
       </Head>
       <ToastContainer />
@@ -43,9 +41,15 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
             </ContextProvider>
           </Auth>
         ) : (
-          <PublicLayout>
-            <Component {...pageProps} />
-          </PublicLayout>
+          <>
+            {Component.public ? (
+              <PublicLayout>
+                <Component {...pageProps} />
+              </PublicLayout>
+            ) : (
+              <Component {...pageProps} />
+            )}
+          </>
         )}
       </SessionProvider>
     </>

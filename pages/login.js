@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import NextLink from "next/link";
 import { signIn, getSession } from "next-auth/react";
 import * as yup from "yup";
-
+// MUI
 import Image from "next/image";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -14,7 +14,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
-
+// COMPONENTS
 import Footer from "components/Layout/Footer";
 
 export async function getServerSideProps(ctx) {
@@ -149,7 +149,7 @@ export default function Login() {
               </form>
               <Grid container>
                 <Grid item xs>
-                  <NextLink href="/">Kembali</NextLink>
+                  <a href="/">Kembali</a>
                 </Grid>
                 <Button
                   type="button"

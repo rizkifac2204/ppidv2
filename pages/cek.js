@@ -163,15 +163,17 @@ function Cek() {
               InputLabelProps={{ style: { fontSize: 14 } }}
             />
           </div>
+        </div>
 
-          <div className="col-xs-6 col-sm-6">
+        <div className="row">
+          <div className="col-xs-12 col-sm-6">
             <ReCAPTCHA
               sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
               ref={recaptchaRef}
               onChange={captchaChange}
             />
           </div>
-          <div className="col-xs-6 col-sm-6">
+          <div className="col-xs-12 col-sm-6">
             <Button type="submit" variant="contained" className="btn btn-info">
               Cek Permohonan
             </Button>
@@ -284,4 +286,5 @@ function Cek() {
   );
 }
 
+Cek.public = true;
 export default Cek;

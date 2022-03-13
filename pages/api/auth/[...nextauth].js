@@ -22,20 +22,25 @@ export default NextAuth({
       },
       async authorize(credentials, req) {
         // pemanggilan data
-        const url = process.env.HOST + "/api/auth/loginCredential";
-        const res = await fetch(url, {
-          method: "POST",
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" },
-        });
-        const user = await res.json();
+        try {
+          const url = process.env.HOST + "/api/login/loginCredential";
+          const res = await fetch(url, {
+            method: "POST",
+            body: JSON.stringify(credentials),
+            headers: { "Content-Type": "application/json" },
+          });
+          const user = await res.json();
 
-        // Jika tidak ada error dan user terdeteksi return user
-        if (res.ok && user) {
-          return user;
+          // Jika tidak ada error dan user terdeteksi return user
+          if (res.ok && user) {
+            return user;
+          }
+          // Return null Jika Tidak ada user
+          return null;
+        } catch (e) {
+          // Return null Jika Tidak ada user
+          return null;
         }
-        // Return null Jika Tidak ada user
-        return null;
       },
     }),
   ],
@@ -45,7 +50,7 @@ export default NextAuth({
       // bagus untuk login menggunakan google kalau user sudah mempunyai data email pada tabel
       if (account.provider === "google") {
         // pemanggilan data
-        const url = process.env.HOST + "/api/auth/checkEmail";
+        const url = process.env.HOST + "/api/login/checkEmail";
         const res = await fetch(url, {
           method: "POST",
           body: JSON.stringify({ email: user.email }),

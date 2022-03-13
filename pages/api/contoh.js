@@ -17,5 +17,30 @@ export default Handler().get(async (req, res) => {
   const db_name = process.env.DB_NAME;
   const db_user = process.env.DB_USER;
   const db_pass = process.env.DB_PASS;
-  res.json({ db_host, db_name, db_user, db_pass });
+  const email_host = process.env.EMAIL_HOST;
+  const email_pass = process.env.EMAIL_PASS;
+  const email_user = process.env.EMAIL_USER;
+  const g_i = process.env.GOOGLE_CLIENT_ID;
+  const g_s = process.env.GOOGLE_CLIENT_SECRET;
+  const host = process.env.HOST;
+  const jwt = process.env.JWT_SECRET_KEY;
+  const nxurl = process.env.NEXTAUTH_URL;
+  const port = process.env.PORT;
+  const scp = process.env.SECRET_COOKIE_PASSWORD;
+  res.json({
+    db_host,
+    db_name,
+    db_user,
+    db_pass,
+    email_host,
+    email_pass,
+    email_user,
+    g_i,
+    g_s,
+    host,
+    jwt,
+    nxurl,
+    port,
+    scp,
+  });
 });
