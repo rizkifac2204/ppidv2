@@ -240,9 +240,12 @@ const Permohonan = () => {
               <div className="col-xs-12">
                 <FormControl
                   fullWidth
+                  required
                   error={formik.touched.kepada && Boolean(formik.errors.kepada)}
                 >
-                  <InputLabel>Penerima *</InputLabel>
+                  <InputLabel>
+                    <p>Penerima *</p>
+                  </InputLabel>
                   <Select
                     name="kepada"
                     label="Penerima"
@@ -267,11 +270,11 @@ const Permohonan = () => {
               </div>
               {/* provinsi  */}
               {formik.values.kepada !== "Bawaslu Republik Indonesia" && (
-                <div className="col-xs-12 col-sm-6">
+                <div className="col-xs-12">
                   <FormControl
+                    fullWidth
                     required
                     sx={{ mt: 2 }}
-                    fullWidth
                     error={
                       formik.touched.id_prov && Boolean(formik.errors.id_prov)
                     }
@@ -302,11 +305,11 @@ const Permohonan = () => {
               )}
               {/* kabkot */}
               {formik.values.kepada === "Bawaslu" && (
-                <div className="col-xs-12 col-sm-6">
+                <div className="col-xs-12">
                   <FormControl
+                    fullWidth
                     required
                     sx={{ mt: 2 }}
-                    fullWidth
                     error={
                       formik.touched.id_kabkot &&
                       Boolean(formik.errors.id_kabkot)
@@ -333,6 +336,8 @@ const Permohonan = () => {
                   </FormControl>
                 </div>
               )}
+            </div>
+            <div className="row">
               {/* nama */}
               <div className="col-xs-12 col-sm-6">
                 <TextField

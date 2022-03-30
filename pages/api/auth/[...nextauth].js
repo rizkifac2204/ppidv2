@@ -18,7 +18,12 @@ export default NextAuth({
           placeholder: "Username",
           required: true,
         },
-        password: { label: "Password", type: "password", required: true },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Password",
+          required: true,
+        },
       },
       async authorize(credentials, req) {
         // pemanggilan data

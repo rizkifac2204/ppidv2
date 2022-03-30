@@ -26,7 +26,6 @@ export default Handler().get(async (req, res) => {
   const jwt = process.env.JWT_SECRET_KEY;
   const nxurl = process.env.NEXTAUTH_URL;
   const port = process.env.PORT;
-  const scp = process.env.SECRET_COOKIE_PASSWORD;
   res.json({
     db_host,
     db_name,
@@ -41,6 +40,5 @@ export default Handler().get(async (req, res) => {
     jwt,
     nxurl,
     port,
-    scp,
   });
 });

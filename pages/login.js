@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useFormik } from "formik";
-import NextLink from "next/link";
 import { signIn, getSession } from "next-auth/react";
 import * as yup from "yup";
 // MUI
@@ -28,11 +27,12 @@ export async function getServerSideProps(ctx) {
     };
   }
   return {
-    props: {},
+    props: { isUser },
   };
 }
 
-export default function Login() {
+export default function Login(props) {
+  console.log(props);
   const [error, setError] = useState(null);
   const router = useRouter();
 
@@ -46,6 +46,7 @@ export default function Login() {
     signIn("credentials", {
       username: values.username,
       password: values.password,
+      callbackUrl: "https://demo.spd.bawaslu.go.id/admin",
     });
   };
 
@@ -149,7 +150,9 @@ export default function Login() {
               </form>
               <Grid container>
                 <Grid item xs>
-                  <a href="/">Kembali</a>
+                  <Button variant="text" onClick={() => router.reload("/")}>
+                    Kembali
+                  </Button>
                 </Grid>
                 <Button
                   type="button"

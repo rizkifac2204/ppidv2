@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { signIn, useSession } from "next-auth/react";
 // ICON
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
@@ -7,6 +8,7 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 import CloseIcon from "@mui/icons-material/Close";
 
 const Template = ({ children }) => {
+  const { data: session } = useSession();
   return (
     <>
       <div id="container">
@@ -134,6 +136,17 @@ const Template = ({ children }) => {
               <Link href="/keberatan">
                 <a className="phone-mail-link">Pengajuan Keberatan</a>
               </Link>
+            </li>
+            <li>
+              {session ? (
+                <Link href="/admin">
+                  <a className="phone-mail-link">Halaman Admin</a>
+                </Link>
+              ) : (
+                <Link href="/login">
+                  <a className="phone-mail-link">Login</a>
+                </Link>
+              )}
             </li>
           </ul>
         </div>

@@ -203,7 +203,7 @@ function EmailForm(props) {
           />
           <Editor
             onInit={(evt, editor) => (editorRef.current = editor)}
-            apiKey={process.env.tynimceAPI}
+            apiKey={process.env.NEXT_PUBLIC_TYNI_MCE_API}
             initialValue={props.detail.isi ? props.detail.isi : ""}
             init={{
               height: 400,
