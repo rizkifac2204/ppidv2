@@ -10,7 +10,7 @@ import {
 export default Handler().get(async (req, res) => {
   // ambil jumlah user
   const user = await db
-    .from("tbl_users")
+    .from("admin")
     .count("id", { as: "jumlah" })
     .modify((builder) => conditionFilterUser(builder, req.session.user))
     .first();

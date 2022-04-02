@@ -10,7 +10,7 @@ const handler = nextConnect({
     res.status(404).json({ message: "Not found", type: "error" });
   },
 }).get(async (req, res) => {
-  const data = await db("tbl_provinsi").orderBy("provinsi", "asc");
+  const data = await db("provinsi").orderBy("provinsi", "asc");
   res.json(data);
 });
 

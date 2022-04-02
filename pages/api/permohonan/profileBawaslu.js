@@ -12,16 +12,12 @@ const handler = nextConnect({
 }).get(async (req, res) => {
   const { id } = req.query;
   const data = await db
-    .from("tbl_data_bawaslu")
-    .select("tbl_data_bawaslu.*", "tbl_users.nama")
-    .innerJoin("tbl_users", function () {
-      this.on("tbl_data_bawaslu.id_wilayah", "=", "tbl_users.id_prov").orOn(
-        "tbl_data_bawaslu.id_wilayah",
-        "=",
-        "tbl_users.id_kabkot"
-      );
+    .from("bawaslu")
+    .select("bawaslu.*", "admin.nama_admin")
+    .innerJoin("admin", function () {
+      this.on("bawaslu.id", "=", "admin.bawaslu_id");
     })
-    .where("tbl_data_bawaslu.id_wilayah", id)
+    .where("bawaslu.id", id)
     .first();
 
   if (!data)

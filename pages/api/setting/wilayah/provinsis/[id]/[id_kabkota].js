@@ -10,8 +10,13 @@ const handler = nextConnect({
     res.status(404).json({ message: "Not found", type: "error" });
   },
 }).get(async (req, res) => {
-  const { id_kabkot } = req.query;
-  const data = await db("tbl_kabupaten").where("id", id_kabkot).first();
+  const { id_kabkota } = req.query;
+  const data = await db
+    .select("kabkota.*", "kabkota_jenis.jenis")
+    .from("kabkota")
+    .innerJoin("kabkota_jenis", "kabkota_jenis.id", "kabkota.jenis_id")
+    .where("kabkota.id", id_kabkota)
+    .first();
   res.json(data);
 });
 

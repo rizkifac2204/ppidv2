@@ -66,8 +66,8 @@ export default NextAuth({
           // ganti/tambahkan data user dan return berhasil
           user.id = newDataUser.id;
           user.level = newDataUser.level;
-          user.id_prov = newDataUser.id_prov;
-          user.id_kabkot = newDataUser.id_kabkot;
+          user.bawaslu_id = newDataUser.bawaslu_id;
+          user.email_admin = newDataUser.email_admin;
           return true;
         } else {
           // jika gagal
@@ -83,10 +83,9 @@ export default NextAuth({
       // usert terbaca hanya after signin
       if (user) {
         token.id = user.id;
-        token.nama = user.nama;
         token.level = user.level;
-        token.id_prov = user.id_prov;
-        token.id_kabkot = user.id_kabkot;
+        token.bawaslu_id = user.bawaslu_id;
+        token.email_admin = user.email_admin;
       }
       return token;
     },
@@ -94,8 +93,8 @@ export default NextAuth({
       if (token) {
         session.user.id = token.id;
         session.user.level = token.level;
-        session.user.id_prov = token.id_prov;
-        session.user.id_kabkot = token.id_kabkot;
+        session.user.bawaslu_id = token.bawaslu_id;
+        session.user.email_admin = token.email_admin;
       }
       return session;
     },

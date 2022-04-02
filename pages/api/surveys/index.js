@@ -5,17 +5,19 @@ import { conditionWillSpesific } from "middlewares/Condition";
 export default Handler()
   .get(async (req, res) => {
     const result = await db
-      .select("tbl_survey.*")
-      .from("tbl_survey")
+      .select(`survey.*`, `bawaslu.nama_bawaslu`, `pemohon.*`)
+      .from("survey")
+      .innerJoin("bawaslu", "survey.bawaslu_id", "bawaslu.id")
+      .innerJoin(`pemohon`, `survey.email_pemohon`, `pemohon.email_pemohon`)
       .modify((builder) =>
-        conditionWillSpesific(db, builder, req.session.user, "tbl_survey")
+        conditionWillSpesific(db, builder, req.session.user, "survey")
       )
-      .orderBy("tbl_survey.created_at", "desc");
+      .orderBy("survey.created_at", "desc");
     res.json(result);
   })
   .delete(async (req, res) => {
     const arrID = req.body;
-    const proses = await db("tbl_survey").whereIn("id", arrID).del();
+    const proses = await db("survey").whereIn("id", arrID).del();
 
     if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
 

@@ -9,29 +9,33 @@ export default Handler()
 
     const result = await db
       .select(
-        "tbl_users.*",
-        "tbl_provinsi.provinsi",
-        "tbl_kabupaten.kabupaten",
-        "tbl_level.nama_level",
+        "admin.*",
+        "bawaslu.level_bawaslu",
         db.raw(
-          `IF(${req.session.user.level} < tbl_users.level, true, false) as editable, 
-          IF(${req.session.user.level} = tbl_users.id, true, false) as myself`
+          `IF(${req.session.user.level} < bawaslu.level_bawaslu, true, false) as editable,
+        IF(${req.session.user.id} = admin.id, true, false) as myself`
         )
       )
-      .from("tbl_users")
-      .innerJoin("tbl_level", "tbl_users.level", "tbl_level.id")
-      .leftJoin("tbl_provinsi", "tbl_users.id_prov", "tbl_provinsi.id")
-      .leftJoin("tbl_kabupaten", "tbl_users.id_kabkot", "tbl_kabupaten.id")
+      .from("admin")
+      .innerJoin("bawaslu", "admin.bawaslu_id", "bawaslu.id")
       .modify((builder) => conditionFilterUser(builder, req.session.user))
-      .where("tbl_users.id", id)
+      .where("admin.id", id)
       .first();
     res.json(result);
   })
   .put(async (req, res) => {
-    const { id, nama, telp, email, alamat, username, passwordBaru } = req.body;
+    const {
+      id,
+      nama_admin,
+      telp_admin,
+      email_admin,
+      alamat_admin,
+      username,
+      passwordBaru,
+    } = req.body;
 
     // cek reg number sama
-    const cek = await db("tbl_users")
+    const cek = await db("admin")
       .where("username", username)
       .whereNot("id", id)
       .first();
@@ -44,11 +48,11 @@ export default Handler()
     const salt = bcrypt.genSaltSync(10);
     const hashPasswordBaru = bcrypt.hashSync(passwordBaru, salt);
 
-    const proses = await db("tbl_users").where("id", id).update({
-      nama,
-      telp,
-      alamat,
-      email,
+    const proses = await db("admin").where("id", id).update({
+      nama_admin,
+      telp_admin,
+      email_admin,
+      alamat_admin,
       username,
       password: hashPasswordBaru,
       updated_at: db.fn.now(),
@@ -61,7 +65,7 @@ export default Handler()
   })
   .delete(async (req, res) => {
     const { id } = req.query;
-    const proses = await db("tbl_users").where("id", id).del();
+    const proses = await db("admin").where("id", id).del();
 
     if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
 

@@ -13,7 +13,12 @@ const Handler = async (req, res) => {
     return;
   }
 
-  const checkUser = await db("tbl_users").where({ email }).first();
+  const checkUser = await db
+    .select(`admin.*`, `bawaslu.level_bawaslu as level`)
+    .from(`admin`)
+    .innerJoin(`bawaslu`, `admin.bawaslu_id`, `bawaslu.id`)
+    .where(`admin.email_admin`, email)
+    .first();
 
   if (!checkUser) {
     res.status(401).json({ message: "Data Tidak Ditemukan" });
@@ -23,9 +28,8 @@ const Handler = async (req, res) => {
   const user = {
     id: checkUser.id,
     level: checkUser.level,
-    id_prov: checkUser.id_prov,
-    id_kabkot: checkUser.id_kabkot,
-    email: checkUser.email,
+    bawaslu_id: checkUser.bawaslu_id,
+    email_admin: checkUser.email_admin,
   };
   res.json(user);
 };

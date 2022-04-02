@@ -11,11 +11,11 @@ const handler = nextConnect({
   },
 }).get(async (req, res) => {
   const { id } = req.query;
-  const data = await db("tbl_provinsi").where("id", id).first();
+  const data = await db("provinsi").where("id", id).first();
 
-  const kabkot = await db("tbl_kabupaten")
-    .where("id_prov", id)
-    .orderBy("kabupaten", "asc");
+  const kabkot = await db("kabkota")
+    .where("provinsi_id", id)
+    .orderBy("kabkota", "asc");
 
   const result = {
     result: data,

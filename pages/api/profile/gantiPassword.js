@@ -11,7 +11,7 @@ export default Handler().put(async (req, res) => {
   const hashLama = bcrypt.hashSync(lama, salt);
   const hashBaru = bcrypt.hashSync(baru, salt);
   // cek password
-  const cek = await db("tbl_users").where("id", id).first();
+  const cek = await db("admin").where("id", id).first();
   if (!cek) return res.status(401).json({ message: "User Tidak Terdeteksi" });
   // jika tidak sama
   const old = sha1(sha1(lama));
@@ -21,7 +21,7 @@ export default Handler().put(async (req, res) => {
       return res.status(401).json({ message: "Password Lama Anda Salah" });
   }
   // proses
-  const proses = await db("tbl_users")
+  const proses = await db("admin")
     .where("id", id)
     .update({ password: hashBaru });
   // failed

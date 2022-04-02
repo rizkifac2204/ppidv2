@@ -9,47 +9,31 @@ import {
 export default Handler()
   .get(async (req, res) => {
     const result = await db
-      .select(
-        "tbl_permohonan.*",
-        "tbl_provinsi.provinsi",
-        "tbl_kabupaten.kabupaten",
-        "tbl_permohonan_response.status",
-        "tbl_permohonan_response.alasan",
-        "tbl_permohonan_response.waktu",
-        "tbl_permohonan_response.response",
-        "tbl_permohonan_response.file"
-      )
-      .from("tbl_permohonan")
-      .leftJoin("tbl_provinsi", "tbl_permohonan.id_will", "tbl_provinsi.id")
-      .leftJoin("tbl_kabupaten", "tbl_permohonan.id_will", "tbl_kabupaten.id")
-      .leftJoin(
-        "tbl_permohonan_response",
-        "tbl_permohonan.id",
-        "tbl_permohonan_response.id_permohonan"
-      )
+      .select("permohonan.*", "bawaslu.nama_bawaslu", "bawaslu.level_bawaslu")
+      .from("permohonan")
+      .innerJoin("bawaslu", "permohonan.bawaslu_id", "bawaslu.id")
       .modify((builder) =>
         conditionWillSpesific(db, builder, req.session.user, "tbl_permohonan")
       )
-      .whereNull("tbl_permohonan.deleted_at")
-      .orderBy("tbl_permohonan.created_at", "desc");
+      .whereNull("permohonan.deleted_at")
+      .orderBy("permohonan.created_at", "desc");
 
     res.json(result);
   })
   .post(async (req, res) => {
-    const { level, id_prov, id_kabkot } = req.session.user;
+    const { level, bawaslu_id } = req.session.user;
     const {
-      nama,
-      email,
-      telp,
-      pekerjaan,
-      alamat,
+      nama_pemohon,
+      email_pemohon,
+      telp_pemohon,
+      pekerjaan_pemohon,
+      alamat_pemohon,
+      no_registrasi,
       rincian,
       tujuan,
-      cara_terima,
-      cara_dapat,
-      reg_number,
-      tanggal,
-      status,
+      bentuk_salinan,
+      tanggal_permohonan,
+      status_permohonan,
     } = req.body;
     var alasan = req.body.alasan;
     if (status !== "Diberikan Sebagian" || status === "Tidak Dapat Diberikan") {

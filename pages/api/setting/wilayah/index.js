@@ -1,81 +1,80 @@
 import db from "libs/db";
 import Handler from "middlewares/Handler";
-import { createWill } from "middlewares/Condition";
-
-const conditionForThis = (builder, user) => {
-  if (user.level <= 2) {
-    builder.where("id_wilayah", 0);
-  }
-  if (user.level === 3) {
-    builder.where("id_wilayah", user.id_prov);
-  }
-  if (user.level === 4) {
-    builder.where("id_wilayah", user.id_kabkot);
-  }
-};
 
 export default Handler()
   .get(async (req, res) => {
-    const data = await db("tbl_data_bawaslu")
-      .modify((builder) => conditionForThis(builder, req.session.user))
+    const data = await db("bawaslu")
+      .where({ id: req.session.user.bawaslu_id })
       .first();
     res.json(data);
   })
   .post(async (req, res) => {
-    const { level, id_prov, id_kabkot } = req.session.user;
-    const id_wilayah = createWill(level, id_prov, id_kabkot);
-    const { telp, alamat, kota, email, ppid, fb, tw, yt, ig } = req.body;
+    const { level, bawaslu_id } = req.session.user;
+    const {
+      provinsi_id,
+      nama_bawaslu,
+      email_bawaslu,
+      telp_bawaslu,
+      alamat_bawaslu,
+      kota_bawaslu,
+      web_profile,
+      web_ppid,
+      facebook,
+      twitter,
+      youtube,
+      instagram,
+    } = req.body;
 
-    const cek = await db("tbl_data_bawaslu")
-      .modify((builder) => conditionForThis(builder, req.session.user))
-      .first();
+    const cek = await db("bawaslu").where({ id: bawaslu_id }).first();
 
     if (cek) {
       // proses update
-      const update = await db("tbl_data_bawaslu")
-        .where("id_wilayah", id_wilayah)
-        .update({
-          telp,
-          alamat,
-          kota,
-          email,
-          ppid,
-          fb,
-          tw,
-          yt,
-          ig,
-        });
+      const update = await db("bawaslu").where({ id: bawaslu_id }).update({
+        provinsi_id,
+        nama_bawaslu,
+        email_bawaslu,
+        telp_bawaslu,
+        alamat_bawaslu,
+        kota_bawaslu,
+        web_profile,
+        web_ppid,
+        facebook,
+        twitter,
+        youtube,
+        instagram,
+      });
 
       // failed
       if (!update)
         return res.status(400).json({
           message: "Gagal Mengubah Data",
         });
-
-      // success
-      res.json({ message: "Berhasil Menyimpan Data", type: "success" });
     } else {
       // proses simpan
-      const simpan = await db("tbl_data_bawaslu").insert({
-        id_wilayah,
-        telp,
-        alamat,
-        kota,
-        email,
-        ppid,
-        fb,
-        tw,
-        yt,
-        ig,
+      const simpan = await db("bawaslu").insert({
+        id: bawaslu_id,
+        level_bawaslu: level,
+        provinsi_id,
+        nama_bawaslu,
+        email_bawaslu,
+        telp_bawaslu,
+        alamat_bawaslu,
+        kota_bawaslu,
+        web_profile,
+        web_ppid,
+        facebook,
+        twitter,
+        youtube,
+        instagram,
       });
 
       // failed
       if (!simpan)
         return res.status(400).json({
-          message: "Gagal Mengubah Data",
+          message: "Gagal Menyimpan Data",
         });
-
-      // success
-      res.json({ message: "Berhasil Menyimpan Data", type: "success" });
     }
+
+    // success
+    res.json({ message: "Berhasil Menyimpan Data", type: "success" });
   });
