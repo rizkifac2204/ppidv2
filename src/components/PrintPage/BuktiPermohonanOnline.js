@@ -21,9 +21,9 @@ const themeLight = createTheme({
 
 const BuktiPermohonanOnline = React.forwardRef(
   ({ detail, profileBawaslu }, ref) => {
-    const textForQrCode = detail.reg_number
-      ? detail.reg_number
-      : detail.tiket_number;
+    const textForQrCode = detail.no_registrasi
+      ? detail.no_registrasi
+      : detail.tiket;
     return (
       <ThemeProvider theme={themeLight}>
         <Card sx={{ display: "none", displayPrint: "block", p: 2 }} ref={ref}>
@@ -41,8 +41,8 @@ const BuktiPermohonanOnline = React.forwardRef(
                 <b>BADAN PENGAWA PEMILIHAN UMUM</b>
               </Typography>
               <Typography>
-                {profileBawaslu.alamat} <br />
-                {profileBawaslu.telp} / {profileBawaslu.email}
+                {profileBawaslu.alamat_bawaslu} <br />
+                {profileBawaslu.telp_bawaslu} / {profileBawaslu.email_bawaslu}
               </Typography>
             </Box>
           </Box>
@@ -62,27 +62,27 @@ const BuktiPermohonanOnline = React.forwardRef(
                 <TableRow>
                   <TableCell>Nama</TableCell>
                   <TableCell>
-                    : <b>{detail.nama}</b>
+                    : <b>{detail.nama_pemohon}</b>
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Alamat</TableCell>
                   <TableCell>
-                    : <b>{detail.alamat}</b>
+                    : <b>{detail.alamat_pemohon}</b>
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Tanggal penyerahan formulir permohonan</TableCell>
                   <TableCell>
-                    : <b>{detail.tanggal}</b>
+                    : <b>{detail.tanggal_permohonan}</b>
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Nomor Registrasi Permohonan</TableCell>
                   <TableCell>
                     :{" "}
-                    {detail.reg_number ? (
-                      <b>{detail.reg_number}</b>
+                    {detail.no_registrasi ? (
+                      <b>{detail.no_registrasi}</b>
                     ) : (
                       "Belum Tersedia"
                     )}
@@ -96,7 +96,7 @@ const BuktiPermohonanOnline = React.forwardRef(
                 <TableRow>
                   <TableCell>Nama</TableCell>
                   <TableCell>
-                    : <b>{profileBawaslu.nama}</b>
+                    : <b>{profileBawaslu.nama_admin}</b>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -107,7 +107,7 @@ const BuktiPermohonanOnline = React.forwardRef(
                 </TableRow>
                 <TableRow sx={{ border: 0 }}>
                   <TableCell colSpan={2}>
-                    {profileBawaslu.kota}, <CurrentDate />
+                    {profileBawaslu.kota_bawaslu}, <CurrentDate />
                   </TableCell>
                 </TableRow>
               </TableBody>

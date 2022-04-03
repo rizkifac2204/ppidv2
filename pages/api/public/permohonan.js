@@ -31,57 +31,96 @@ export default PublicHandler().post(
     const {
       kepada,
       id_prov,
-      id_kabkot,
-      nama,
-      email,
-      telp,
-      pekerjaan,
-      alamat,
+      id_kabkota,
+      email_pemohon,
+      nama_pemohon,
+      telp_pemohon,
+      pekerjaan_pemohon,
+      pendidikan_pemohon,
+      alamat_pemohon,
       rincian,
       tujuan,
       cara_terima,
       cara_dapat,
     } = req.body;
-    const tiket_number = buatTiket(6, kepada, id_prov, id_kabkot);
-    const curtime = buatCurTime();
-    const id_will = buatIDWill(kepada, id_prov, id_kabkot);
+    const platform = "Website";
+    const status_permohonan = "Proses";
+    const tiket = buatTiket(6, kepada, id_prov, id_kabkota);
+    const tanggal_permohonan = buatCurTime();
+    const bawaslu_id = buatIDWill(kepada, id_prov, id_kabkota);
 
-    const dataForInsert = {
-      kepada,
-      tiket_number,
-      nama,
-      email,
-      telp,
-      pekerjaan,
-      alamat,
+    const dataForInsertPermohonan = {
+      bawaslu_id,
+      email_pemohon,
+      tiket,
+      tanggal_permohonan,
+      platform,
       rincian,
       tujuan,
       cara_terima,
       cara_dapat,
-      tanggal: curtime,
-      id_will: id_will,
-      ktp: filename,
+      file_identitas: filename,
+      status_permohonan,
     };
 
-    const getEmailBawaslu = await db("tbl_data_bawaslu")
-      .where("id_wilayah", id_will)
-      .first();
+    const dataForInsertPemohon = {
+      email_pemohon,
+      nama_pemohon,
+      telp_pemohon,
+      pekerjaan_pemohon,
+      pendidikan_pemohon,
+      alamat_pemohon,
+    };
+
+    const getEmailBawaslu = await db("bawaslu").where("id", bawaslu_id).first();
 
     // setting email untuk admin dan pemohon
     const setMailOptionPemohon = mailOption(
-      email,
+      email_pemohon,
       "Permohonan Informasi PPID Bawaslu",
-      TextPermohonanBaruKepadaPemohon(tiket_number, email)
+      TextPermohonanBaruKepadaPemohon(tiket, email_pemohon)
     );
     const setMailOptionAdmin = mailOption(
-      getEmailBawaslu.email,
+      getEmailBawaslu.email_bawaslu,
       "Permohonan Informasi Baru",
-      TextPermohonanBaruKepadaAdmin(tiket_number, email)
+      TextPermohonanBaruKepadaAdmin(tiket, email_pemohon)
     );
+
+    // proses simpan data pemohon
+    const cekDataPemohon = await db("pemohon")
+      .where({ email_pemohon: email_pemohon })
+      .first();
+    if (cekDataPemohon) {
+      // proses update
+      const update = await db("pemohon")
+        .where({ email_pemohon: email_pemohon })
+        .update({
+          nama_pemohon,
+          telp_pemohon,
+          pekerjaan_pemohon,
+          pendidikan_pemohon,
+          alamat_pemohon,
+        });
+
+      // failed
+      if (!update)
+        return res.status(400).json({
+          message: "Gagal Proses Input Pemohon",
+        });
+    } else {
+      // proses simpan
+      const simpan = await db("pemohon").insert(dataForInsertPemohon);
+
+      // failed
+      if (!simpan)
+        return res.status(400).json({
+          message: "Gagal Menyimpan Data Pemohon",
+        });
+    }
 
     // proses simpan
     try {
-      const proses = await db("tbl_permohonan").insert([dataForInsert]);
+      const proses = await db("permohonan").insert(dataForInsertPermohonan);
 
       // failed
       if (!proses) {
@@ -94,10 +133,15 @@ export default PublicHandler().post(
       await sendingMail(setMailOptionPemohon);
       await sendingMail(setMailOptionAdmin);
 
+      const currentData = {
+        ...dataForInsertPermohonan,
+        ...dataForInsertPemohon,
+      };
+
       // success
       res.json({
         message: "Berhasil Mengirim Permohonan",
-        currentData: dataForInsert,
+        currentData,
         type: "success",
       });
     } catch (err) {

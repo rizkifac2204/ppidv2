@@ -53,6 +53,7 @@ const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
   axios
     .post(`/api/public/permohonan`, form, config)
     .then((res) => {
+      // console.log(res.data);
       afterSubmit(res.data.currentData);
       toast.update(toastProses, {
         render: res.data.message,
@@ -62,7 +63,7 @@ const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err.response.data);
       toast.update(toastProses, {
         render: err.response.data.message,
         type: "error",
@@ -77,11 +78,15 @@ const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
 
 const validationSchema = yup.object({
   kepada: yup.string().required("Harus Diisi"),
-  nama: yup.string("Masukan Nama").required("Harus Diisi"),
-  pekerjaan: yup.string("Masukan Pekerjaan").required("Harus Diisi"),
-  telp: yup.string("Masukan Telp/HP").required("Telp Harus Diisi"),
-  email: yup.string().email("Email Tidak Valid").required("Harus Diisi"),
-  alamat: yup.string().required("Alamat Harus Diisi"),
+  nama_pemohon: yup.string("Masukan Nama").required("Harus Diisi"),
+  pekerjaan_pemohon: yup.string("Masukan Pekerjaan").required("Harus Diisi"),
+  pendidikan_pemohon: yup.string("Masukan Pendidikan").required("Harus Diisi"),
+  telp_pemohon: yup.string("Masukan Telp/HP").required("Telp Harus Diisi"),
+  email_pemohon: yup
+    .string()
+    .email("Email Tidak Valid")
+    .required("Harus Diisi"),
+  alamat_pemohon: yup.string().required("Alamat Harus Diisi"),
   rincian: yup.string().required("Harus Diisi"),
   tujuan: yup.string().required("Harus Diisi"),
   cara_terima: yup.string().required("Harus Diisi"),
@@ -92,7 +97,7 @@ const validationSchema = yup.object({
     then: yup.number().required("Provinsi Harus Dipilih"),
     otherwise: yup.number(),
   }),
-  id_kabkot: yup.number().when("kepada", {
+  id_kabkota: yup.number().when("kepada", {
     is: (kepada) => kepada === "Bawaslu",
     then: yup.number().required("Kabupaten/Kota Harus Diisi"),
     otherwise: yup.number(),
@@ -102,7 +107,7 @@ const validationSchema = yup.object({
 const Permohonan = () => {
   const [curData, setCurData] = useState({});
   const [provinsis, setProvinsis] = useState([]);
-  const [kabkots, setKabkots] = useState([]);
+  const [kabkotas, setKabkotas] = useState([]);
   const [profileBawaslu, setProfileBawaslu] = useState({});
 
   const recaptchaRef = useRef(null);
@@ -124,7 +129,7 @@ const Permohonan = () => {
     axios
       .get(`/api/setting/wilayah/provinsis/` + id)
       .then((res) => {
-        setKabkots(res.data.kabkot);
+        setKabkotas(res.data.kabkot);
       })
       .catch((err) => {
         console.log(err);
@@ -134,7 +139,7 @@ const Permohonan = () => {
   const fetchProfileBawaslu = (callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
     axios
-      .get(`/api/permohonan/profileBawaslu?id=` + curData.id_will)
+      .get(`/api/permohonan/profileBawaslu?id=` + curData.bawaslu_id)
       .then((res) => {
         setProfileBawaslu(res.data);
         toast.dismiss(toastProses);
@@ -165,12 +170,13 @@ const Permohonan = () => {
     initialValues: {
       kepada: "",
       id_prov: "",
-      id_kabkot: "",
-      nama: "",
-      pekerjaan: "",
-      telp: "",
-      email: "",
-      alamat: "",
+      id_kabkota: "",
+      nama_pemohon: "",
+      pekerjaan_pemohon: "",
+      pendidikan_pemohon: "",
+      telp_pemohon: "",
+      email_pemohon: "",
+      alamat_pemohon: "",
       rincian: "",
       tujuan: "",
       cara_terima: "",
@@ -197,13 +203,9 @@ const Permohonan = () => {
   };
 
   useEffect(() => {
-    // console.log(curData);
-  }, [curData]);
-
-  useEffect(() => {
     if (!formik.values.kepada) return;
     formik.setFieldValue("id_prov", "");
-    formik.setFieldValue("id_kabkot", "");
+    formik.setFieldValue("id_kabkota", "");
     if (
       formik.values.kepada !== "Bawaslu Republik Indonesia" &&
       provinsis.length === 0
@@ -212,7 +214,7 @@ const Permohonan = () => {
   }, [formik.values.kepada]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    formik.setFieldValue("id_kabkot", "");
+    formik.setFieldValue("id_kabkota", "");
     if (!formik.values.id_prov) return;
     if (formik.values.kepada === "Bawaslu") fetchKabkot(formik.values.id_prov);
   }, [formik.values.id_prov]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -308,30 +310,31 @@ const Permohonan = () => {
                 <div className="col-xs-12">
                   <FormControl
                     fullWidth
-                    required
                     sx={{ mt: 2 }}
                     error={
-                      formik.touched.id_kabkot &&
-                      Boolean(formik.errors.id_kabkot)
+                      formik.touched.id_kabkota &&
+                      Boolean(formik.errors.id_kabkota)
                     }
                   >
-                    <InputLabel>Kabupaten/Kota *</InputLabel>
+                    <InputLabel>
+                      <p>Kabupaten/Kota *</p>
+                    </InputLabel>
                     <Select
                       required
-                      name="id_kabkot"
+                      name="id_kabkota"
                       label="Kabupaten/Kota *"
-                      value={formik.values.id_kabkot}
+                      value={formik.values.id_kabkota}
                       onChange={formik.handleChange}
                     >
-                      {kabkots.length !== 0 &&
-                        kabkots.map((item) => (
+                      {kabkotas.length !== 0 &&
+                        kabkotas.map((item) => (
                           <MenuItem key={item.id} value={item.id}>
-                            {item.kabupaten}
+                            {item.kabkota}
                           </MenuItem>
                         ))}
                     </Select>
                     <FormHelperText>
-                      {formik.touched.id_kabkot && formik.errors.id_kabkot}
+                      {formik.touched.id_kabkota && formik.errors.id_kabkota}
                     </FormHelperText>
                   </FormControl>
                 </div>
@@ -345,12 +348,17 @@ const Permohonan = () => {
                   required
                   margin="normal"
                   label="Nama"
-                  name="nama"
-                  value={formik.values.nama}
+                  name="nama_pemohon"
+                  value={formik.values.nama_pemohon}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.nama && Boolean(formik.errors.nama)}
-                  helperText={formik.touched.nama && formik.errors.nama}
+                  error={
+                    formik.touched.nama_pemohon &&
+                    Boolean(formik.errors.nama_pemohon)
+                  }
+                  helperText={
+                    formik.touched.nama_pemohon && formik.errors.nama_pemohon
+                  }
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
@@ -362,15 +370,40 @@ const Permohonan = () => {
                   required
                   margin="normal"
                   label="Pekerjaan"
-                  name="pekerjaan"
-                  value={formik.values.pekerjaan}
+                  name="pekerjaan_pemohon"
+                  value={formik.values.pekerjaan_pemohon}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={
-                    formik.touched.pekerjaan && Boolean(formik.errors.pekerjaan)
+                    formik.touched.pekerjaan &&
+                    Boolean(formik.errors.pekerjaan_pemohon)
                   }
                   helperText={
-                    formik.touched.pekerjaan && formik.errors.pekerjaan
+                    formik.touched.pekerjaan_pemohon &&
+                    formik.errors.pekerjaan_pemohon
+                  }
+                  inputProps={{ style: { fontSize: 14 } }}
+                  InputLabelProps={{ style: { fontSize: 14 } }}
+                />
+              </div>
+              {/* pekerjaan  */}
+              <div className="col-xs-12 col-sm-6">
+                <TextField
+                  fullWidth
+                  required
+                  margin="normal"
+                  label="Pendidikan"
+                  name="pendidikan_pemohon"
+                  value={formik.values.pendidikan_pemohon}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.pendidikan_pemohon &&
+                    Boolean(formik.errors.pendidikan_pemohon)
+                  }
+                  helperText={
+                    formik.touched.pendidikan_pemohon &&
+                    formik.errors.pendidikan_pemohon
                   }
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
@@ -383,12 +416,17 @@ const Permohonan = () => {
                   required
                   margin="normal"
                   label="Telp/Hp"
-                  name="telp"
-                  value={formik.values.telp}
+                  name="telp_pemohon"
+                  value={formik.values.telp_pemohon}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.telp && Boolean(formik.errors.telp)}
-                  helperText={formik.touched.telp && formik.errors.telp}
+                  error={
+                    formik.touched.telp_pemohon &&
+                    Boolean(formik.errors.telp_pemohon)
+                  }
+                  helperText={
+                    formik.touched.telp_pemohon && formik.errors.telp_pemohon
+                  }
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
@@ -401,12 +439,17 @@ const Permohonan = () => {
                   margin="normal"
                   type="email"
                   label="Email"
-                  name="email"
-                  value={formik.values.email}
+                  name="email_pemohon"
+                  value={formik.values.email_pemohon}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
+                  error={
+                    formik.touched.email_pemohon &&
+                    Boolean(formik.errors.email_pemohon)
+                  }
+                  helperText={
+                    formik.touched.email_pemohon && formik.errors.email_pemohon
+                  }
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
@@ -420,12 +463,18 @@ const Permohonan = () => {
                   rows={4}
                   margin="normal"
                   label="Alamat"
-                  name="alamat"
-                  value={formik.values.alamat}
+                  name="alamat_pemohon"
+                  value={formik.values.alamat_pemohon}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.alamat && Boolean(formik.errors.alamat)}
-                  helperText={formik.touched.alamat && formik.errors.alamat}
+                  error={
+                    formik.touched.alamat_pemohon &&
+                    Boolean(formik.errors.alamat_pemohon)
+                  }
+                  helperText={
+                    formik.touched.alamat_pemohon &&
+                    formik.errors.alamat_pemohon
+                  }
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
@@ -618,6 +667,7 @@ const Permohonan = () => {
             id="isilagi"
             type="button"
             variant="contained"
+            className="btn btn-info"
             onClick={() => {
               setTimeout(() => {
                 setCurData({});

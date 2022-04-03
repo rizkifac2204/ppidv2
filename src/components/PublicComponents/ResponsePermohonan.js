@@ -13,8 +13,8 @@ function ResponsePermohonan({ curData, handlePrint }) {
             <a className="phone-mail-link">Formulir Cek Pemohonan Informasi</a>
           </Link>{" "}
           dengan mengisi data <br />
-          <b>Nomor Tiket</b> : <h3>{curData.tiket_number}</h3>
-          <b>Email</b> : <h3>{curData.email}</h3>
+          <b>Nomor Tiket</b> : <h3>{curData.tiket}</h3>
+          <b>Email</b> : <h3>{curData.email_pemohon}</h3>
           Email yang anda terima dapat digunakan sebagai bukti Permohonan
           Informasi. Atau anda bisa cetak Bukti Permohonan{" "}
           <a onClick={() => handlePrint()}>

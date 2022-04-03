@@ -9,7 +9,7 @@ const storage = () => {
       cb(null, dir);
     },
     filename: (req, file, cb) => {
-      cb(null, file.originalname);
+      cb(null, Date.now() + "-" + file.originalname);
     },
   });
 };
@@ -38,7 +38,7 @@ export const UploadPublic = () =>
   multer({
     storage: storage(),
     fileFilter: filterFile,
-    limits: { fileSize: 1048576 }, // hanya dibatasi 1mb
+    limits: { fileSize: 3145728 }, // hanya dibatasi 3mb
   });
 
 function prosesDelete(path, file) {
