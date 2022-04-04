@@ -46,8 +46,11 @@ const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
 };
 
 const validationSchema = yup.object({
-  tiket_number: yup.string().required("Harus Diisi"),
-  email: yup.string().email("Email Tidak Valid").required("Harus Diisi"),
+  tiket: yup.string().required("Harus Diisi"),
+  email_pemohon: yup
+    .string()
+    .email("Email Tidak Valid")
+    .required("Harus Diisi"),
 });
 
 function Cek() {
@@ -61,7 +64,7 @@ function Cek() {
   const fetchProfileBawaslu = (callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
     axios
-      .get(`/api/permohonan/profileBawaslu?id=` + curData.id_will)
+      .get(`/api/permohonan/profileBawaslu?id=` + curData.bawaslu_id)
       .then((res) => {
         setProfileBawaslu(res.data);
         toast.dismiss(toastProses);
@@ -102,8 +105,8 @@ function Cek() {
 
   const formik = useFormik({
     initialValues: {
-      tiket_number: "",
-      email: "",
+      tiket: "",
+      email_pemohon: "",
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
@@ -130,17 +133,12 @@ function Cek() {
               required
               margin="normal"
               label="Nomor Tiket"
-              name="tiket_number"
-              value={formik.values.tiket_number}
+              name="tiket"
+              value={formik.values.tiket}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={
-                formik.touched.tiket_number &&
-                Boolean(formik.errors.tiket_number)
-              }
-              helperText={
-                formik.touched.tiket_number && formik.errors.tiket_number
-              }
+              error={formik.touched.tiket && Boolean(formik.errors.tiket)}
+              helperText={formik.touched.tiket && formik.errors.tiket}
               inputProps={{ style: { fontSize: 14 } }}
               InputLabelProps={{ style: { fontSize: 14 } }}
             />
@@ -153,12 +151,17 @@ function Cek() {
               margin="normal"
               type="email"
               label="Email"
-              name="email"
-              value={formik.values.email}
+              name="email_pemohon"
+              value={formik.values.email_pemohon}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
+              error={
+                formik.touched.email_pemohon &&
+                Boolean(formik.errors.email_pemohon)
+              }
+              helperText={
+                formik.touched.email_pemohon && formik.errors.email_pemohon
+              }
               inputProps={{ style: { fontSize: 14 } }}
               InputLabelProps={{ style: { fontSize: 14 } }}
             />
@@ -186,7 +189,7 @@ function Cek() {
           <>
             <h4>
               Berikut Data Permohonan Informasi dengan Nomor Tiket{" "}
-              <b>{curData.tiket_number}</b>
+              <b>{curData.tiket}</b>
             </h4>
             <div className="table-responsive">
               <table
@@ -197,17 +200,14 @@ function Cek() {
                   <tr>
                     <td>Nomor Registrasi</td>
                     <td>
-                      <b>{curData.reg_number}</b>
-                      {!curData.reg_number && <>Saat ini belum tersedia</>}
+                      <b>{curData.no_registrasi}</b>
+                      {!curData.no_registrasi && <>Saat ini belum tersedia</>}
                     </td>
                   </tr>
                   <tr>
                     <td>Ditujukan Kepada</td>
                     <td>
-                      <b>
-                        {curData.kepada} {curData.provinsi}
-                        {curData.kabupaten}
-                      </b>
+                      <b>{curData.nama_bawaslu}</b>
                     </td>
                   </tr>
                   <tr>
@@ -220,25 +220,23 @@ function Cek() {
                   </tr>
                   <tr>
                     <td>Status Permohonan</td>
-                    <td>
-                      {curData.status} {!curData.status && "Diterima"}
-                    </td>
+                    <td>{curData.status_permohonan}</td>
                   </tr>
                   <tr>
                     <td>Balasan Admin</td>
                     <td>
-                      {curData.response}{" "}
-                      {!curData.response &&
+                      {curData.pesan}{" "}
+                      {!curData.pesan &&
                         "Sedang dalam proses verifikasi data diri pemohon dan verifikasi permohonan yang diajukan"}
                     </td>
                   </tr>
-                  {curData.file && (
+                  {curData.file_informasi && (
                     <tr>
                       <td>Berikut File Yang Bisa Kamu Download</td>
                       <td>
                         <a
                           className="phone-mail-link"
-                          href={`/response/${curData.file}`}
+                          href={`/response/${curData.file_informasi}`}
                           download
                         >
                           <i className="fa fa-download"></i>

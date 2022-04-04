@@ -13,23 +13,25 @@ export default PublicHandler()
 
     const data = await db
       .select(
-        "tbl_permohonan.*",
-        "tbl_permohonan_response.status",
-        "tbl_permohonan_response.alasan",
-        "tbl_provinsi.provinsi",
-        "tbl_kabupaten.kabupaten"
+        "permohonan.*",
+        "permohonan_respon.pesan",
+        "permohonan_respon.file_informasi",
+        "bawaslu.*",
+        "pemohon.nama_pemohon",
+        "pemohon.alamat_pemohon"
       )
-      .from("tbl_permohonan")
-      .leftJoin("tbl_provinsi", "tbl_permohonan.id_will", "tbl_provinsi.id")
-      .leftJoin("tbl_kabupaten", "tbl_permohonan.id_will", "tbl_kabupaten.id")
+      .from("permohonan")
+      .innerJoin("pemohon", "pemohon.email_pemohon", "permohonan.email_pemohon")
+      .leftJoin("bawaslu", "bawaslu.id", "permohonan.bawaslu_id")
       .leftJoin(
-        "tbl_permohonan_response",
-        "tbl_permohonan.id",
-        "tbl_permohonan_response.id_permohonan"
+        "permohonan_respon",
+        "permohonan.id",
+        "permohonan_respon.permohonan_id"
       )
-      .whereNull("tbl_permohonan.deleted_at")
-      .andWhere("tbl_permohonan.reg_number", reg_number)
+      .whereNull("permohonan.deleted_at")
+      .andWhere("permohonan.no_registrasi", reg_number)
       .first();
+
     if (!data) return res.status(404).json({ message: "Tidak Ditemukan" });
     res.json(data);
   })

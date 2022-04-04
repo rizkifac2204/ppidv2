@@ -242,7 +242,6 @@ const Permohonan = () => {
               <div className="col-xs-12">
                 <FormControl
                   fullWidth
-                  required
                   error={formik.touched.kepada && Boolean(formik.errors.kepada)}
                 >
                   <InputLabel>
@@ -250,7 +249,7 @@ const Permohonan = () => {
                   </InputLabel>
                   <Select
                     name="kepada"
-                    label="Penerima"
+                    label={<p>Penerima</p>}
                     value={formik.values.kepada}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -271,42 +270,42 @@ const Permohonan = () => {
                 </FormControl>
               </div>
               {/* provinsi  */}
-              {formik.values.kepada !== "Bawaslu Republik Indonesia" && (
-                <div className="col-xs-12">
-                  <FormControl
-                    fullWidth
-                    required
-                    sx={{ mt: 2 }}
-                    error={
-                      formik.touched.id_prov && Boolean(formik.errors.id_prov)
-                    }
-                  >
-                    <InputLabel>
-                      <p>Provinsi *</p>
-                    </InputLabel>
-                    <Select
-                      name="id_prov"
-                      label={<p>Provinsi</p>}
-                      value={formik.values.id_prov}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
+              {formik.values.kepada &&
+                formik.values.kepada !== "Bawaslu Republik Indonesia" && (
+                  <div className="col-xs-12">
+                    <FormControl
+                      fullWidth
+                      sx={{ mt: 2 }}
+                      error={
+                        formik.touched.id_prov && Boolean(formik.errors.id_prov)
+                      }
                     >
-                      <MenuItem value="">--Pilih--</MenuItem>
-                      {provinsis.length !== 0 &&
-                        provinsis.map((item, idx) => (
-                          <MenuItem key={idx} value={item.id}>
-                            <p>{item.provinsi}</p>
-                          </MenuItem>
-                        ))}
-                    </Select>
-                    <FormHelperText>
-                      {formik.touched.id_prov && formik.errors.id_prov}
-                    </FormHelperText>
-                  </FormControl>
-                </div>
-              )}
+                      <InputLabel>
+                        <p>Provinsi *</p>
+                      </InputLabel>
+                      <Select
+                        name="id_prov"
+                        label={<p>Provinsi</p>}
+                        value={formik.values.id_prov}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      >
+                        <MenuItem value="">--Pilih--</MenuItem>
+                        {provinsis.length !== 0 &&
+                          provinsis.map((item, idx) => (
+                            <MenuItem key={idx} value={item.id}>
+                              <p>{item.provinsi}</p>
+                            </MenuItem>
+                          ))}
+                      </Select>
+                      <FormHelperText>
+                        {formik.touched.id_prov && formik.errors.id_prov}
+                      </FormHelperText>
+                    </FormControl>
+                  </div>
+                )}
               {/* kabkot */}
-              {formik.values.kepada === "Bawaslu" && (
+              {formik.values.kepada && formik.values.kepada === "Bawaslu" && (
                 <div className="col-xs-12">
                   <FormControl
                     fullWidth
@@ -320,9 +319,8 @@ const Permohonan = () => {
                       <p>Kabupaten/Kota *</p>
                     </InputLabel>
                     <Select
-                      required
                       name="id_kabkota"
-                      label="Kabupaten/Kota *"
+                      label={<p>Kabupaten/Kota</p>}
                       value={formik.values.id_kabkota}
                       onChange={formik.handleChange}
                     >

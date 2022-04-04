@@ -2,28 +2,28 @@ import db from "libs/db";
 import PublicHandler from "middlewares/PublicHandler";
 
 export default PublicHandler().post(async (req, res) => {
-  const { tiket_number, email } = req.body;
+  const { tiket, email_pemohon } = req.body;
 
   const data = await db
     .select(
-      "tbl_permohonan.*",
-      "tbl_permohonan_response.status",
-      "tbl_permohonan_response.file",
-      "tbl_permohonan_response.alasan",
-      "tbl_provinsi.provinsi",
-      "tbl_kabupaten.kabupaten"
+      "permohonan.*",
+      "permohonan_respon.pesan",
+      "permohonan_respon.file_informasi",
+      "bawaslu.*",
+      "pemohon.nama_pemohon",
+      "pemohon.alamat_pemohon"
     )
-    .from("tbl_permohonan")
-    .leftJoin("tbl_provinsi", "tbl_permohonan.id_will", "tbl_provinsi.id")
-    .leftJoin("tbl_kabupaten", "tbl_permohonan.id_will", "tbl_kabupaten.id")
+    .from("permohonan")
+    .innerJoin("pemohon", "pemohon.email_pemohon", "permohonan.email_pemohon")
+    .leftJoin("bawaslu", "bawaslu.id", "permohonan.bawaslu_id")
     .leftJoin(
-      "tbl_permohonan_response",
-      "tbl_permohonan.id",
-      "tbl_permohonan_response.id_permohonan"
+      "permohonan_respon",
+      "permohonan.id",
+      "permohonan_respon.permohonan_id"
     )
-    .whereNull("tbl_permohonan.deleted_at")
-    .andWhere("tbl_permohonan.tiket_number", tiket_number)
-    .andWhere("tbl_permohonan.email", email)
+    .whereNull("permohonan.deleted_at")
+    .andWhere("permohonan.tiket", tiket)
+    .andWhere("permohonan.email_pemohon", email_pemohon)
     .first();
 
   if (!data) return res.status(404).json({ message: "Tidak Ditemukan" });

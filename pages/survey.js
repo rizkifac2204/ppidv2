@@ -29,6 +29,7 @@ const handleSubmit = (values, recaptchaRef, afterSubmit, setResponse) => {
   axios
     .post(`/api/public/survey`, values)
     .then((res) => {
+      console.log(res);
       afterSubmit(res);
       toast.update(toastProses, {
         render: res.data.message,
@@ -58,34 +59,37 @@ const validationSchema = yup.object({
     then: yup.number().required("Provinsi Harus Dipilih"),
     otherwise: yup.number(),
   }),
-  id_kabkot: yup.number().when("kepada", {
+  id_kabkota: yup.number().when("kepada", {
     is: (kepada) => kepada === "Bawaslu",
     then: yup.number().required("Kabupaten/Kota Harus Diisi"),
     otherwise: yup.number(),
   }),
-  nama: yup.string().required("Harus Diisi"),
-  jenis_kelamin: yup.string().required("Harus Diisi"),
-  pendidikan: yup.string().required("Telp Harus Diisi"),
-  email: yup.string().email("Email Tidak Valid").required("Harus Diisi"),
-  pekerjaan: yup.string().required("Harus Diisi"),
-  alamat: yup.string().required("Harus Diisi"),
-  satu: yup.string().required("Harus Diisi"),
-  dua: yup.string().required("Harus Diisi"),
-  tiga: yup.string().required("Harus Diisi"),
-  empat: yup.string().required("Harus Diisi"),
-  lima: yup.string().required("Harus Diisi"),
-  enam: yup.string().required("Harus Diisi"),
-  tujuh: yup.string().required("Harus Diisi"),
-  delapan: yup.string().required("Harus Diisi"),
-  sembilan: yup.string().required("Harus Diisi"),
-  sepuluh: yup.string().required("Harus Diisi"),
+  nama_pemohon: yup.string().required("Harus Diisi"),
+  jenis_kelamin_pemohon: yup.string().required("Harus Diisi"),
+  pendidikan_pemohon: yup.string().required("Telp Harus Diisi"),
+  email_pemohon: yup
+    .string()
+    .email("Email Tidak Valid")
+    .required("Harus Diisi"),
+  pekerjaan_pemohon: yup.string().required("Harus Diisi"),
+  alamat_pemohon: yup.string().required("Harus Diisi"),
+  q1: yup.string().required("Harus Diisi"),
+  q2: yup.string().required("Harus Diisi"),
+  q3: yup.string().required("Harus Diisi"),
+  q4: yup.string().required("Harus Diisi"),
+  q5: yup.string().required("Harus Diisi"),
+  q6: yup.string().required("Harus Diisi"),
+  q7: yup.string().required("Harus Diisi"),
+  q8: yup.string().required("Harus Diisi"),
+  q9: yup.string().required("Harus Diisi"),
+  q10: yup.string().required("Harus Diisi"),
   saran: yup.string().required("Harus Diisi"),
 });
 
 function Survey() {
   const [response, setResponse] = useState(false);
   const [provinsis, setProvinsis] = useState([]);
-  const [kabkots, setKabkots] = useState([]);
+  const [kabkotas, setKabkotas] = useState([]);
   const recaptchaRef = useRef(null);
   const answerRef = useRef(null);
 
@@ -100,11 +104,11 @@ function Survey() {
       });
   };
 
-  const fetchKabkot = (id) => {
+  const fetchKabkota = (id) => {
     axios
       .get(`/api/setting/wilayah/provinsis/` + id)
       .then((res) => {
-        setKabkots(res.data.kabkot);
+        setKabkotas(res.data.kabkot);
       })
       .catch((err) => {
         console.log(err);
@@ -115,23 +119,23 @@ function Survey() {
     initialValues: {
       kepada: "",
       id_prov: "",
-      id_kabkot: "",
-      nama: "",
-      jenis_kelamin: "",
-      pendidikan: "",
-      email: "",
-      pekerjaan: "",
-      alamat: "",
-      satu: "",
-      dua: "",
-      tiga: "",
-      empat: "",
-      lima: "",
-      enam: "",
-      tujuh: "",
-      delapan: "",
-      sembilan: "",
-      sepuluh: "",
+      id_kabkota: "",
+      nama_pemohon: "",
+      jenis_kelamin_pemohon: "",
+      pendidikan_pemohon: "",
+      email_pemohon: "",
+      pekerjaan_pemohon: "",
+      alamat_pemohon: "",
+      q1: "",
+      q2: "",
+      q3: "",
+      q4: "",
+      q5: "",
+      q6: "",
+      q7: "",
+      q8: "",
+      q9: "",
+      q10: "",
       saran: "",
     },
     enableReinitialize: true,
@@ -156,7 +160,7 @@ function Survey() {
   useEffect(() => {
     if (!formik.values.kepada) return;
     formik.setFieldValue("id_prov", "");
-    formik.setFieldValue("id_kabkot", "");
+    formik.setFieldValue("id_kabkota", "");
     if (
       formik.values.kepada !== "Bawaslu Republik Indonesia" &&
       provinsis.length === 0
@@ -165,9 +169,9 @@ function Survey() {
   }, [formik.values.kepada]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    formik.setFieldValue("id_kabkot", "");
+    formik.setFieldValue("id_kabkota", "");
     if (!formik.values.id_prov) return;
-    if (formik.values.kepada === "Bawaslu") fetchKabkot(formik.values.id_prov);
+    if (formik.values.kepada === "Bawaslu") fetchKabkota(formik.values.id_prov);
   }, [formik.values.id_prov]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -187,10 +191,12 @@ function Survey() {
                 fullWidth
                 error={formik.touched.kepada && Boolean(formik.errors.kepada)}
               >
-                <InputLabel>Penerima *</InputLabel>
+                <InputLabel>
+                  <p>Penerima *</p>
+                </InputLabel>
                 <Select
                   name="kepada"
-                  label="Penerima"
+                  label={<p>Penerima</p>}
                   value={formik.values.kepada}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -211,85 +217,93 @@ function Survey() {
               </FormControl>
             </div>
             {/* provinsi  */}
-            {formik.values.kepada !== "Bawaslu Republik Indonesia" && (
+            {formik.values.kepada &&
+              formik.values.kepada !== "Bawaslu Republik Indonesia" && (
+                <div className="col-xs-12 col-sm-6">
+                  <FormControl
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    error={
+                      formik.touched.id_prov && Boolean(formik.errors.id_prov)
+                    }
+                  >
+                    <InputLabel>
+                      <p>Provinsi *</p>
+                    </InputLabel>
+                    <Select
+                      name="id_prov"
+                      label={<p>Provinsi</p>}
+                      value={formik.values.id_prov}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    >
+                      <MenuItem value="">--Pilih--</MenuItem>
+                      {provinsis.length !== 0 &&
+                        provinsis.map((item, idx) => (
+                          <MenuItem key={idx} value={item.id}>
+                            <p>{item.provinsi}</p>
+                          </MenuItem>
+                        ))}
+                    </Select>
+                    <FormHelperText>
+                      {formik.touched.id_prov && formik.errors.id_prov}
+                    </FormHelperText>
+                  </FormControl>
+                </div>
+              )}
+            {/* kabkota */}
+            {formik.values.kepada && formik.values.kepada === "Bawaslu" && (
               <div className="col-xs-12 col-sm-6">
                 <FormControl
-                  required
-                  sx={{ mt: 2 }}
                   fullWidth
+                  sx={{ mt: 2 }}
                   error={
-                    formik.touched.id_prov && Boolean(formik.errors.id_prov)
+                    formik.touched.id_kabkota &&
+                    Boolean(formik.errors.id_kabkota)
                   }
                 >
                   <InputLabel>
-                    <p>Provinsi *</p>
+                    <p>Kabupaten/Kota *</p>
                   </InputLabel>
                   <Select
-                    name="id_prov"
-                    label={<p>Provinsi</p>}
-                    value={formik.values.id_prov}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  >
-                    <MenuItem value="">--Pilih--</MenuItem>
-                    {provinsis.length !== 0 &&
-                      provinsis.map((item, idx) => (
-                        <MenuItem key={idx} value={item.id}>
-                          <p>{item.provinsi}</p>
-                        </MenuItem>
-                      ))}
-                  </Select>
-                  <FormHelperText>
-                    {formik.touched.id_prov && formik.errors.id_prov}
-                  </FormHelperText>
-                </FormControl>
-              </div>
-            )}
-            {/* kabkot */}
-            {formik.values.kepada === "Bawaslu" && (
-              <div className="col-xs-12 col-sm-6">
-                <FormControl
-                  required
-                  sx={{ mt: 2 }}
-                  fullWidth
-                  error={
-                    formik.touched.id_kabkot && Boolean(formik.errors.id_kabkot)
-                  }
-                >
-                  <InputLabel>Kabupaten/Kota *</InputLabel>
-                  <Select
-                    required
-                    name="id_kabkot"
-                    label="Kabupaten/Kota *"
-                    value={formik.values.id_kabkot}
+                    name="id_kabkota"
+                    label={<p>Kabupaten/Kota</p>}
+                    value={formik.values.id_kabkota}
                     onChange={formik.handleChange}
                   >
-                    {kabkots.length !== 0 &&
-                      kabkots.map((item) => (
+                    {kabkotas.length !== 0 &&
+                      kabkotas.map((item) => (
                         <MenuItem key={item.id} value={item.id}>
-                          {item.kabupaten}
+                          {item.kabkota}
                         </MenuItem>
                       ))}
                   </Select>
                   <FormHelperText>
-                    {formik.touched.id_kabkot && formik.errors.id_kabkot}
+                    {formik.touched.id_kabkota && formik.errors.id_kabkota}
                   </FormHelperText>
                 </FormControl>
               </div>
             )}
+          </div>
+          <div className="row">
             {/* nama */}
-            <div className="col-xs-12 col-sm-6">
+            <div className="col-xs-12">
               <TextField
                 fullWidth
                 required
                 margin="normal"
                 label="Nama"
-                name="nama"
-                value={formik.values.nama}
+                name="nama_pemohon"
+                value={formik.values.nama_pemohon}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.nama && Boolean(formik.errors.nama)}
-                helperText={formik.touched.nama && formik.errors.nama}
+                error={
+                  formik.touched.nama_pemohon &&
+                  Boolean(formik.errors.nama_pemohon)
+                }
+                helperText={
+                  formik.touched.nama_pemohon && formik.errors.nama_pemohon
+                }
                 inputProps={{ style: { fontSize: 14 } }}
                 InputLabelProps={{ style: { fontSize: 14 } }}
               />
@@ -299,15 +313,15 @@ function Survey() {
               <FormControl
                 component="fieldset"
                 error={
-                  formik.touched.jenis_kelamin &&
-                  Boolean(formik.errors.jenis_kelamin)
+                  formik.touched.jenis_kelamin_pemohon &&
+                  Boolean(formik.errors.jenis_kelamin_pemohon)
                 }
                 variant="standard"
               >
                 <RadioGroup
                   aria-label="jenis_kelamin"
-                  name="jenis_kelamin"
-                  value={formik.values.jenis_kelamin}
+                  name="jenis_kelamin_pemohon"
+                  value={formik.values.jenis_kelamin_pemohon}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -322,7 +336,8 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.jenis_kelamin && formik.errors.jenis_kelamin}
+                  {formik.touched.jenis_kelamin_pemohon &&
+                    formik.errors.jenis_kelamin_pemohon}
                 </FormHelperText>
               </FormControl>
             </div>
@@ -333,15 +348,17 @@ function Survey() {
                 required
                 margin="normal"
                 label="Pendidikan"
-                name="pendidikan"
-                value={formik.values.pendidikan}
+                name="pendidikan_pemohon"
+                value={formik.values.pendidikan_pemohon}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={
-                  formik.touched.pendidikan && Boolean(formik.errors.pendidikan)
+                  formik.touched.pendidikan_pemohon &&
+                  Boolean(formik.errors.pendidikan_pemohon)
                 }
                 helperText={
-                  formik.touched.pendidikan && formik.errors.pendidikan
+                  formik.touched.pendidikan_pemohon &&
+                  formik.errors.pendidikan_pemohon
                 }
                 inputProps={{ style: { fontSize: 14 } }}
                 InputLabelProps={{ style: { fontSize: 14 } }}
@@ -355,12 +372,17 @@ function Survey() {
                 margin="normal"
                 type="email"
                 label="Email"
-                name="email"
-                value={formik.values.email}
+                name="email_pemohon"
+                value={formik.values.email_pemohon}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
+                error={
+                  formik.touched.email_pemohon &&
+                  Boolean(formik.errors.email_pemohon)
+                }
+                helperText={
+                  formik.touched.email_pemohon && formik.errors.email_pemohon
+                }
                 inputProps={{ style: { fontSize: 14 } }}
                 InputLabelProps={{ style: { fontSize: 14 } }}
               />
@@ -372,14 +394,18 @@ function Survey() {
                 required
                 margin="normal"
                 label="Pekerjaan"
-                name="pekerjaan"
-                value={formik.values.pekerjaan}
+                name="pekerjaan_pemohon"
+                value={formik.values.pekerjaan_pemohon}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={
-                  formik.touched.pekerjaan && Boolean(formik.errors.pekerjaan)
+                  formik.touched.pekerjaan_pemohon &&
+                  Boolean(formik.errors.pekerjaan_pemohon)
                 }
-                helperText={formik.touched.pekerjaan && formik.errors.pekerjaan}
+                helperText={
+                  formik.touched.pekerjaan_pemohon &&
+                  formik.errors.pekerjaan_pemohon
+                }
                 inputProps={{ style: { fontSize: 14 } }}
                 InputLabelProps={{ style: { fontSize: 14 } }}
               />
@@ -393,21 +419,26 @@ function Survey() {
                 rows={4}
                 margin="normal"
                 label="Alamat"
-                name="alamat"
-                value={formik.values.alamat}
+                name="alamat_pemohon"
+                value={formik.values.alamat_pemohon}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.alamat && Boolean(formik.errors.alamat)}
-                helperText={formik.touched.alamat && formik.errors.alamat}
+                error={
+                  formik.touched.alamat_pemohon &&
+                  Boolean(formik.errors.alamat_pemohon)
+                }
+                helperText={
+                  formik.touched.alamat_pemohon && formik.errors.alamat_pemohon
+                }
                 inputProps={{ style: { fontSize: 14 } }}
                 InputLabelProps={{ style: { fontSize: 14 } }}
               />
             </div>
-            {/* satu  */}
+            {/* q1  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={formik.touched.satu && Boolean(formik.errors.satu)}
+                error={formik.touched.q1 && Boolean(formik.errors.q1)}
                 variant="standard"
               >
                 <FormLabel>
@@ -417,9 +448,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="satu"
-                  name="satu"
-                  value={formik.values.satu}
+                  aria-label="q1"
+                  name="q1"
+                  value={formik.values.q1}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -444,15 +475,15 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.satu && formik.errors.satu}
+                  {formik.touched.q1 && formik.errors.q1}
                 </FormHelperText>
               </FormControl>
             </div>
-            {/* dua  */}
+            {/* q2  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={formik.touched.dua && Boolean(formik.errors.dua)}
+                error={formik.touched.q2 && Boolean(formik.errors.q2)}
                 variant="standard"
               >
                 <FormLabel>
@@ -462,9 +493,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="dua"
-                  name="dua"
-                  value={formik.values.dua}
+                  aria-label="q2"
+                  name="q2"
+                  value={formik.values.q2}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -489,15 +520,15 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.dua && formik.errors.dua}
+                  {formik.touched.q2 && formik.errors.q2}
                 </FormHelperText>
               </FormControl>
             </div>
-            {/* tiga  */}
+            {/* q3  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={formik.touched.tiga && Boolean(formik.errors.tiga)}
+                error={formik.touched.q3 && Boolean(formik.errors.q3)}
                 variant="standard"
               >
                 <FormLabel>
@@ -507,9 +538,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="tiga"
-                  name="tiga"
-                  value={formik.values.tiga}
+                  aria-label="q3"
+                  name="q3"
+                  value={formik.values.q3}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -534,15 +565,15 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.tiga && formik.errors.tiga}
+                  {formik.touched.q3 && formik.errors.q3}
                 </FormHelperText>
               </FormControl>
             </div>
-            {/* empat  */}
+            {/* q4  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={formik.touched.empat && Boolean(formik.errors.empat)}
+                error={formik.touched.q4 && Boolean(formik.errors.q4)}
                 variant="standard"
               >
                 <FormLabel>
@@ -552,9 +583,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="empat"
-                  name="empat"
-                  value={formik.values.empat}
+                  aria-label="q4"
+                  name="q4"
+                  value={formik.values.q4}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -579,15 +610,15 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.empat && formik.errors.empat}
+                  {formik.touched.q4 && formik.errors.q4}
                 </FormHelperText>
               </FormControl>
             </div>
-            {/* lima  */}
+            {/* q5  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={formik.touched.lima && Boolean(formik.errors.lima)}
+                error={formik.touched.q5 && Boolean(formik.errors.q5)}
                 variant="standard"
               >
                 <FormLabel>
@@ -598,9 +629,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="lima"
-                  name="lima"
-                  value={formik.values.lima}
+                  aria-label="q5"
+                  name="q5"
+                  value={formik.values.q5}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -625,15 +656,15 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.lima && formik.errors.lima}
+                  {formik.touched.q5 && formik.errors.q5}
                 </FormHelperText>
               </FormControl>
             </div>
-            {/* enam  */}
+            {/* q6  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={formik.touched.enam && Boolean(formik.errors.enam)}
+                error={formik.touched.q6 && Boolean(formik.errors.q6)}
                 variant="standard"
               >
                 <FormLabel>
@@ -643,9 +674,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="enam"
-                  name="enam"
-                  value={formik.values.enam}
+                  aria-label="q6"
+                  name="q6"
+                  value={formik.values.q6}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -670,15 +701,15 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.enam && formik.errors.enam}
+                  {formik.touched.q6 && formik.errors.q6}
                 </FormHelperText>
               </FormControl>
             </div>
-            {/* tujuh  */}
+            {/* q7  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={formik.touched.tujuh && Boolean(formik.errors.tujuh)}
+                error={formik.touched.q7 && Boolean(formik.errors.q7)}
                 variant="standard"
               >
                 <FormLabel>
@@ -688,9 +719,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="tujuh"
-                  name="tujuh"
-                  value={formik.values.tujuh}
+                  aria-label="q7"
+                  name="q7"
+                  value={formik.values.q7}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -715,15 +746,15 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.tujuh && formik.errors.tujuh}
+                  {formik.touched.q7 && formik.errors.q7}
                 </FormHelperText>
               </FormControl>
             </div>
-            {/* delapan  */}
+            {/* q8  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={formik.touched.delapan && Boolean(formik.errors.delapan)}
+                error={formik.touched.q8 && Boolean(formik.errors.q8)}
                 variant="standard"
               >
                 <FormLabel>
@@ -733,9 +764,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="delapan"
-                  name="delapan"
-                  value={formik.values.delapan}
+                  aria-label="q8"
+                  name="q8"
+                  value={formik.values.q8}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -760,17 +791,15 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.delapan && formik.errors.delapan}
+                  {formik.touched.q8 && formik.errors.q8}
                 </FormHelperText>
               </FormControl>
             </div>
-            {/* sembilan  */}
+            {/* q9  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={
-                  formik.touched.sembilan && Boolean(formik.errors.sembilan)
-                }
+                error={formik.touched.q9 && Boolean(formik.errors.q9)}
                 variant="standard"
               >
                 <FormLabel>
@@ -780,9 +809,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="sembilan"
-                  name="sembilan"
-                  value={formik.values.sembilan}
+                  aria-label="q9"
+                  name="q9"
+                  value={formik.values.q9}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -807,15 +836,15 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.sembilan && formik.errors.sembilan}
+                  {formik.touched.q9 && formik.errors.q9}
                 </FormHelperText>
               </FormControl>
             </div>
-            {/* sepuluh  */}
+            {/* q10  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
-                error={formik.touched.sepuluh && Boolean(formik.errors.sepuluh)}
+                error={formik.touched.q10 && Boolean(formik.errors.q10)}
                 variant="standard"
               >
                 <FormLabel>
@@ -825,9 +854,9 @@ function Survey() {
                   </p>
                 </FormLabel>
                 <RadioGroup
-                  aria-label="sepuluh"
-                  name="sepuluh"
-                  value={formik.values.sepuluh}
+                  aria-label="q10"
+                  name="q10"
+                  value={formik.values.q10}
                   onChange={formik.handleChange}
                 >
                   <FormControlLabel
@@ -852,7 +881,7 @@ function Survey() {
                   />
                 </RadioGroup>
                 <FormHelperText>
-                  {formik.touched.sepuluh && formik.errors.sepuluh}
+                  {formik.touched.q10 && formik.errors.q10}
                 </FormHelperText>
               </FormControl>
             </div>
