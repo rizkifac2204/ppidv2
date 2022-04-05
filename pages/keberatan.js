@@ -32,9 +32,9 @@ const handleSubmit = (values, data, recaptchaRef, afterSubmit, setCurData) => {
   const postValues = {
     ...values,
     id: data.id,
-    id_will: data.id_will,
-    reg_number: data.reg_number,
-    email: data.email,
+    no_registrasi: data.no_registrasi,
+    email_pemohon: data.email_pemohon,
+    email_bawaslu: data.email_bawaslu,
   };
   const recaptchaValue = recaptchaRef.current.getValue();
   if (!recaptchaValue) {
@@ -49,7 +49,7 @@ const handleSubmit = (values, data, recaptchaRef, afterSubmit, setCurData) => {
     .then((res) => {
       afterSubmit(res.data.currentData);
       toast.update(toastProses, {
-        render: "Ditemukan",
+        render: res.data.message,
         type: "success",
         isLoading: false,
         autoClose: 2000,
@@ -69,13 +69,13 @@ const handleSubmit = (values, data, recaptchaRef, afterSubmit, setCurData) => {
 };
 
 const validationSchema = yup.object({
-  kasus: yup.string().required("Harus Diisi"),
+  kasus_posisi: yup.string().required("Harus Diisi"),
 });
 
 function Keberatan({ isUser = "Kosong" }) {
   const [data, setData] = useState({});
   const [curData, setCurData] = useState({});
-  const [regNumber, setRegNumber] = useState("");
+  const [noRegistrasi, setNoRegistrasi] = useState("");
   const [profileBawaslu, setProfileBawaslu] = useState({});
   const recaptchaRef = useRef(null);
   const printBuktiRef = useRef(null);
@@ -85,8 +85,9 @@ function Keberatan({ isUser = "Kosong" }) {
     e.preventDefault();
     const toastProses = toast.loading("Mencari Data...");
     axios
-      .get(`/api/public/keberatan?reg_number=${regNumber}`)
+      .get(`/api/public/keberatan?no_registrasi=${noRegistrasi}`)
       .then((res) => {
+        console.log(res.data);
         setData(() => res.data);
         toast.update(toastProses, {
           render: "Ditemukan, Lanjutkan Mengisi Formulir",
@@ -111,29 +112,29 @@ function Keberatan({ isUser = "Kosong" }) {
   };
 
   // PRINT
-  const fetchProfileBawaslu = (callback) => {
-    const toastProses = toast.loading("Menyiapkan Format...");
-    axios
-      .get(`/api/permohonan/profileBawaslu?id=` + curData.id_will)
-      .then((res) => {
-        setProfileBawaslu(res.data);
-        toast.dismiss(toastProses);
-        callback();
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.update(toastProses, {
-          render: "Terjadi Kesalahan",
-          type: "error",
-          isLoading: false,
-          autoClose: 2000,
-        });
-      });
-  };
+  // const fetchProfileBawaslu = (callback) => {
+  //   const toastProses = toast.loading("Menyiapkan Format...");
+  //   axios
+  //     .get(`/api/permohonan/profileBawaslu?id=` + curData.bawaslu_id)
+  //     .then((res) => {
+  //       setProfileBawaslu(res.data);
+  //       toast.dismiss(toastProses);
+  //       callback();
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       toast.update(toastProses, {
+  //         render: "Terjadi Kesalahan",
+  //         type: "error",
+  //         isLoading: false,
+  //         autoClose: 2000,
+  //       });
+  //     });
+  // };
   const handlePrint = () => {
-    return fetchProfileBawaslu(() => {
-      processPrintBukti();
-    });
+    // return fetchProfileBawaslu(() => {
+    // });
+    processPrintBukti();
   };
   const processPrintBukti = useReactToPrint({
     content: () => printBuktiRef.current,
@@ -158,7 +159,7 @@ function Keberatan({ isUser = "Kosong" }) {
       alasan_e: false,
       alasan_f: false,
       alasan_g: false,
-      kasus: "",
+      kasus_posisi: "",
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
@@ -190,10 +191,10 @@ function Keberatan({ isUser = "Kosong" }) {
                 fullWidth
                 margin="normal"
                 label="Nomor Registrasi"
-                name="regNumber"
-                value={regNumber}
+                name="noRegistrasi"
+                value={noRegistrasi}
                 onChange={(e) => {
-                  setRegNumber(e.target.value);
+                  setNoRegistrasi(e.target.value);
                   setData({});
                   formik.resetForm();
                 }}
@@ -220,7 +221,7 @@ function Keberatan({ isUser = "Kosong" }) {
             <div className="row" style={{ marginTop: "20px" }}>
               <div className="col-xs-12 col-sm-12 col-lg-12 no-padding">
                 <div className="form-group">
-                  <h4>A. INFORMASI PENGAJU KEBERATAN </h4>
+                  <h4>A. INFORMASI PENGAJUAN KEBERATAN </h4>
                 </div>
               </div>
 
@@ -265,8 +266,8 @@ function Keberatan({ isUser = "Kosong" }) {
                   fullWidth
                   margin="normal"
                   label="Nama"
-                  name="nama"
-                  value={data.nama}
+                  name="nama_pemohon"
+                  value={data.nama_pemohon}
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
@@ -278,8 +279,8 @@ function Keberatan({ isUser = "Kosong" }) {
                   fullWidth
                   margin="normal"
                   label="Pekerjaan"
-                  name="pekerjaan"
-                  value={data.pekerjaan}
+                  name="pekerjaan_pemohon"
+                  value={data.pekerjaan_pemohon}
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
@@ -291,8 +292,8 @@ function Keberatan({ isUser = "Kosong" }) {
                   fullWidth
                   margin="normal"
                   label="Telp/Hp"
-                  name="telp"
-                  value={data.telp}
+                  name="telp_pemohon"
+                  value={data.telp_pemohon}
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
@@ -306,8 +307,8 @@ function Keberatan({ isUser = "Kosong" }) {
                   rows={4}
                   margin="normal"
                   label="Alamat"
-                  name="alamat"
-                  value={data.alamat}
+                  name="alamat_pemohon"
+                  value={data.alamat_pemohon}
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
@@ -447,12 +448,17 @@ function Keberatan({ isUser = "Kosong" }) {
                   rows={4}
                   margin="normal"
                   label="Kasus Posisi"
-                  name="kasus"
-                  value={formik.values.kasus}
+                  name="kasus_posisi"
+                  value={formik.values.kasus_posisi}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.kasus && Boolean(formik.errors.kasus)}
-                  helperText={formik.touched.kasus && formik.errors.kasus}
+                  error={
+                    formik.touched.kasus_posisi &&
+                    Boolean(formik.errors.kasus_posisi)
+                  }
+                  helperText={
+                    formik.touched.kasus_posisi && formik.errors.kasus_posisi
+                  }
                   inputProps={{ style: { fontSize: 14 } }}
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
@@ -495,6 +501,7 @@ function Keberatan({ isUser = "Kosong" }) {
             id="isilagi"
             type="button"
             variant="contained"
+            className="btn btn-info"
             onClick={() => {
               setTimeout(() => {
                 setCurData({});
@@ -510,7 +517,7 @@ function Keberatan({ isUser = "Kosong" }) {
         <BuktiPengajuanKeberatan
           ref={printBuktiRef}
           detail={curData}
-          profileBawaslu={profileBawaslu}
+          profileBawaslu={data}
         />
       )}
     </div>

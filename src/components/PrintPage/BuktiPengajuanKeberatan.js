@@ -41,8 +41,8 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                 <b>BADAN PENGAWA PEMILIHAN UMUM</b>
               </Typography>
               <Typography>
-                {profileBawaslu.alamat} <br />
-                {profileBawaslu.telp} / {profileBawaslu.email}
+                {profileBawaslu.alamat_bawaslu} <br />
+                {profileBawaslu.telp_bawaslu} / {profileBawaslu.email_bawaslu}
               </Typography>
             </Box>
           </Box>
@@ -69,7 +69,7 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                     <b>Nomor Tiket keberatan</b>
                   </TableCell>
                   <TableCell>
-                    : <b>{detail.reg_number}</b>
+                    : <b>{detail.no_registrasi}</b>
                   </TableCell>
                 </TableRow>
 
@@ -107,25 +107,25 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                 <TableRow>
                   <TableCell></TableCell>
                   <TableCell>Nama</TableCell>
-                  <TableCell>: {detail.nama}</TableCell>
+                  <TableCell>: {detail.nama_pemohon}</TableCell>
                 </TableRow>
 
                 <TableRow>
                   <TableCell></TableCell>
                   <TableCell>Alamat</TableCell>
-                  <TableCell>: {detail.alamat}</TableCell>
+                  <TableCell>: {detail.alamat_pemohon}</TableCell>
                 </TableRow>
 
                 <TableRow>
                   <TableCell></TableCell>
                   <TableCell>Pekerjaan</TableCell>
-                  <TableCell>: {detail.pekerjaan}</TableCell>
+                  <TableCell>: {detail.pekerjaan_pemohon}</TableCell>
                 </TableRow>
 
                 <TableRow>
                   <TableCell></TableCell>
                   <TableCell>Nomor Telepon</TableCell>
-                  <TableCell>: {detail.telp}</TableCell>
+                  <TableCell>: {detail.telp_pemohon}</TableCell>
                 </TableRow>
 
                 <TableRow>
@@ -138,19 +138,19 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                 <TableRow>
                   <TableCell></TableCell>
                   <TableCell>Nama</TableCell>
-                  <TableCell>: {detail.kuasa_nama}</TableCell>
+                  <TableCell>: {detail.nama_kuasa}</TableCell>
                 </TableRow>
 
                 <TableRow>
                   <TableCell></TableCell>
                   <TableCell>Alamat</TableCell>
-                  <TableCell>: {detail.alamat}</TableCell>
+                  <TableCell>: {detail.alamat_kuasa}</TableCell>
                 </TableRow>
 
                 <TableRow>
                   <TableCell></TableCell>
                   <TableCell>Nomor Telepon</TableCell>
-                  <TableCell>: {detail.kuasa_telp}</TableCell>
+                  <TableCell>: {detail.telp_kuasa}</TableCell>
                 </TableRow>
 
                 <TableRow>
@@ -251,7 +251,7 @@ const BuktiPengajuanKeberatan = React.forwardRef(
 
                 <TableRow>
                   <TableCell></TableCell>
-                  <TableCell colSpan={2}>{detail.kasus}</TableCell>
+                  <TableCell colSpan={2}>{detail.kasus_posisi}</TableCell>
                 </TableRow>
 
                 <TableRow>
@@ -266,14 +266,16 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                 <TableRow>
                   <TableCell></TableCell>
                   <TableCell colSpan={2}>
-                    {detail.tanggal &&
-                      new Date(detail.tanggal).toISOString().split("T")[0]}
+                    {detail.tanggal_keberatan &&
+                      new Date(detail.tanggal_keberatan)
+                        .toISOString()
+                        .split("T")[0]}
                   </TableCell>
                 </TableRow>
 
                 <TableRow sx={{ border: 0 }}>
                   <TableCell colSpan={2}>
-                    {profileBawaslu.kota}, <CurrentDate />
+                    {profileBawaslu.kota_bawaslu}, <CurrentDate />
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -281,7 +283,7 @@ const BuktiPengajuanKeberatan = React.forwardRef(
           </TableContainer>
 
           <Box>
-            <SetQRCode text={"keberatan/" + detail.reg_number} />
+            <SetQRCode text={"keberatan/" + detail.no_registrasi} />
             <Box sx={{ fontSize: 10, m: 1 }}>
               (Kode merupakan bukti Sah dari Sistem PPID Bawaslu <br /> selama
               dapat terbaca dan terscan dengan benar)

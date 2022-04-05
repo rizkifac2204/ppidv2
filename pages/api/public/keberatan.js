@@ -9,27 +9,26 @@ import { buatCurTime } from "middlewares/PublicCondition";
 
 export default PublicHandler()
   .get(async (req, res) => {
-    const { reg_number } = req.query;
+    const { no_registrasi } = req.query;
 
     const data = await db
       .select(
         "permohonan.*",
-        "permohonan_respon.pesan",
-        "permohonan_respon.file_informasi",
-        "bawaslu.*",
+        "bawaslu.nama_bawaslu",
+        "bawaslu.email_bawaslu",
+        "bawaslu.telp_bawaslu",
+        "bawaslu.alamat_bawaslu",
+        "bawaslu.kota_bawaslu",
         "pemohon.nama_pemohon",
-        "pemohon.alamat_pemohon"
+        "pemohon.alamat_pemohon",
+        "pemohon.pekerjaan_pemohon",
+        "pemohon.telp_pemohon"
       )
       .from("permohonan")
       .innerJoin("pemohon", "pemohon.email_pemohon", "permohonan.email_pemohon")
       .leftJoin("bawaslu", "bawaslu.id", "permohonan.bawaslu_id")
-      .leftJoin(
-        "permohonan_respon",
-        "permohonan.id",
-        "permohonan_respon.permohonan_id"
-      )
       .whereNull("permohonan.deleted_at")
-      .andWhere("permohonan.no_registrasi", reg_number)
+      .andWhere("permohonan.no_registrasi", no_registrasi)
       .first();
 
     if (!data) return res.status(404).json({ message: "Tidak Ditemukan" });
@@ -38,9 +37,9 @@ export default PublicHandler()
   .post(async (req, res) => {
     const {
       id,
-      reg_number,
-      id_will,
-      email,
+      no_registrasi,
+      email_pemohon,
+      email_bawaslu,
       alasan_a,
       alasan_b,
       alasan_c,
@@ -48,28 +47,24 @@ export default PublicHandler()
       alasan_e,
       alasan_f,
       alasan_g,
-      kasus,
+      kasus_posisi,
     } = req.body;
     const curtime = buatCurTime();
 
-    const getEmailBawaslu = await db("tbl_data_bawaslu")
-      .where("id_wilayah", id_will)
-      .first();
-
     // setting email untuk admin dan pemohon
     const setMailOptionPemohon = mailOption(
-      email,
+      email_pemohon,
       "Pengajuan Keberatan PPID Bawaslu",
-      TextKeberatanKepadaPemohon(reg_number)
+      TextKeberatanKepadaPemohon(no_registrasi)
     );
     const setMailOptionAdmin = mailOption(
-      getEmailBawaslu.email,
+      email_bawaslu,
       "Pengajuan Keberatan Permohonan Informasi Baru",
-      TextKeberatanKepadaAdmin(reg_number, email)
+      TextKeberatanKepadaAdmin(no_registrasi, email_pemohon)
     );
 
     const dataForInsert = {
-      id_permohonan: id,
+      permohonan_id: id,
       alasan_a: alasan_a ? 1 : 0,
       alasan_b: alasan_b ? 1 : 0,
       alasan_c: alasan_c ? 1 : 0,
@@ -77,15 +72,13 @@ export default PublicHandler()
       alasan_e: alasan_e ? 1 : 0,
       alasan_f: alasan_f ? 1 : 0,
       alasan_g: alasan_g ? 1 : 0,
-      kasus,
-      tanggal: curtime,
+      kasus_posisi,
+      tanggal_keberatan: curtime,
     };
 
     // proses simpan
     try {
-      const proses = await db("tbl_permohonan_keberatan").insert([
-        dataForInsert,
-      ]);
+      const proses = await db("permohonan_keberatan").insert(dataForInsert);
 
       // failed
       if (!proses) {
