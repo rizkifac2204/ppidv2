@@ -36,3 +36,7 @@ export function FormatedDate({ tanggal }) {
     return "-";
   }
 }
+
+export function NumberWithCommas({ number }) {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

@@ -38,7 +38,7 @@ export const TextPerubahanStatus = (
     Nomor Tiket <b>${tiket_number}</b> <br/>
     Email <b>${email}</b><br/>
     <p>
-       Telah ditanggapi oleh Admin. Status aktif Status aktif pada Permohonan Informasi tersebut sekarang adalah
+       Telah ditanggapi oleh Admin. Status aktif pada Permohonan Informasi tersebut sekarang adalah
     </p>
     <h3>${status}</h3>
     Nomor Registrasi <b>${reg_number}</b> <br/>

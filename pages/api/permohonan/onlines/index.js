@@ -9,11 +9,19 @@ import {
 export default Handler()
   .get(async (req, res) => {
     const result = await db
-      .select("permohonan.*", "bawaslu.nama_bawaslu", "bawaslu.level_bawaslu")
+      .select(
+        "permohonan.*",
+        "pemohon.*",
+        "bawaslu.nama_bawaslu",
+        "bawaslu.level_bawaslu",
+        "provinsi.provinsi"
+      )
       .from("permohonan")
       .innerJoin("bawaslu", "permohonan.bawaslu_id", "bawaslu.id")
+      .innerJoin("pemohon", "pemohon.email_pemohon", "permohonan.email_pemohon")
+      .leftJoin("provinsi", "provinsi.id", "bawaslu.provinsi_id")
       .modify((builder) =>
-        conditionWillSpesific(db, builder, req.session.user, "tbl_permohonan")
+        conditionWillSpesific(db, builder, req.session.user, "permohonan")
       )
       .whereNull("permohonan.deleted_at")
       .orderBy("permohonan.created_at", "desc");
@@ -38,10 +46,6 @@ export default Handler()
       tanggal_permohonan,
       status_permohonan,
     } = req.body;
-    // var alasan = req.body.alasan;
-    // if (status !== "Diberikan Sebagian" || status === "Tidak Dapat Diberikan") {
-    //   alasan = null;
-    // }
 
     // cek reg number sama
     const cek = await db("permohonan")
@@ -129,7 +133,7 @@ export default Handler()
   })
   .delete(async (req, res) => {
     const arrID = req.body;
-    const proses = await db("tbl_permohonan")
+    const proses = await db("permohonan")
       .whereIn("id", arrID)
       .update("deleted_at", db.fn.now());
 

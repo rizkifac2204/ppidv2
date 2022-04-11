@@ -13,12 +13,9 @@ import Box from "@mui/material/Box";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
-import Tooltip from "@mui/material/Tooltip";
 // ICONS
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import PrintIcon from "@mui/icons-material/Print";
-import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
-import CancelScheduleSendIcon from "@mui/icons-material/CancelScheduleSend";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 //Component
@@ -26,13 +23,13 @@ import WaitLoadingComponent from "components/WaitLoadingComponent";
 import { FormatedDate } from "components/Attributes";
 import DataPermohonanOnline from "components/PrintPage/DataPermohonanOnline";
 import BuktiPermohonanOnline from "components/PrintPage/BuktiPermohonanOnline";
-import ResponseDialog from "components/ResponseDialog";
-import FileAction from "components/FileAction";
+import ResponseDialog from "components/permohonan/ResponseDialog";
+import ResponseCard from "components/permohonan/ResponseCard";
 
 function OnlineDetail() {
   const router = useRouter();
   const [detail, setDetail] = useState({});
-  const [response, setResponse] = useState({});
+  const [responses, setResponses] = useState([]);
   const [openResponse, setOpenResponse] = useState(false);
   const [profileBawaslu, setProfileBawaslu] = useState({});
   const { id } = router.query;
@@ -53,11 +50,11 @@ function OnlineDetail() {
             setTimeout(() => router.push("/admin/permohonan/online"), 2000);
           });
       };
-      const fetchResponse = () => {
+      const fetchResponses = () => {
         axios
-          .get(`/api/permohonan/onlines/` + id + "/response")
+          .get(`/api/permohonan/onlines/` + id + "/responses")
           .then((res) => {
-            setResponse(res.data);
+            setResponses(res.data);
           })
           .catch((err) => {
             toast.error(err.response.data.message);
@@ -65,12 +62,16 @@ function OnlineDetail() {
       };
 
       fetchDetail();
-      fetchResponse();
+      fetchResponses();
     }
-    return () => {
-      // console.log("clear");
-    };
   }, [id, router]);
+
+  const onDeleteResponse = (id) => {
+    const filtered = responses.filter((data) => {
+      return data.id != id;
+    });
+    setResponses(filtered);
+  };
 
   // ACTION NORMAL
   const handleDelete = () => {
@@ -101,7 +102,7 @@ function OnlineDetail() {
   const fetchProfileBawaslu = (callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
     axios
-      .get(`/api/permohonan/profileBawaslu?id=` + detail.id_will)
+      .get(`/api/permohonan/profileBawaslu?id=` + detail.bawaslu_id)
       .then((res) => {
         setProfileBawaslu(res.data);
         toast.dismiss(toastProses);
@@ -167,7 +168,7 @@ function OnlineDetail() {
       <WaitLoadingComponent loading={Object.keys(detail).length == 0} />
       {Object.keys(detail).length !== 0 && (
         <>
-          <Card>
+          <Card sx={{ mb: 2 }}>
             <Typography
               variant="h5"
               component="div"
@@ -188,7 +189,7 @@ function OnlineDetail() {
                   }}
                 >
                   <Image
-                    src={"/upload/" + detail.ktp}
+                    src={"/upload/" + detail.identitas_pemohon}
                     alt="KTP"
                     layout="fill"
                     objectFit="contain"
@@ -201,9 +202,9 @@ function OnlineDetail() {
                       Nomor Registrasi / Tiket
                     </Grid>
                     <Grid item xs={8}>
-                      : {detail.reg_number} /{" "}
+                      : {detail.no_registrasi} /{" "}
                       <Typography variant="caption" color="primary">
-                        {detail.tiket_number}
+                        {detail.tiket}
                       </Typography>
                     </Grid>
 
@@ -211,49 +212,49 @@ function OnlineDetail() {
                       Kepada
                     </Grid>
                     <Grid item xs={8}>
-                      : {detail.kepada} {detail.provinsi} {detail.kabupaten}
+                      : {detail.nama_bawaslu}
                     </Grid>
 
                     <Grid item xs={4}>
                       Tanggal
                     </Grid>
                     <Grid item xs={8}>
-                      : <FormatedDate tanggal={detail.tanggal} />
+                      : <FormatedDate tanggal={detail.tanggal_permohonan} />
                     </Grid>
 
                     <Grid item xs={4}>
                       Nama
                     </Grid>
                     <Grid item xs={8}>
-                      : {detail.nama}
+                      : {detail.nama_pemohon}
                     </Grid>
 
                     <Grid item xs={4}>
                       Pekerjaan
                     </Grid>
                     <Grid item xs={8}>
-                      : {detail.pekerjaan}
+                      : {detail.pekerjaan_pemohon}
                     </Grid>
 
                     <Grid item xs={4}>
                       Telp/Hp
                     </Grid>
                     <Grid item xs={8}>
-                      : {detail.telp}
+                      : {detail.telp_pemohon}
                     </Grid>
 
                     <Grid item xs={4}>
                       Email
                     </Grid>
                     <Grid item xs={8}>
-                      : {detail.email}
+                      : {detail.email_pemohon}
                     </Grid>
 
                     <Grid item xs={4}>
                       Alamat
                     </Grid>
                     <Grid item xs={8}>
-                      : {detail.alamat}
+                      : {detail.alamat_pemohon}
                     </Grid>
 
                     <Grid item xs={4}>
@@ -285,50 +286,10 @@ function OnlineDetail() {
                     </Grid>
 
                     <Grid item xs={4}>
-                      Status
+                      Status Permohonan
                     </Grid>
                     <Grid item xs={8}>
-                      : {response.status}{" "}
-                      {response.alasan && `- ${response.alasan}`}
-                      {response.mailed ? (
-                        <Tooltip title="Email Terkirim">
-                          <MarkEmailReadIcon fontSize="small" color="primary" />
-                        </Tooltip>
-                      ) : (
-                        <Tooltip title="Email Tidak Terkirim">
-                          <CancelScheduleSendIcon
-                            fontSize="small"
-                            color="primary"
-                          />
-                        </Tooltip>
-                      )}
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      Waktu Pelayanan
-                    </Grid>
-                    <Grid item xs={8}>
-                      : {response.waktu} Hari
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      Pesan Kepada Pemohon
-                    </Grid>
-                    <Grid item xs={8}>
-                      : {response.response}
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      File Pendukung
-                    </Grid>
-                    <Grid item xs={8}>
-                      :{" "}
-                      <FileAction
-                        path="response"
-                        response={response}
-                        setResponse={setResponse}
-                        id_permohonan={detail.id}
-                      />
+                      : {detail.status_permohonan}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -368,14 +329,26 @@ function OnlineDetail() {
             </Box>
           </Card>
 
+          <Grid container spacing={2}>
+            {responses.map((respon) => (
+              <ResponseCard
+                key={respon.id}
+                data={respon}
+                onDeleteResponse={onDeleteResponse}
+                responses={responses}
+                setResponses={setResponses}
+              />
+            ))}
+          </Grid>
+
           <ResponseDialog
             open={openResponse}
             onClose={handleCloseResponse}
             fullScreen={true}
             detail={detail}
-            response={response}
             setDetail={setDetail}
-            setResponse={setResponse}
+            responses={responses}
+            setResponses={setResponses}
           />
 
           <DataPermohonanOnline

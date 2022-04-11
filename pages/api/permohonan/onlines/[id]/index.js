@@ -5,31 +5,32 @@ import { conditionWillSpesific } from "middlewares/Condition";
 export default Handler()
   .get(async (req, res) => {
     const { id } = req.query;
-
-    const data = await db
+    const result = await db
       .select(
-        "tbl_permohonan.*",
-        "tbl_provinsi.provinsi",
-        "tbl_kabupaten.kabupaten"
+        "permohonan.*",
+        "pemohon.*",
+        "bawaslu.nama_bawaslu",
+        "bawaslu.level_bawaslu",
+        "provinsi.provinsi"
       )
-      .from("tbl_permohonan")
-      .leftJoin("tbl_provinsi", "tbl_permohonan.id_will", "tbl_provinsi.id")
-      .leftJoin("tbl_kabupaten", "tbl_permohonan.id_will", "tbl_kabupaten.id")
+      .from("permohonan")
+      .innerJoin("bawaslu", "permohonan.bawaslu_id", "bawaslu.id")
+      .innerJoin("pemohon", "pemohon.email_pemohon", "permohonan.email_pemohon")
+      .leftJoin("provinsi", "provinsi.id", "bawaslu.provinsi_id")
       .modify((builder) =>
-        conditionWillSpesific(db, builder, req.session.user, "tbl_permohonan")
+        conditionWillSpesific(db, builder, req.session.user, "permohonan")
       )
-      .whereNull("tbl_permohonan.deleted_at")
-      .where("tbl_permohonan.id", id)
+      .whereNull("permohonan.deleted_at")
+      .where("permohonan.id", id)
       .first();
 
-    if (!data) return res.status(404).json({ message: "Tidak Ditemukan" });
-
-    res.json(data);
+    if (!result) return res.status(404).json({ message: "Tidak Ditemukan" });
+    res.json(result);
   })
   .delete(async (req, res) => {
     const { id } = req.query;
 
-    const proses = await db("tbl_permohonan")
+    const proses = await db("permohonan")
       .where("id", id)
       .update("deleted_at", db.fn.now());
 

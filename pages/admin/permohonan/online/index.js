@@ -16,17 +16,17 @@ import PrintIcon from "@mui/icons-material/Print";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 // Components
 import { CustomToolbar } from "components/TableComponents";
-import ResponseDialog from "components/ResponseDialog";
+import ResponseDialog from "components/permohonan/ResponseDialog";
 import DataPermohonanOnline from "components/PrintPage/DataPermohonanOnline";
 
 function getFullReg(params) {
   return (
     <>
       <Typography>
-        {params.row.reg_number}
+        {params.row.no_registrasi}
         <br />
         <Typography variant="caption" color="primary">
-          {params.row.tiket_number}
+          {params.row.tiket}
         </Typography>
       </Typography>
     </>
@@ -44,31 +44,13 @@ function Online() {
   const [response, setResponse] = useState({});
   const [profileBawaslu, setProfileBawaslu] = useState({});
   const printRef = useRef();
+
   // call for response dan print
-  const fetchResponse = (id, callback) => {
-    const toastProses = toast.loading("Menyiapkan Format...");
-    axios
-      .get(`/api/permohonan/onlines/` + id + "/response")
-      .then((res) => {
-        setResponse(res.data);
-        callback();
-        toast.dismiss(toastProses);
-      })
-      .catch((err) => {
-        toast.update(toastProses, {
-          render: "Terjadi Kesalahan",
-          type: "error",
-          isLoading: false,
-          autoClose: 2000,
-        });
-      });
-  };
   const fetchProfileBawaslu = (id, callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
     axios
       .get(`/api/permohonan/profileBawaslu?id=` + id)
       .then((res) => {
-        console.log(res.data);
         setProfileBawaslu(res.data);
         toast.dismiss(toastProses);
         callback();
@@ -148,7 +130,7 @@ function Online() {
     setTimeout(() => {
       setDetail((prev) => values);
     });
-    fetchProfileBawaslu(values.id_will, () => {
+    fetchProfileBawaslu(values.bawaslu_id, () => {
       processPrint();
     });
   };
@@ -164,9 +146,7 @@ function Online() {
     setTimeout(() => {
       setDetail((prev) => values);
     });
-    fetchResponse(values.id, () => {
-      handleOpenResponse();
-    });
+    handleOpenResponse();
   };
 
   useEffect(() => {
@@ -189,21 +169,26 @@ function Online() {
 
   const columns = [
     {
-      field: "reg_number",
+      field: "no_registrasi",
       headerName: "Nomor Registrasi",
       width: 300,
       renderCell: getFullReg,
       valueFormatter: ({ value }) => `${value}`,
     },
     {
-      field: "tiket_number",
+      field: "tiket",
       headerName: "Tiket",
       minWidth: 180,
       hide: true,
     },
     {
-      field: "kepada",
+      field: "nama_bawaslu",
       headerName: "Kepada",
+      minWidth: 180,
+    },
+    {
+      field: "platform",
+      headerName: "Platform",
       minWidth: 180,
     },
     {
@@ -213,34 +198,28 @@ function Online() {
       hide: true,
     },
     {
-      field: "kabupaten",
-      headerName: "Kabupaten/Kota",
-      minWidth: 180,
-      hide: true,
-    },
-    {
-      field: "nama",
+      field: "nama_pemohon",
       headerName: "Pemohon",
       minWidth: 180,
     },
     {
-      field: "telp",
+      field: "telp_pemohon",
       headerName: "Telp/HP",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "email",
+      field: "email_pemohon",
       headerName: "Email",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "tanggal",
+      field: "tanggal_permohonan",
       headerName: "Tanggal",
       minWidth: 120,
       valueGetter: (params) => {
-        var date = new Date(params.row.tanggal);
+        var date = new Date(params.row.tanggal_permohonan);
         if (date instanceof Date && !isNaN(date.valueOf())) {
           return date.toISOString().split("T")[0];
         } else {
@@ -249,17 +228,11 @@ function Online() {
       },
     },
     {
-      field: "status",
+      field: "status_permohonan",
       headerName: "Status",
       minWidth: 150,
       flex: 1,
       editable: true,
-    },
-    {
-      field: "alasan",
-      headerName: "Alasan",
-      minWidth: 180,
-      hide: true,
     },
     {
       field: "actions",
@@ -337,9 +310,9 @@ function Online() {
         onClose={handleCloseResponse}
         fullScreen={true}
         detail={detail}
-        response={response}
         setDetail={setDetail}
-        setResponse={setResponse}
+        data={data}
+        setData={setData}
       />
       <DataPermohonanOnline
         ref={printRef}
