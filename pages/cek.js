@@ -10,7 +10,7 @@ import Link from "next/link";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 // COMPONENTS
-import BuktiPermohonanOnline from "components/PrintPage/BuktiPermohonanOnline";
+import BuktiPermohonan from "components/PrintPage/BuktiPermohonan";
 
 const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
   const recaptchaValue = recaptchaRef.current.getValue();
@@ -272,7 +272,7 @@ function Cek() {
         )}
         {curData && Object.keys(curData).length !== 0 && (
           <div>
-            <BuktiPermohonanOnline
+            <BuktiPermohonan
               ref={printBuktiRef}
               detail={curData}
               profileBawaslu={profileBawaslu}

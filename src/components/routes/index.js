@@ -12,7 +12,6 @@ import DataArrayIcon from "@mui/icons-material/DataArray";
 import AddIcon from "@mui/icons-material/Add";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import WifiIcon from "@mui/icons-material/Wifi";
-import SignalWifiConnectedNoInternet4Icon from "@mui/icons-material/SignalWifiConnectedNoInternet4";
 
 export const mainRoutes = [
   {
@@ -25,25 +24,14 @@ export const mainRoutes = [
     icon: <AutoAwesomeMotionIcon />,
     children: [
       {
-        title: "Online",
-        path: "/admin/permohonan/online",
+        title: "Data",
+        path: "/admin/permohonan",
         icon: <WifiIcon sx={{ fontSize: 12 }} />,
       },
       {
-        title: "Offline",
-        icon: <SignalWifiConnectedNoInternet4Icon sx={{ fontSize: 12 }} />,
-        children: [
-          {
-            title: "Data",
-            path: "/admin/permohonan/offline",
-            icon: <DataArrayIcon sx={{ fontSize: 12 }} />,
-          },
-          {
-            title: "Tambah",
-            path: "/admin/permohonan/offline/add",
-            icon: <AddIcon sx={{ fontSize: 12 }} />,
-          },
-        ],
+        title: "Tambah",
+        path: "/admin/permohonan/add",
+        icon: <WifiIcon sx={{ fontSize: 12 }} />,
       },
     ],
   },

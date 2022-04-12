@@ -21,12 +21,12 @@ import FileCopyIcon from "@mui/icons-material/FileCopy";
 //Component
 import WaitLoadingComponent from "components/WaitLoadingComponent";
 import { FormatedDate } from "components/Attributes";
-import DataPermohonanOnline from "components/PrintPage/DataPermohonanOnline";
-import BuktiPermohonanOnline from "components/PrintPage/BuktiPermohonanOnline";
+import DataPermohonan from "components/PrintPage/DataPermohonan";
+import BuktiPermohonan from "components/PrintPage/BuktiPermohonan";
 import ResponseDialog from "components/permohonan/ResponseDialog";
 import ResponseCard from "components/permohonan/ResponseCard";
 
-function OnlineDetail() {
+function PermohonanDetail() {
   const router = useRouter();
   const [detail, setDetail] = useState({});
   const [responses, setResponses] = useState([]);
@@ -41,18 +41,18 @@ function OnlineDetail() {
     if (id) {
       const fetchDetail = () => {
         axios
-          .get(`/api/permohonan/onlines/` + id)
+          .get(`/api/permohonan/` + id)
           .then((res) => {
             setDetail(res.data);
           })
           .catch((err) => {
             toast.error(err.response.data.message);
-            setTimeout(() => router.push("/admin/permohonan/online"), 2000);
+            setTimeout(() => router.push("/admin/permohonan"), 1000);
           });
       };
       const fetchResponses = () => {
         axios
-          .get(`/api/permohonan/onlines/` + id + "/responses")
+          .get(`/api/permohonan/` + id + "/responses")
           .then((res) => {
             setResponses(res.data);
           })
@@ -79,7 +79,7 @@ function OnlineDetail() {
     if (ask) {
       const toastProses = toast.loading("Tunggu Sebentar...");
       axios
-        .delete(`/api/permohonan/onlines/` + id)
+        .delete(`/api/permohonan/` + id)
         .then((res) => {
           toast.update(toastProses, {
             render: res.data.message,
@@ -87,7 +87,7 @@ function OnlineDetail() {
             isLoading: false,
             autoClose: 2000,
           });
-          router.push("/admin/permohonan/online");
+          router.push("/admin/permohonan");
         })
         .catch((err) => {
           toast.update(toastProses, {
@@ -102,7 +102,7 @@ function OnlineDetail() {
   const fetchProfileBawaslu = (callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
     axios
-      .get(`/api/permohonan/profileBawaslu?id=` + detail.bawaslu_id)
+      .get(`/api/services/profileBawaslu?id=` + detail.bawaslu_id)
       .then((res) => {
         setProfileBawaslu(res.data);
         toast.dismiss(toastProses);
@@ -123,17 +123,9 @@ function OnlineDetail() {
     const isNotReady = Object.keys(profileBawaslu).length === 0;
     if (isNotReady)
       return fetchProfileBawaslu(() => {
-        if (param === "bukti") {
-          processPrintBukti();
-        } else {
-          processPrint();
-        }
+        param === "bukti" ? processPrintBukti() : processPrint();
       });
-    if (param === "bukti") {
-      processPrintBukti();
-    } else {
-      processPrint();
-    }
+    param === "bukti" ? processPrintBukti() : processPrint();
   };
   const processPrint = useReactToPrint({
     content: () => printRef.current,
@@ -234,6 +226,13 @@ function OnlineDetail() {
                     </Grid>
                     <Grid item xs={8}>
                       : {detail.pekerjaan_pemohon}
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      Pendidikan
+                    </Grid>
+                    <Grid item xs={8}>
+                      : {detail.pendidikan_pemohon}
                     </Grid>
 
                     <Grid item xs={4}>
@@ -351,12 +350,12 @@ function OnlineDetail() {
             setResponses={setResponses}
           />
 
-          <DataPermohonanOnline
+          <DataPermohonan
             ref={printRef}
             detail={detail}
             profileBawaslu={profileBawaslu}
           />
-          <BuktiPermohonanOnline
+          <BuktiPermohonan
             ref={printBuktiRef}
             detail={detail}
             profileBawaslu={profileBawaslu}
@@ -367,19 +366,19 @@ function OnlineDetail() {
   );
 }
 
-OnlineDetail.auth = true;
-OnlineDetail.breadcrumb = [
+PermohonanDetail.auth = true;
+PermohonanDetail.breadcrumb = [
   {
     path: "/admin",
     title: "Home",
   },
   {
-    path: "/admin/permohonan/online",
-    title: "Permohonan Online",
+    path: "/admin/permohonan",
+    title: "Permohonan",
   },
   {
-    path: "/admin/permohonan/online",
+    path: "/admin/permohonan",
     title: "Detail",
   },
 ];
-export default OnlineDetail;
+export default PermohonanDetail;

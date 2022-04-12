@@ -54,3 +54,19 @@ export const conditionWillSpesific = (db, builder, user, table) => {
     builder.where(`${table}.bawaslu_id`, "=", user.bawaslu_id);
   }
 };
+
+export const buatTiketByAdmin = (length, level, bawaslu_id) => {
+  var firstCode = "";
+  var result = "";
+  var characters = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  if (level !== 1) {
+    firstCode = bawaslu_id;
+  } else {
+    firstCode = "01";
+  }
+  return firstCode + "-" + result;
+};

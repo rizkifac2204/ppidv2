@@ -20,7 +20,7 @@ import MenuItem from "@mui/material/MenuItem";
 // COMPONENTS
 import Thumb from "components/Thumb";
 import ResponsePermohonan from "components/PublicComponents/ResponsePermohonan";
-import BuktiPermohonanOnline from "components/PrintPage/BuktiPermohonanOnline";
+import BuktiPermohonan from "components/PrintPage/BuktiPermohonan";
 
 const config = {
   headers: { "content-type": "multipart/form-data", destinationfile: "upload" },
@@ -116,7 +116,7 @@ const Permohonan = () => {
 
   const fetchProv = () => {
     axios
-      .get(`/api/setting/wilayah/provinsis`)
+      .get(`/api/services/provinsis`)
       .then((res) => {
         setProvinsis(res.data);
       })
@@ -127,7 +127,7 @@ const Permohonan = () => {
 
   const fetchKabkot = (id) => {
     axios
-      .get(`/api/setting/wilayah/provinsis/` + id)
+      .get(`/api/services/provinsis/` + id)
       .then((res) => {
         setKabkotas(res.data.kabkot);
       })
@@ -139,7 +139,7 @@ const Permohonan = () => {
   const fetchProfileBawaslu = (callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
     axios
-      .get(`/api/permohonan/profileBawaslu?id=` + curData.bawaslu_id)
+      .get(`/api/services/profileBawaslu?id=` + curData.bawaslu_id)
       .then((res) => {
         setProfileBawaslu(res.data);
         toast.dismiss(toastProses);
@@ -678,7 +678,7 @@ const Permohonan = () => {
       </div>
 
       {curData && Object.keys(curData).length !== 0 && (
-        <BuktiPermohonanOnline
+        <BuktiPermohonan
           ref={printBuktiRef}
           detail={curData}
           profileBawaslu={profileBawaslu}

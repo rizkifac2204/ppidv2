@@ -52,9 +52,7 @@ function ResponseCard({ data, onDeleteResponse, responses, setResponses }) {
     if (ask) {
       const toastProses = toast.loading("Tunggu Sebentar...");
       axios
-        .delete(
-          `/api/permohonan/onlines/` + data.permohonan_id + `/responses/` + id
-        )
+        .delete(`/api/permohonan/` + data.permohonan_id + `/responses/` + id)
         .then((res) => {
           onDeleteResponse(id);
           toast.update(toastProses, {

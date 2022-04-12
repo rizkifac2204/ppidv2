@@ -20,7 +20,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Grid from "@mui/material/Grid";
 
-const handleSubmit = (values, props) => {
+const handleSubmit = (values, props, setSubmitting) => {
   const postData = {
     ...values,
     email_pemohon: props.detail.email_pemohon,
@@ -28,7 +28,7 @@ const handleSubmit = (values, props) => {
   };
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
-    .post(`/api/permohonan/onlines/${values.permohonan_id}/responses`, postData)
+    .post(`/api/permohonan/${values.permohonan_id}/responses`, postData)
     .then((res) => {
       props.setDetail({
         ...props.detail,
@@ -72,6 +72,9 @@ const handleSubmit = (values, props) => {
         isLoading: false,
         autoClose: 2000,
       });
+    })
+    .then(() => {
+      setSubmitting(false);
     });
 };
 
@@ -146,7 +149,8 @@ function ResponseDialog(props) {
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: (values) => handleSubmit(values, props),
+    onSubmit: (values, { setSubmitting }) =>
+      handleSubmit(values, props, setSubmitting),
   });
   return (
     <Dialog
@@ -484,7 +488,9 @@ function ResponseDialog(props) {
           </FormGroup>
         </DialogContent>
         <DialogActions>
-          <Button type="submit">Simpan dan Tutup</Button>
+          <Button type="submit" disabled={formik.isSubmitting}>
+            Simpan dan Tutup
+          </Button>
           <Button onClick={props.onClose} type="button">
             Tutup
           </Button>

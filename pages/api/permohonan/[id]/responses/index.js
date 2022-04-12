@@ -169,3 +169,7 @@ export default Handler()
       type: "success",
     });
   });
+
+// proses selanjutnya adalah
+// kosongkan kolom tertentu  jika ditolak
+// dan rapihkan responCard
