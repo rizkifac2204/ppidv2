@@ -23,12 +23,10 @@ import InputLabel from "@mui/material/InputLabel";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 
 const handleSubmit = (values, setSubmitting) => {
-  console.log(values);
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
     .post(`/api/permohonan`, values)
     .then((res) => {
-      console.log(res.data);
       toast.update(toastProses, {
         render: res.data.message,
         type: "success",
@@ -55,6 +53,7 @@ const handleSubmit = (values, setSubmitting) => {
 const validationSchema = yup.object({
   no_registrasi: yup.string("Masukan Nomor Registrasi").required("Harus Diisi"),
   tanggal_permohonan: yup.string("Masukan Tanggal").required("Harus Diisi"),
+  platform: yup.string("Masukan platform").required("Harus Diisi"),
   nama_pemohon: yup.string("Masukan Nama").required("Harus Diisi"),
   pekerjaan_pemohon: yup.string("Masukan Pekerjaan").required("Harus Diisi"),
   pendidikan_pemohon: yup.string("Masukan Pendidikan").required("Harus Diisi"),
@@ -107,6 +106,7 @@ function PermohonanAdd() {
   const initialValues = {
     no_registrasi: "",
     tanggal_permohonan: "",
+    platform: "",
     nama_pemohon: "",
     pekerjaan_pemohon: "",
     pendidikan_pemohon: "",
@@ -170,10 +170,10 @@ function PermohonanAdd() {
                 <TextField
                   fullWidth
                   required
+                  margin="normal"
                   type="date"
                   InputLabelProps={{ shrink: true }}
-                  margin="normal"
-                  label="Tanggal"
+                  label="Tanggal Permohonan"
                   name="tanggal_permohonan"
                   value={formik.values.tanggal_permohonan}
                   onChange={formik.handleChange}
@@ -187,6 +187,26 @@ function PermohonanAdd() {
                     formik.errors.tanggal_permohonan
                   }
                 />
+                <FormControl
+                  fullWidth
+                  sx={{ my: 1 }}
+                  error={Boolean(formik.errors.platform)}
+                >
+                  <InputLabel>Platform *</InputLabel>
+                  <Select
+                    name="platform"
+                    label="platform *"
+                    value={formik.values.platform}
+                    onChange={formik.handleChange}
+                  >
+                    <MenuItem value="Langsung">Langsung</MenuItem>
+                    <MenuItem value="Telepon">Telepon</MenuItem>
+                    <MenuItem value="Media Sosial">Media Sosial</MenuItem>
+                    <MenuItem value="Website">Website</MenuItem>
+                    <MenuItem value="Aplikasi">Aplikasi</MenuItem>
+                  </Select>
+                  <FormHelperText>{formik.errors.platform}</FormHelperText>
+                </FormControl>
                 <TextField
                   fullWidth
                   required
@@ -497,9 +517,9 @@ function PermohonanAdd() {
                   </Grid>
 
                   {/* Penguasaan Informasi Lain */}
-                  <Grid item xs={12} md={6}>
-                    {formik.values.penguasaan_informasi ===
-                      "Badan Publik Lain" && (
+                  {formik.values.penguasaan_informasi ===
+                    "Badan Publik Lain" && (
+                    <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
                         required
@@ -518,8 +538,8 @@ function PermohonanAdd() {
                           formik.errors.penguasaan_informasi_lain
                         }
                       />
-                    )}
-                  </Grid>
+                    </Grid>
+                  )}
 
                   {/* #################DIBERIKAN################## */}
                   {formik.values.status_permohonan === "Diberikan" && (
@@ -729,22 +749,3 @@ PermohonanAdd.breadcrumb = [
   },
 ];
 export default PermohonanAdd;
-
-// {
-//   (formik.values.status_permohonan === "Diberikan Sebagian" ||
-//     formik.values.status_permohonan === "Tidak Dapat Diberikan") && (
-//     <FormControl fullWidth error={Boolean(formik.errors.alasan)}>
-//       <InputLabel>Alasan Tidak Diberikan Seluruhnya</InputLabel>
-//       <Select
-//         name="alasan"
-//         label="Alasan Tidak DIberikan Seluruhnya"
-//         value={formik.values.alasan}
-//         onChange={formik.handleChange}
-//       >
-//         <MenuItem value="Dikecualikan">Dikecualikan</MenuItem>
-//         <MenuItem value="Tidak Dikuasai">Tidak Dikuasai</MenuItem>
-//       </Select>
-//       <FormHelperText>{formik.errors.alasan}</FormHelperText>
-//     </FormControl>
-//   );
-// }

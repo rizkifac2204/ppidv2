@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
@@ -20,7 +19,7 @@ import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 //Component
 import WaitLoadingComponent from "components/WaitLoadingComponent";
-import { FormatedDate } from "components/Attributes";
+import { FormatedDate, WithDynamicImage } from "components/Attributes";
 import DataPermohonan from "components/PrintPage/DataPermohonan";
 import BuktiPermohonan from "components/PrintPage/BuktiPermohonan";
 import ResponseDialog from "components/permohonan/ResponseDialog";
@@ -167,7 +166,7 @@ function PermohonanDetail() {
               gutterBottom
               sx={{ bgcolor: "background.paper", p: 2 }}
             >
-              Detail Permohonan {detail.reg_number}
+              Detail Permohonan {detail.no_registrasi}
             </Typography>
             <CardContent>
               <Grid container spacing={2}>
@@ -180,13 +179,7 @@ function PermohonanDetail() {
                     minHeight: 200,
                   }}
                 >
-                  <Image
-                    src={"/upload/" + detail.identitas_pemohon}
-                    alt="KTP"
-                    layout="fill"
-                    objectFit="contain"
-                    priority
-                  />
+                  <WithDynamicImage image={detail.identitas_pemohon} />
                 </Grid>
                 <Grid item xs={12} md={9}>
                   <Grid container>
@@ -317,7 +310,7 @@ function PermohonanDetail() {
                         {
                           // disabled: Boolean(
                           //   action.name === "Print Bukti Permohonan" &&
-                          //     !detail.reg_number
+                          //     !detail.no_registrasi
                           // ),
                         }
                       }

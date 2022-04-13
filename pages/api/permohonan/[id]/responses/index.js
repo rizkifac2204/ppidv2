@@ -85,8 +85,8 @@ export default Handler()
       tanggal_respon: tanggal,
       pesan,
       penguasaan_informasi: badan_publik,
-      bentuk_fisik,
-      ket_biaya,
+      bentuk_fisik: status_permohonan === "Ditolak" ? "" : bentuk_fisik,
+      ket_biaya: status_permohonan === "Ditolak" ? "" : ket_biaya,
       penjelasan_penghitaman,
       jangka_waktu,
       mailed,
@@ -169,7 +169,3 @@ export default Handler()
       type: "success",
     });
   });
-
-// proses selanjutnya adalah
-// kosongkan kolom tertentu  jika ditolak
-// dan rapihkan responCard

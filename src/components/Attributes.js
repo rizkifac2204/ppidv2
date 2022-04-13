@@ -1,5 +1,6 @@
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export function SetQRCode({ text }) {
   const [src, setSrc] = useState("");
@@ -39,4 +40,17 @@ export function FormatedDate({ tanggal }) {
 
 export function NumberWithCommas({ number }) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+export function WithDynamicImage({ image }) {
+  const namaImage = image ? "/upload/" + image : "/images/no-file.png";
+  return (
+    <Image
+      src={namaImage}
+      alt="Identitas"
+      layout="fill"
+      objectFit="contain"
+      priority
+    />
+  );
 }

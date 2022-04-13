@@ -34,6 +34,7 @@ export default Handler()
     const {
       no_registrasi,
       tanggal_permohonan,
+      platform,
       nama_pemohon,
       pekerjaan_pemohon,
       pendidikan_pemohon,
@@ -58,7 +59,6 @@ export default Handler()
       pada_pasal,
       ket_konsekuensi,
     } = req.body;
-    const platform = "Website";
     const tiket = buatTiketByAdmin(6, level, bawaslu_id);
     const badan_publik =
       penguasaan_informasi === "Bawaslu"
@@ -144,8 +144,8 @@ export default Handler()
       permohonan_id: prosesInsertPermohonan,
       jenis_respon,
       penguasaan_informasi: badan_publik,
-      bentuk_fisik,
-      ket_biaya,
+      bentuk_fisik: status_permohonan === "Ditolak" ? "" : bentuk_fisik,
+      ket_biaya: status_permohonan === "Ditolak" ? "" : ket_biaya,
       penjelasan_penghitaman,
       jangka_waktu,
       mailed: false,

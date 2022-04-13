@@ -11,7 +11,12 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 // Components
-import { SetQRCode, CurrentDate, FormatedDate } from "components/Attributes";
+import {
+  SetQRCode,
+  CurrentDate,
+  FormatedDate,
+  WithDynamicImage,
+} from "components/Attributes";
 
 const themeLight = createTheme({
   palette: {
@@ -129,12 +134,7 @@ const DataPermohonan = React.forwardRef(({ detail, profileBawaslu }, ref) => {
             </Box>
           </Box>
           <Box sx={{ position: "relative", width: 100, height: 90, mr: 3 }}>
-            <Image
-              src={"/upload/" + detail.identitas_pemohon}
-              alt="Logo"
-              layout="fill"
-              priority
-            />
+            <WithDynamicImage image={detail.identitas_pemohon} />
             <Box sx={{ fontSize: 10, m: 1 }}>Pemohon</Box>
           </Box>
         </Box>
