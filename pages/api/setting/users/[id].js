@@ -11,16 +11,23 @@ export default Handler()
       .select(
         "admin.*",
         "bawaslu.level_bawaslu",
+        "bawaslu.nama_bawaslu",
+        "level.level",
+        "provinsi.provinsi",
         db.raw(
           `IF(${req.session.user.level} < bawaslu.level_bawaslu, true, false) as editable,
-        IF(${req.session.user.id} = admin.id, true, false) as myself`
+          IF(${req.session.user.id} = admin.id, true, false) as myself`
         )
       )
       .from("admin")
       .innerJoin("bawaslu", "admin.bawaslu_id", "bawaslu.id")
+      .innerJoin("level", "bawaslu.level_bawaslu", "level.id")
+      .leftJoin("provinsi", "bawaslu.provinsi_id", "provinsi.id")
       .modify((builder) => conditionFilterUser(builder, req.session.user))
+      .orderBy("bawaslu.level_bawaslu")
       .where("admin.id", id)
       .first();
+
     res.json(result);
   })
   .put(async (req, res) => {

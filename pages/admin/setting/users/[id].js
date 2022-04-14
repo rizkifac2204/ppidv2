@@ -6,8 +6,8 @@ import { toast } from "react-toastify";
 import Grid from "@mui/material/Grid";
 //Component
 import WaitLoadingComponent from "components/WaitLoadingComponent";
-import ProfileCard from "components/ProfileCard";
-import UserUpdate from "components/UserUpdateForm";
+import ProfileCard from "components/Userprofile/ProfileCard";
+import UserUpdateForm from "components/Userprofile/UserUpdateForm";
 
 function UsersDetail() {
   const router = useRouter();
@@ -21,11 +21,12 @@ function UsersDetail() {
         axios
           .get(`/api/setting/users/` + id)
           .then((res) => {
+            console.log(res.data);
             setDetail(res.data);
           })
           .catch((err) => {
             toast.error(err.response.data.message);
-            setTimeout(() => router.push("/admin/setting/users"), 2000);
+            setTimeout(() => router.push("/admin/setting/users"), 1000);
           })
           .then(() => setLoading(false));
       };
@@ -72,7 +73,7 @@ function UsersDetail() {
       </Grid>
       <Grid item xs={12} md={9}>
         <WaitLoadingComponent loading={loading} />
-        {!loading && <UserUpdate profile={detail} setDetail={setDetail} />}
+        {!loading && <UserUpdateForm profile={detail} setDetail={setDetail} />}
       </Grid>
     </Grid>
   );

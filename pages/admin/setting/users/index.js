@@ -129,34 +129,34 @@ function Users() {
 
   const columns = [
     {
-      field: "nama_level",
+      field: "level",
       headerName: "Sebagai",
       minWidth: 180,
+    },
+    {
+      field: "nama_bawaslu",
+      headerName: "Bawaslu",
+      minWidth: 220,
     },
     {
       field: "provinsi",
       headerName: "Provinsi",
       minWidth: 180,
-    },
-    {
-      field: "kabupaten",
-      headerName: "Kabupaten/Kota",
-      minWidth: 180,
       hide: true,
     },
     {
-      field: "nama",
+      field: "nama_admin",
       headerName: "Nama",
       minWidth: 180,
       flex: 1,
     },
     {
-      field: "telp",
+      field: "telp_admin",
       headerName: "Telp/HP",
       minWidth: 180,
     },
     {
-      field: "email",
+      field: "email_admin",
       headerName: "Email",
       minWidth: 180,
       hide: true,

@@ -11,7 +11,7 @@ export default Handler()
   .post(async (req, res) => {
     const { level, bawaslu_id } = req.session.user;
     const {
-      provinsi_id,
+      id,
       nama_bawaslu,
       email_bawaslu,
       telp_bawaslu,
@@ -24,13 +24,12 @@ export default Handler()
       youtube,
       instagram,
     } = req.body;
+    let provinsi_id = bawaslu_id.substring(0, 2);
 
     const cek = await db("bawaslu").where({ id: bawaslu_id }).first();
-
     if (cek) {
       // proses update
       const update = await db("bawaslu").where({ id: bawaslu_id }).update({
-        provinsi_id,
         nama_bawaslu,
         email_bawaslu,
         telp_bawaslu,

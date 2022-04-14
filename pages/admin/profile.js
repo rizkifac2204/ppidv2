@@ -10,9 +10,9 @@ import Box from "@mui/material/Box";
 
 //Component
 import WaitLoadingComponent from "components/WaitLoadingComponent";
-import ProfileCard from "components/ProfileCard";
-import ProfileForm from "components/ProfileForm";
-import ProfilePassword from "components/ProfilePassword";
+import ProfileCard from "components/Userprofile/ProfileCard";
+import ProfileForm from "components/Userprofile/ProfileForm";
+import ProfilePassword from "components/Userprofile/ProfilePassword";
 
 function TabPanel({ children, value, index, ...other }) {
   return (

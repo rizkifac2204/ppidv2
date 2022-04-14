@@ -22,46 +22,46 @@ function ProfileCard({ profile, handleDelete }) {
             }}
           >
             <Avatar
-              alt={profile.nama || profile.name}
+              alt={profile.nama_admin || profile.name}
               src={profile.image ? profile.image : "."}
               sx={{ width: 160, height: 160 }}
             />
-            <Typography variant="h5">{profile.nama_level}</Typography>
+            <Typography variant="h5">{profile.level}</Typography>
           </Box>
           <Grid container wrap="wrap" sx={{ typography: "body2" }} spacing={1}>
             <Grid item xs={4}>
               Nama
             </Grid>
             <Grid item xs={8}>
-              : {profile.nama}
+              : {profile.nama_admin}
             </Grid>
 
             <Grid item xs={4}>
               Unit
             </Grid>
             <Grid item xs={8}>
-              : {profile.provinsi} {profile.kabupaten}
+              : {profile.nama_bawaslu}
             </Grid>
 
             <Grid item xs={4}>
               Telp
             </Grid>
             <Grid item xs={8}>
-              : {profile.telp}
+              : {profile.telp_admin}
             </Grid>
 
             <Grid item xs={4}>
               Email
             </Grid>
             <Grid item xs={8}>
-              : {profile.email}
+              : {profile.email_admin}
             </Grid>
 
             <Grid item xs={4}>
               Alamat
             </Grid>
             <Grid item xs={8}>
-              : {profile.alamat}
+              : {profile.alamat_admin}
             </Grid>
           </Grid>
         </CardContent>

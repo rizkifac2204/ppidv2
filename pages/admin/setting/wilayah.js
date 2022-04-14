@@ -6,7 +6,7 @@ import axios from "axios";
 import { Card, CardContent, Grid, Box, Button, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
-const handleSubmit = (values) => {
+const handleSubmit = (values, setSubmitting) => {
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
     .post(`/api/setting/wilayah`, values)
@@ -26,44 +26,63 @@ const handleSubmit = (values) => {
         isLoading: false,
         autoClose: 2000,
       });
+    })
+    .then(() => {
+      setSubmitting(false);
     });
 };
 
 const validationSchema = yup.object({
-  email: yup
+  nama_bawaslu: yup.string().required("Harus Diisi"),
+  email_bawaslu: yup
     .string("Masukan Email")
     .email("Email Tidak Valid")
-    .required("Password Harus Diisi"),
-  telp: yup.string().required("Telp Harus Diisi"),
-  alamat: yup.string().required("Alamat Harus Diisi"),
-  kota: yup.string().required("Kota Harus Diisi"),
-  ppid: yup.string().required("URL PPID Harus Diisi"),
-  fb: yup.string(),
-  tw: yup.string(),
-  yt: yup.string(),
-  ig: yup.string(),
+    .required("Harus Diisi"),
+  telp_bawaslu: yup.string().required("Harus Diisi"),
+  alamat_bawaslu: yup.string().required("Alamat Harus Diisi"),
+  kota_bawaslu: yup.string().required("Kota Harus Diisi"),
+  web_profile: yup.string().required("URL PPID Harus Diisi"),
+  web_ppid: yup.string().required("URL PPID Harus Diisi"),
+  facebook: yup.string(),
+  twitter: yup.string(),
+  youtube: yup.string(),
+  instagram: yup.string(),
 });
 
 const Wilayah = () => {
   const [data, setData] = useState({
-    id: null,
-    id_wilayah: null,
-    email: "",
-    telp: "",
-    kota: "",
-    alamat: "",
-    ppid: "",
-    fb: "",
-    tw: "",
-    yt: "",
-    ig: "",
+    nama_bawaslu: "",
+    email_bawaslu: "",
+    telp_bawaslu: "",
+    alamat_bawaslu: "",
+    kota_bawaslu: "",
+    web_profile: "",
+    web_ppid: "",
+    facebook: "",
+    twitter: "",
+    youtube: "",
+    instagram: "",
   });
   useEffect(() => {
     function fetcData() {
       axios
         .get(`/api/setting/wilayah`)
         .then((res) => {
-          if (res.data) setData(res.data);
+          const forInit = {
+            ...res.data,
+            nama_bawaslu: res.data.nama_bawaslu ?? "",
+            email_bawaslu: res.data.email_bawaslu ?? "",
+            telp_bawaslu: res.data.telp_bawaslu ?? "",
+            alamat_bawaslu: res.data.alamat_bawaslu ?? "",
+            kota_bawaslu: res.data.kota_bawaslu ?? "",
+            web_profile: res.data.web_profile ?? "",
+            web_ppid: res.data.web_ppid ?? "",
+            facebook: res.data.facebook ?? "",
+            twitter: res.data.twitter ?? "",
+            youtube: res.data.youtube ?? "",
+            instagram: res.data.instagram ?? "",
+          };
+          setData(forInit);
         })
         .catch((err) => {
           console.log(err.response.data);
@@ -76,7 +95,8 @@ const Wilayah = () => {
     initialValues: data,
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: handleSubmit,
+    onSubmit: (values, { setSubmitting }) =>
+      handleSubmit(values, setSubmitting),
   });
 
   return (
@@ -88,26 +108,53 @@ const Wilayah = () => {
               fullWidth
               required
               margin="normal"
-              type="email"
-              label="Email"
-              name="email"
-              value={formik.values.email}
+              label="Nama Bawaslu"
+              name="nama_bawaslu"
+              value={formik.values.nama_bawaslu}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
+              error={
+                formik.touched.nama_bawaslu &&
+                Boolean(formik.errors.nama_bawaslu)
+              }
+              helperText={
+                formik.touched.nama_bawaslu && formik.errors.nama_bawaslu
+              }
+            />
+            <TextField
+              fullWidth
+              required
+              margin="normal"
+              type="email"
+              label="Email"
+              name="email_bawaslu"
+              value={formik.values.email_bawaslu}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.email_bawaslu &&
+                Boolean(formik.errors.email_bawaslu)
+              }
+              helperText={
+                formik.touched.email_bawaslu && formik.errors.email_bawaslu
+              }
             />
             <TextField
               fullWidth
               required
               margin="normal"
               label="HP / Telp"
-              name="telp"
-              value={formik.values.telp}
+              name="telp_bawaslu"
+              value={formik.values.telp_bawaslu}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.telp && Boolean(formik.errors.telp)}
-              helperText={formik.touched.telp && formik.errors.telp}
+              error={
+                formik.touched.telp_bawaslu &&
+                Boolean(formik.errors.telp_bawaslu)
+              }
+              helperText={
+                formik.touched.telp_bawaslu && formik.errors.telp_bawaslu
+              }
             />
             <TextField
               fullWidth
@@ -116,36 +163,62 @@ const Wilayah = () => {
               rows={3}
               margin="normal"
               label="Alamat"
-              name="alamat"
-              value={formik.values.alamat}
+              name="alamat_bawaslu"
+              value={formik.values.alamat_bawaslu}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.alamat && Boolean(formik.errors.alamat)}
-              helperText={formik.touched.alamat && formik.errors.alamat}
+              error={
+                formik.touched.alamat_bawaslu &&
+                Boolean(formik.errors.alamat_bawaslu)
+              }
+              helperText={
+                formik.touched.alamat_bawaslu && formik.errors.alamat_bawaslu
+              }
             />
             <TextField
               fullWidth
               required
               margin="normal"
               label="Kota"
-              name="kota"
-              value={formik.values.kota}
+              name="kota_bawaslu"
+              value={formik.values.kota_bawaslu}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.kota && Boolean(formik.errors.kota)}
-              helperText={formik.touched.kota && formik.errors.kota}
+              error={
+                formik.touched.kota_bawaslu &&
+                Boolean(formik.errors.kota_bawaslu)
+              }
+              helperText={
+                formik.touched.kota_bawaslu && formik.errors.kota_bawaslu
+              }
+            />
+            <TextField
+              fullWidth
+              required
+              margin="normal"
+              label="URL Website"
+              name="web_profile"
+              value={formik.values.web_profile}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.web_profile && Boolean(formik.errors.web_profile)
+              }
+              helperText={
+                formik.touched.web_profile && formik.errors.web_profile
+              }
             />
             <TextField
               fullWidth
               required
               margin="normal"
               label="URL PPID"
-              name="ppid"
-              value={formik.values.ppid}
+              name="web_ppid"
+              value={formik.values.web_ppid}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.ppid && Boolean(formik.errors.ppid)}
-              helperText={formik.touched.ppid && formik.errors.ppid}
+              error={formik.touched.web_ppid && Boolean(formik.errors.web_ppid)}
+              helperText={formik.touched.web_ppid && formik.errors.web_ppid}
             />
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
@@ -153,12 +226,14 @@ const Wilayah = () => {
                   fullWidth
                   margin="normal"
                   label="Alamat Facebook"
-                  name="fb"
-                  value={formik.values.fb}
+                  name="facebook"
+                  value={formik.values.facebook}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.fb && Boolean(formik.errors.fb)}
-                  helperText={formik.touched.fb && formik.errors.fb}
+                  error={
+                    formik.touched.facebook && Boolean(formik.errors.facebook)
+                  }
+                  helperText={formik.touched.facebook && formik.errors.facebook}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -166,12 +241,14 @@ const Wilayah = () => {
                   fullWidth
                   margin="normal"
                   label="Alamat Twitter"
-                  name="tw"
-                  value={formik.values.tw}
+                  name="twitter"
+                  value={formik.values.twitter}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.tw && Boolean(formik.errors.tw)}
-                  helperText={formik.touched.tw && formik.errors.tw}
+                  error={
+                    formik.touched.twitter && Boolean(formik.errors.twitter)
+                  }
+                  helperText={formik.touched.twitter && formik.errors.twitter}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -179,12 +256,14 @@ const Wilayah = () => {
                   fullWidth
                   margin="normal"
                   label="Alamat Youtube"
-                  name="yt"
-                  value={formik.values.yt}
+                  name="youtube"
+                  value={formik.values.youtube}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.yt && Boolean(formik.errors.yt)}
-                  helperText={formik.touched.yt && formik.errors.yt}
+                  error={
+                    formik.touched.youtube && Boolean(formik.errors.youtube)
+                  }
+                  helperText={formik.touched.youtube && formik.errors.youtube}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -192,16 +271,25 @@ const Wilayah = () => {
                   fullWidth
                   margin="normal"
                   label="Alamat Instagram"
-                  name="ig"
-                  value={formik.values.ig}
+                  name="instagram"
+                  value={formik.values.instagram}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.ig && Boolean(formik.errors.ig)}
-                  helperText={formik.touched.ig && formik.errors.ig}
+                  error={
+                    formik.touched.instagram && Boolean(formik.errors.instagram)
+                  }
+                  helperText={
+                    formik.touched.instagram && formik.errors.instagram
+                  }
                 />
               </Grid>
             </Grid>
-            <Button type="submit" variant="contained" endIcon={<EditIcon />}>
+            <Button
+              disabled={formik.isSubmitting}
+              type="submit"
+              variant="contained"
+              endIcon={<EditIcon />}
+            >
               Submit
             </Button>
           </form>
