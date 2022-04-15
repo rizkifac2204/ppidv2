@@ -3,7 +3,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 // MUI
 import Card from "@mui/material/Card";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { DataGrid, GridActionsCellItem, GridToolbar } from "@mui/x-data-grid";
 // ICONS
@@ -12,16 +11,16 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import RestoreIcon from "@mui/icons-material/Restore";
 // Components
 import { CustomToolbar } from "components/TableComponents";
-import DetailPermohonan from "components/DetailPermohonan";
+import DetailPermohonan from "components/permohonan/DetailPermohonan";
 
 function getFullReg(params) {
   return (
     <>
       <Typography>
-        {params.row.reg_number}
+        {params.row.no_registrasi}
         <br />
         <Typography variant="caption" color="primary">
-          {params.row.tiket_number}
+          {params.row.tiket}
         </Typography>
       </Typography>
     </>
@@ -52,7 +51,7 @@ function Trash() {
     if (ask) {
       const toastProses = toast.loading("Tunggu Sebentar...");
       axios
-        .post(`/api/setting/trash/`, { id: detail.id, jenis: detail.jenis })
+        .post(`/api/setting/trash/`, { id: detail.id })
         .then((res) => {
           setTimeout(() => {
             setData((prev) => prev.filter((row) => row.id != detail.id));
@@ -79,7 +78,7 @@ function Trash() {
     if (ask) {
       const toastProses = toast.loading("Tunggu Sebentar...");
       axios
-        .put(`/api/setting/trash/`, { id: detail.id, jenis: detail.jenis })
+        .put(`/api/setting/trash/`, { id: detail.id })
         .then((res) => {
           setTimeout(() => {
             setData((prev) => prev.filter((row) => row.id != detail.id));
@@ -115,8 +114,9 @@ function Trash() {
     if (ask) {
       const toastProses = toast.loading("Tunggu Sebentar...");
       axios
-        .delete(`/api/setting/trash/`, { data: selected })
+        .delete(`/api/setting/trash/`, { data: { id: selected } })
         .then((res) => {
+          console.log(res);
           setTimeout(() => {
             setData((prevRows) =>
               prevRows.filter((row) => !selected.includes(row.id))
@@ -142,11 +142,7 @@ function Trash() {
 
   const columns = [
     {
-      field: "jenis",
-      headerName: "Jenis",
-    },
-    {
-      field: "reg_number",
+      field: "no_registrasi",
       headerName: "Nomor Registrasi",
       minWidth: 100,
       flex: 1,
@@ -154,14 +150,19 @@ function Trash() {
       valueFormatter: ({ value }) => `${value}`,
     },
     {
-      field: "tiket_number",
+      field: "tiket",
       headerName: "Tiket",
       minWidth: 180,
       hide: true,
     },
     {
-      field: "kepada",
+      field: "nama_bawaslu",
       headerName: "Kepada",
+      minWidth: 220,
+    },
+    {
+      field: "platform",
+      headerName: "Platform",
       minWidth: 180,
     },
     {
@@ -171,34 +172,28 @@ function Trash() {
       hide: true,
     },
     {
-      field: "kabupaten",
-      headerName: "Kabupaten/Kota",
-      minWidth: 180,
-      hide: true,
-    },
-    {
-      field: "nama",
+      field: "nama_pemohon",
       headerName: "Pemohon",
       minWidth: 180,
     },
     {
-      field: "telp",
+      field: "telp_pemohon",
       headerName: "Telp/HP",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "email",
+      field: "email_pemohon",
       headerName: "Email",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "tanggal",
+      field: "tanggal_permohonan",
       headerName: "Tanggal",
       minWidth: 120,
       valueGetter: (params) => {
-        var date = new Date(params.row.tanggal);
+        var date = new Date(params.row.tanggal_permohonan);
         if (date instanceof Date && !isNaN(date.valueOf())) {
           return date.toISOString().split("T")[0];
         } else {
@@ -221,15 +216,9 @@ function Trash() {
       },
     },
     {
-      field: "status",
+      field: "status_permohonan",
       headerName: "Status",
       minWidth: 150,
-      hide: true,
-    },
-    {
-      field: "alasan",
-      headerName: "Alasan",
-      minWidth: 180,
       hide: true,
     },
     {

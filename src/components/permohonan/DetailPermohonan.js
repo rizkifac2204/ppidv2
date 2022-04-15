@@ -15,7 +15,7 @@ import { FormatedDate } from "components/Attributes";
 function DetailPermohonan({ open, onClose, detail }) {
   return (
     <Dialog open={open} onClose={onClose} fullScreen={true}>
-      <DialogTitle>Detail Permohonan {detail.jenis}</DialogTitle>
+      <DialogTitle>Detail Permohonan</DialogTitle>
       <DialogContent>
         <Card>
           <CardContent>
@@ -26,9 +26,9 @@ function DetailPermohonan({ open, onClose, detail }) {
                     Nomor Registrasi / Tiket
                   </Grid>
                   <Grid item xs={8}>
-                    : {detail.reg_number} /{" "}
+                    : {detail.no_registrasi} /{" "}
                     <Typography variant="caption" color="primary">
-                      {detail.tiket_number}
+                      {detail.tiket}
                     </Typography>
                   </Grid>
 
@@ -36,49 +36,49 @@ function DetailPermohonan({ open, onClose, detail }) {
                     Kepada
                   </Grid>
                   <Grid item xs={8}>
-                    : {detail.kepada} {detail.provinsi} {detail.kabupaten}
+                    : {detail.nama_bawaslu}
                   </Grid>
 
                   <Grid item xs={4}>
                     Tanggal
                   </Grid>
                   <Grid item xs={8}>
-                    : <FormatedDate tanggal={detail.tanggal} />
+                    : <FormatedDate tanggal={detail.tanggal_permohonan} />
                   </Grid>
 
                   <Grid item xs={4}>
                     Nama
                   </Grid>
                   <Grid item xs={8}>
-                    : {detail.nama}
+                    : {detail.nama_pemohon}
                   </Grid>
 
                   <Grid item xs={4}>
                     Pekerjaan
                   </Grid>
                   <Grid item xs={8}>
-                    : {detail.pekerjaan}
+                    : {detail.pekerjaan_pemohon}
                   </Grid>
 
                   <Grid item xs={4}>
                     Telp/Hp
                   </Grid>
                   <Grid item xs={8}>
-                    : {detail.telp}
+                    : {detail.telp_pemohon}
                   </Grid>
 
                   <Grid item xs={4}>
                     Email
                   </Grid>
                   <Grid item xs={8}>
-                    : {detail.email}
+                    : {detail.email_pemohon}
                   </Grid>
 
                   <Grid item xs={4}>
                     Alamat
                   </Grid>
                   <Grid item xs={8}>
-                    : {detail.alamat}
+                    : {detail.alamat_pemohon}
                   </Grid>
 
                   <Grid item xs={4}>
@@ -113,7 +113,7 @@ function DetailPermohonan({ open, onClose, detail }) {
                     Status
                   </Grid>
                   <Grid item xs={8}>
-                    : {detail.status} {detail.alasan && `- ${detail.alasan}`}
+                    : {detail.status_permohonan}
                   </Grid>
                 </Grid>
               </Grid>
