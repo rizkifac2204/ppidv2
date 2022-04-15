@@ -12,12 +12,11 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
-const handleSubmit = (values) => {
+const handleSubmit = (values, setSubmitting) => {
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
     .put(`/api/profile/gantiPassword`, values)
     .then((res) => {
-      console.log(res);
       toast.update(toastProses, {
         render: res.data.message,
         type: "success",
@@ -33,6 +32,9 @@ const handleSubmit = (values) => {
         isLoading: false,
         autoClose: 2000,
       });
+    })
+    .then(() => {
+      setSubmitting(false);
     });
 };
 
@@ -49,7 +51,8 @@ function ProfilePassword({ profile }) {
   const formik = useFormik({
     initialValues: { lama: "", baru: "", confirm: "" },
     validationSchema: validationSchema,
-    onSubmit: handleSubmit,
+    onSubmit: (values, { setSubmitting }) =>
+      handleSubmit(values, setSubmitting),
   });
 
   return (
@@ -105,7 +108,12 @@ function ProfilePassword({ profile }) {
                 error={formik.touched.confirm && Boolean(formik.errors.confirm)}
                 helperText={formik.touched.confirm && formik.errors.confirm}
               />
-              <Button type="submit" variant="contained" endIcon={<EditIcon />}>
+              <Button
+                disabled={formik.isSubmitting}
+                type="submit"
+                variant="contained"
+                endIcon={<EditIcon />}
+              >
                 Update
               </Button>
             </form>

@@ -5,15 +5,30 @@ import sha1 from "js-sha1";
 
 export default Handler()
   .get(async (req, res) => {
+    const result = await db
+      .select(
+        "admin.*",
+        "bawaslu.level_bawaslu",
+        "bawaslu.nama_bawaslu",
+        "level.level",
+        "provinsi.provinsi"
+      )
+      .from("admin")
+      .innerJoin("bawaslu", "admin.bawaslu_id", "bawaslu.id")
+      .innerJoin("level", "bawaslu.level_bawaslu", "level.id")
+      .leftJoin("provinsi", "bawaslu.provinsi_id", "provinsi.id")
+      .orderBy("bawaslu.level_bawaslu")
+      .where("admin.id", req.session.user.id)
+      .first();
     const data = await db
       .select("admin.*", "bawaslu.nama_bawaslu")
       .from("admin")
       .innerJoin("bawaslu", "admin.bawaslu_id", "bawaslu.id")
       .where("admin.id", req.session.user.id)
       .first();
-    if (!data) return res.status(404).json({ message: "Tidak Ditemukan" });
+    if (!result) return res.status(404).json({ message: "Tidak Ditemukan" });
 
-    res.json(data);
+    res.json(result);
   })
   .put(async (req, res) => {
     const { id } = req.session.user;
@@ -27,12 +42,12 @@ export default Handler()
       passwordConfirm,
     } = req.body;
 
-    const salt = bcrypt.genSaltSync(10);
-    const hashPasswordConfirm = bcrypt.hashSync(passwordConfirm, salt);
+    const cek = await db("admin").where("id", id).first();
+    if (!cek) return res.status(401).json({ message: "User Tidak Terdeteksi" });
 
     // // jika password tidak sama
     const old = sha1(sha1(passwordConfirm));
-    const match = await bcrypt.compare(hashPasswordConfirm, password);
+    const match = await bcrypt.compare(passwordConfirm, cek.password);
 
     if (!match) {
       if (old !== password)

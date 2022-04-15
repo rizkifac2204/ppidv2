@@ -8,14 +8,15 @@ export default Handler().put(async (req, res) => {
   const { lama, baru } = req.body;
 
   const salt = bcrypt.genSaltSync(10);
-  const hashLama = bcrypt.hashSync(lama, salt);
   const hashBaru = bcrypt.hashSync(baru, salt);
-  // cek password
+  // cek exist
   const cek = await db("admin").where("id", id).first();
   if (!cek) return res.status(401).json({ message: "User Tidak Terdeteksi" });
+
   // jika tidak sama
   const old = sha1(sha1(lama));
-  const match = await bcrypt.compare(hashLama, cek.password);
+  const match = await bcrypt.compare(lama, cek.password);
+
   if (!match) {
     if (old !== cek.password)
       return res.status(401).json({ message: "Password Lama Anda Salah" });

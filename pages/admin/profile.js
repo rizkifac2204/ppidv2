@@ -51,8 +51,7 @@ function Profile() {
       axios
         .get("/api/profile")
         .then((res) => {
-          const merged = { ...res.data, ...session.user };
-          setProfile(merged);
+          setProfile(res.data);
           setLoading(false);
         })
         .catch((err) => {
@@ -83,7 +82,9 @@ function Profile() {
         </Box>
         <TabPanel value={value} index={0}>
           <WaitLoadingComponent loading={loading} />
-          {!loading && <ProfileForm profile={profile} />}
+          {!loading && (
+            <ProfileForm profile={profile} setProfile={setProfile} />
+          )}
         </TabPanel>
         <TabPanel value={value} index={1}>
           <WaitLoadingComponent loading={loading} />

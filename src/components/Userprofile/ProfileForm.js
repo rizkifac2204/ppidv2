@@ -12,11 +12,12 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
-const handleSubmit = (values) => {
+const handleSubmit = (values, setProfile, setSubmitting) => {
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
     .put(`/api/profile`, values)
     .then((res) => {
+      setProfile(() => values);
       toast.update(toastProses, {
         render: res.data.message,
         type: "success",
@@ -32,27 +33,31 @@ const handleSubmit = (values) => {
         isLoading: false,
         autoClose: 2000,
       });
+    })
+    .then(() => {
+      setSubmitting(false);
     });
 };
 
 const validationSchema = yup.object({
-  nama: yup.string("Masukan Nama").required("Harus Diisi"),
-  telp: yup.string("Masukan Telp/HP").required("Telp Harus Diisi"),
-  email: yup
+  nama_admin: yup.string("Masukan Nama").required("Harus Diisi"),
+  telp_admin: yup.string("Masukan Telp/HP").required("Telp Harus Diisi"),
+  email_admin: yup
     .string("Masukan Email")
     .email("Email Tidak Valid")
     .required("Email Harus Diisi"),
-  alamat: yup.string().required("Alamat Harus Diisi"),
+  alamat_admin: yup.string().required("Alamat Harus Diisi"),
   username: yup.string().required("Username Harus Diisi"),
   passwordConfirm: yup.string().required("Password Harus Diisi"),
 });
 
-function ProfileForm({ profile }) {
+function ProfileForm({ profile, setProfile }) {
   const formik = useFormik({
     initialValues: { ...profile, passwordConfirm: "" },
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: handleSubmit,
+    onSubmit: (values, { setSubmitting }) =>
+      handleSubmit(values, setProfile, setSubmitting),
   });
 
   return (
@@ -71,12 +76,16 @@ function ProfileForm({ profile }) {
                 margin="normal"
                 placeholder="Ganti Nama"
                 label="Nama"
-                name="nama"
-                value={formik.values.nama}
+                name="nama_admin"
+                value={formik.values.nama_admin}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.nama && Boolean(formik.errors.nama)}
-                helperText={formik.touched.nama && formik.errors.nama}
+                error={
+                  formik.touched.nama_admin && Boolean(formik.errors.nama_admin)
+                }
+                helperText={
+                  formik.touched.nama_admin && formik.errors.nama_admin
+                }
               />
               <TextField
                 fullWidth
@@ -84,12 +93,16 @@ function ProfileForm({ profile }) {
                 margin="normal"
                 placeholder="Telp"
                 label="HP / Telp"
-                name="telp"
-                value={formik.values.telp}
+                name="telp_admin"
+                value={formik.values.telp_admin}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.telp && Boolean(formik.errors.telp)}
-                helperText={formik.touched.telp && formik.errors.telp}
+                error={
+                  formik.touched.telp_admin && Boolean(formik.errors.telp_admin)
+                }
+                helperText={
+                  formik.touched.telp_admin && formik.errors.telp_admin
+                }
               />
               <TextField
                 fullWidth
@@ -98,12 +111,17 @@ function ProfileForm({ profile }) {
                 type="email"
                 placeholder="Email"
                 label="Email"
-                name="email"
-                value={formik.values.email}
+                name="email_admin"
+                value={formik.values.email_admin}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
+                error={
+                  formik.touched.email_admin &&
+                  Boolean(formik.errors.email_admin)
+                }
+                helperText={
+                  formik.touched.email_admin && formik.errors.email_admin
+                }
               />
               <TextField
                 fullWidth
@@ -113,12 +131,17 @@ function ProfileForm({ profile }) {
                 margin="normal"
                 placeholder="Alamat"
                 label="Alamat"
-                name="alamat"
-                value={formik.values.alamat}
+                name="alamat_admin"
+                value={formik.values.alamat_admin}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.alamat && Boolean(formik.errors.alamat)}
-                helperText={formik.touched.alamat && formik.errors.alamat}
+                error={
+                  formik.touched.alamat_admin &&
+                  Boolean(formik.errors.alamat_admin)
+                }
+                helperText={
+                  formik.touched.alamat_admin && formik.errors.alamat_admin
+                }
               />
               <TextField
                 fullWidth
@@ -155,7 +178,12 @@ function ProfileForm({ profile }) {
                   formik.errors.passwordConfirm
                 }
               />
-              <Button type="submit" variant="contained" endIcon={<EditIcon />}>
+              <Button
+                disabled={formik.isSubmitting}
+                type="submit"
+                variant="contained"
+                endIcon={<EditIcon />}
+              >
                 Update
               </Button>
             </form>
