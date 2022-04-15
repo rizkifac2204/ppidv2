@@ -32,13 +32,12 @@ const config = {
   },
 };
 
-const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
+const handleSubmit = (values, recaptchaRef, afterSubmit) => {
   const recaptchaValue = recaptchaRef.current.getValue();
   if (!recaptchaValue) {
     toast.info("Mohon Validasi");
     return;
   }
-  setCurData(() => {});
 
   const form = new FormData();
   for (var key in values) {
@@ -53,7 +52,6 @@ const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
   axios
     .post(`/api/public/permohonan`, form, config)
     .then((res) => {
-      // console.log(res.data);
       afterSubmit(res.data.currentData);
       toast.update(toastProses, {
         render: res.data.message,
@@ -185,8 +183,7 @@ const Permohonan = () => {
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: (values) =>
-      handleSubmit(values, recaptchaRef, afterSubmit, setCurData),
+    onSubmit: (values) => handleSubmit(values, recaptchaRef, afterSubmit),
   });
 
   const captchaChange = () => {

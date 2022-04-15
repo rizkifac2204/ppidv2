@@ -59,7 +59,6 @@ export default PublicHandler().post(
       tujuan,
       cara_terima,
       cara_dapat,
-      file_identitas: filename,
       status_permohonan,
     };
 
@@ -70,6 +69,7 @@ export default PublicHandler().post(
       pekerjaan_pemohon,
       pendidikan_pemohon,
       alamat_pemohon,
+      identitas_pemohon: filename,
     };
 
     const getEmailBawaslu = await db("bawaslu").where("id", bawaslu_id).first();
@@ -91,6 +91,8 @@ export default PublicHandler().post(
       .where({ email_pemohon: email_pemohon })
       .first();
     if (cekDataPemohon) {
+      // ganti dengan file yang baru
+      DeleteUpload("./public/upload", cekDataPemohon.identitas_pemohon);
       // proses update
       const update = await db("pemohon")
         .where({ email_pemohon: email_pemohon })
@@ -100,6 +102,7 @@ export default PublicHandler().post(
           pekerjaan_pemohon,
           pendidikan_pemohon,
           alamat_pemohon,
+          identitas_pemohon: filename,
         });
 
       // failed
