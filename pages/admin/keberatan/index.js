@@ -16,10 +16,10 @@ function getFullReg(params) {
   return (
     <>
       <Typography>
-        {params.row.reg_number}
+        {params.row.no_registrasi}
         <br />
         <Typography variant="caption" color="primary">
-          {params.row.tiket_number}
+          {params.row.tiket}
         </Typography>
       </Typography>
     </>
@@ -105,17 +105,17 @@ function Keberatan() {
 
   const columns = [
     {
-      field: "reg_number",
+      field: "no_registrasi",
       headerName: "Nomor Registrasi",
       width: 180,
     },
     {
-      field: "tiket_number",
+      field: "tiket",
       headerName: "Nomor Tiket",
       width: 180,
     },
     {
-      field: "kasus",
+      field: "kasus_posisi",
       headerName: "Kasus Posisi",
       flex: 1,
       minWidth: 180,

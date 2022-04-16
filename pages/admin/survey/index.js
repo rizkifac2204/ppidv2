@@ -9,7 +9,7 @@ import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 // Components
 import { CustomToolbar } from "components/TableComponents";
-import DetailSurvey from "components/DetailSurvey";
+import DetailSurvey from "components/Survey/DetailSurvey";
 
 function Survey() {
   const [data, setData] = useState([]);
@@ -101,15 +101,9 @@ function Survey() {
 
   const columns = [
     {
-      field: "kepada",
+      field: "nama_bawaslu",
       headerName: "Kepada",
       minWidth: 300,
-      valueGetter: (params) => {
-        return `${params.row.kepada || ""} ${params.row.provinsi || ""} ${
-          params.row.kabupaten || ""
-        }`;
-      },
-      sortComparator: (v1, v2) => v1.toString().localeCompare(v2.toString()),
     },
     {
       field: "provinsi",
@@ -118,97 +112,91 @@ function Survey() {
       hide: true,
     },
     {
-      field: "kabupaten",
-      headerName: "Kabupaten/Kota",
-      minWidth: 180,
-      hide: true,
-    },
-    {
-      field: "nama",
+      field: "nama_pemohon",
       headerName: "Nama",
       minWidth: 180,
       flex: 1,
     },
     {
-      field: "pendidikan",
+      field: "pendidikan_pemohon",
       headerName: "Pendidikan",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "email",
+      field: "email_pemohon",
       headerName: "Email",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "pekerjaan",
+      field: "pekerjaan_pemohon",
       headerName: "Pekerjaan",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "alamat",
+      field: "alamat_pemohon",
       headerName: "Alamat",
       minWidth: 150,
       hide: true,
     },
     {
-      field: "satu",
+      field: "q1",
       headerName: "Pertanyaan 1",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "dua",
+      field: "q2",
       headerName: "Pertanyaan 2",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "tiga",
+      field: "q3",
       headerName: "Pertanyaan 3",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "empat",
+      field: "q4",
       headerName: "Pertanyaan 4",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "lima",
+      field: "q5",
       headerName: "Pertanyaan 5",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "enam",
+      field: "q6",
       headerName: "Pertanyaan 6",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "tujuh",
+      field: "q7",
       headerName: "Pertanyaan 7",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "delapan",
+      field: "q8",
       headerName: "Pertanyaan 8",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "sembilan",
+      field: "q9",
       headerName: "Pertanyaan 9",
       minWidth: 130,
       hide: true,
     },
     {
-      field: "sepuluh",
+      field: "q10",
       headerName: "Pertanyaan 10",
       minWidth: 130,
       hide: true,

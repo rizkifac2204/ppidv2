@@ -19,70 +19,70 @@ const INITQUEST = [
   {
     no: 1,
     chartData: [],
-    bil: "satu",
+    bil: "q1",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG KESESUAIAN PERSYARATAN PERMOHONAN INFORMASI PUBLIK DENGAN JENIS PELAYANANNYA?",
   },
   {
     no: 2,
     chartData: [],
-    bil: "dua",
+    bil: "q2",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG KEMUDAHAN PROSEDUR PELAYANAN PERMOHONAN INFORMASI PUBLIK DI BAWASLU?",
   },
   {
     no: 3,
     chartData: [],
-    bil: "tiga",
+    bil: "q3",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG KECEPATAN WAKTU PETUGAS DALAM MEMBERIKAN PELAYANAN INFORMASI PUBLIK?",
   },
   {
     no: 4,
     chartData: [],
-    bil: "empat",
+    bil: "q4",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG KEWAJARAN BIAYA/TARIF DALAM PELAYANAN INFORMASI PUBLIK?",
   },
   {
     no: 5,
     chartData: [],
-    bil: "lima",
+    bil: "q5",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG KESESUAIAN PRODUK PELAYANAN ANTARA YANG TERCANTUM DALAM STANDAR PELAYANAN DENGAN HASIL YANG DIBERIKAN?",
   },
   {
     no: 6,
     chartData: [],
-    bil: "enam",
+    bil: "q6",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG KOMPETENSI/KEMAMPUAN PETUGAS DALAM PELAYANAN INFORMASI PUBLIK?",
   },
   {
     no: 7,
     chartData: [],
-    bil: "tujuh",
+    bil: "q7",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG PERILAKU PETUGAS DALAM PELAYANAN INFORMASI PUBLIK TERKAIT KESOPANAN DAN KERAMAHAN?",
   },
   {
     no: 8,
     chartData: [],
-    bil: "delapan",
+    bil: "q8",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG KUALITAS SARANA DAN PRASARANA PELAYANAN INFORMASI PUBLIK?",
   },
   {
     no: 9,
     chartData: [],
-    bil: "sembilan",
+    bil: "q9",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG PENANGANAN PENGADUAN PENGGUNA LAYANAN INFORMASI PUBLIK?",
   },
   {
     no: 10,
     chartData: [],
-    bil: "sepuluh",
+    bil: "q10",
     quest:
       "BAGAIMANA PENDAPAT SAUDARA TENTANG TINGKAT KEPUASAN TERHADAP KESELURUHAN PELAYANAN INFORMASI PUBLIK DI BAWASLU?",
   },
@@ -113,7 +113,7 @@ function SurveyChart() {
   const fetchProv = () => {
     if (provinsis.length !== 0) return;
     axios
-      .get(`/api/setting/wilayah/provinsis`)
+      .get(`/api/services/provinsis`)
       .then((res) => {
         setProvinsis(res.data);
       })
@@ -126,9 +126,9 @@ function SurveyChart() {
     setKabkots([]);
     if (!id_prov) return;
     axios
-      .get(`/api/setting/wilayah/provinsis/` + id_prov)
+      .get(`/api/services/provinsis/` + id_prov)
       .then((res) => {
-        setKabkots(res.data.kabkot);
+        setKabkots(res.data.kabkota);
       })
       .catch((err) => {
         console.log(err);
@@ -153,7 +153,7 @@ function SurveyChart() {
       axios
         .get(`/api/surveys/chart`, { params: filter })
         .then((res) => {
-          setData((prevData) => res.data);
+          setData(() => res.data);
         })
         .catch((err) => {
           toast.error("Terjadi Kesalahan");
@@ -174,7 +174,7 @@ function SurveyChart() {
       const eachData = groupByKey(data, tempData[i].bil);
       Object.keys(eachData).forEach((item, idx) => {
         tempData[i].chartData.push({
-          name: item,
+          label: item,
           value: eachData[Object.keys(eachData)[idx]].length,
         });
       });
@@ -200,6 +200,8 @@ function SurveyChart() {
                 <MenuItem value="2020">2020</MenuItem>
                 <MenuItem value="2021">2021</MenuItem>
                 <MenuItem value="2022">2022</MenuItem>
+                <MenuItem value="2023">2023</MenuItem>
+                <MenuItem value="2024">2024</MenuItem>
               </Select>
             </FormControl>
             <FormControl sx={{ mx: 1, my: 1, minWidth: 180 }}>
@@ -210,20 +212,15 @@ function SurveyChart() {
                 value={filter.unit}
                 onChange={(e) => {
                   handleChangeFilter(e);
-                  if (
-                    e.target.value === "Bawaslu Provinsi" ||
-                    e.target.value === "Bawaslu"
-                  ) {
+                  if (e.target.value === "2" || e.target.value === "3") {
                     fetchProv();
                   }
                 }}
               >
                 <MenuItem value="">Semua</MenuItem>
-                <MenuItem value="Bawaslu Republik Indonesia">
-                  Bawaslu RI
-                </MenuItem>
-                <MenuItem value="Bawaslu Provinsi">Bawaslu/Provinsi</MenuItem>
-                <MenuItem value="Bawaslu">Bawaslu Kabupaten/Kota</MenuItem>
+                <MenuItem value="1">Bawaslu RI</MenuItem>
+                <MenuItem value="2">Bawaslu/Provinsi</MenuItem>
+                <MenuItem value="3">Bawaslu Kabupaten/Kota</MenuItem>
               </Select>
             </FormControl>
             <FormControl sx={{ mx: 1, my: 1, minWidth: 180 }}>
@@ -256,7 +253,7 @@ function SurveyChart() {
                 <MenuItem value="">Semua</MenuItem>
                 {kabkots.map((item) => (
                   <MenuItem key={item.id} value={item.id}>
-                    {item.kabupaten}
+                    {item.kabkota}
                   </MenuItem>
                 ))}
               </Select>

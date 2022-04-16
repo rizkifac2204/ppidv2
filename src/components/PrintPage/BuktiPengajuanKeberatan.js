@@ -24,6 +24,7 @@ const themeLight = createTheme({
 
 const BuktiPengajuanKeberatan = React.forwardRef(
   ({ detail, profileBawaslu }, ref) => {
+    const textForQrCode = detail.tiket ? detail.tiket : detail.no_registrasi;
     return (
       <ThemeProvider theme={themeLight}>
         <Card sx={{ display: "none", displayPrint: "block", p: 2 }} ref={ref}>
@@ -167,7 +168,6 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                   <TableCell colSpan={2}>
                     <FormGroup>
                       <FormControlLabel
-                        disabled
                         control={
                           <Checkbox
                             size="small"
@@ -177,7 +177,6 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                         label="Permohonan Informasi ditolak"
                       />
                       <FormControlLabel
-                        disabled
                         control={
                           <Checkbox
                             size="small"
@@ -187,7 +186,6 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                         label="Informasi berkala tidak disediakan"
                       />
                       <FormControlLabel
-                        disabled
                         control={
                           <Checkbox
                             size="small"
@@ -197,7 +195,6 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                         label="Permintaan Informasi tidak ditanggapi"
                       />
                       <FormControlLabel
-                        disabled
                         control={
                           <Checkbox
                             size="small"
@@ -207,7 +204,6 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                         label="Permintaan Informasi ditanggapi tidak sebagaimana yang diminta"
                       />
                       <FormControlLabel
-                        disabled
                         control={
                           <Checkbox
                             size="small"
@@ -217,7 +213,6 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                         label="Permintaan Informasi tidak dipenuhi"
                       />
                       <FormControlLabel
-                        disabled
                         control={
                           <Checkbox
                             size="small"
@@ -227,7 +222,6 @@ const BuktiPengajuanKeberatan = React.forwardRef(
                         label="Biaya yang dikenakan tidak wajar"
                       />
                       <FormControlLabel
-                        disabled
                         control={
                           <Checkbox
                             size="small"
@@ -283,7 +277,11 @@ const BuktiPengajuanKeberatan = React.forwardRef(
           </TableContainer>
 
           <Box>
-            <SetQRCode text={"keberatan/" + detail.no_registrasi} />
+            <SetQRCode
+              text={
+                process.env.NEXT_PUBLIC_HOST + "/qr/keberatan/" + textForQrCode
+              }
+            />
             <Box sx={{ fontSize: 10, m: 1 }}>
               (Kode merupakan bukti Sah dari Sistem PPID Bawaslu <br /> selama
               dapat terbaca dan terscan dengan benar)

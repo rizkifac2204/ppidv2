@@ -15,12 +15,15 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import ModelTrainingIcon from "@mui/icons-material/ModelTraining";
 import CheckIcon from "@mui/icons-material/Check";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import BalanceIcon from "@mui/icons-material/Balance";
+import DoNotTouchIcon from "@mui/icons-material/DoNotTouch";
+import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 
 function getJumlah(arr, param) {
   if (!arr) return 0;
-  const obj = arr.find((o) => o.status === param);
+  const obj = arr.find((o) => o.status_permohonan === param);
   if (!obj) return 0;
-  const kosong = arr.find((o) => o.status === "");
+  const kosong = arr.find((o) => o.status_permohonan === "");
   if (param === null) {
     return obj.jumlah + (kosong ? kosong.jumlah : 0);
   } else {
@@ -28,7 +31,7 @@ function getJumlah(arr, param) {
   }
 }
 
-function DashboardCollapse({ expanded, arr, jumlah, diterima }) {
+function DashboardCollapse({ expanded, arr, jumlah }) {
   return (
     <Collapse in={expanded} timeout="auto" unmountOnExit>
       <TableContainer component={Paper}>
@@ -44,28 +47,7 @@ function DashboardCollapse({ expanded, arr, jumlah, diterima }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {diterima && (
-              <TableRow>
-                <TableCell
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <ReportIcon color="primary" />
-                  <Typography variant="body2" ml={1}>
-                    Diterima
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">
-                  {getJumlah(arr, null)}
-                  <LinearProgress
-                    variant="determinate"
-                    value={(getJumlah(arr, null) / jumlah) * 100}
-                  />
-                </TableCell>
-              </TableRow>
-            )}
+            {/* proses  */}
             <TableRow>
               <TableCell
                 sx={{
@@ -73,20 +55,21 @@ function DashboardCollapse({ expanded, arr, jumlah, diterima }) {
                   alignItems: "center",
                 }}
               >
-                <ModelTrainingIcon color="secondary" />
+                <ModelTrainingIcon color="primary" />
                 <Typography variant="body2" ml={1}>
                   Proses
                 </Typography>
               </TableCell>
               <TableCell align="right">
-                {getJumlah(arr, "Diproses")}
+                {getJumlah(arr, "Proses")}
                 <LinearProgress
                   variant="determinate"
-                  color="secondary"
-                  value={(getJumlah(arr, "Diproses") / jumlah) * 100}
+                  color="primary"
+                  value={(getJumlah(arr, "Proses") / jumlah) * 100}
                 />
               </TableCell>
             </TableRow>
+            {/* Diberikan  */}
             <TableRow>
               <TableCell
                 sx={{
@@ -96,20 +79,19 @@ function DashboardCollapse({ expanded, arr, jumlah, diterima }) {
               >
                 <DoneAllIcon color="success" />
                 <Typography variant="body2" ml={1}>
-                  Diberikan Seluruhnya
+                  Diberikan
                 </Typography>
               </TableCell>
               <TableCell align="right">
-                {getJumlah(arr, "Diberikan Seluruhnya")}
+                {getJumlah(arr, "Diberikan")}
                 <LinearProgress
                   variant="determinate"
                   color="success"
-                  value={
-                    (getJumlah(arr, "Diberikan Seluruhnya") / jumlah) * 100
-                  }
+                  value={(getJumlah(arr, "Diberikan") / jumlah) * 100}
                 />
               </TableCell>
             </TableRow>
+            {/* Informasi Belum Dikuasai  */}
             <TableRow>
               <TableCell
                 sx={{
@@ -117,20 +99,49 @@ function DashboardCollapse({ expanded, arr, jumlah, diterima }) {
                   alignItems: "center",
                 }}
               >
-                <CheckIcon color="warning" />
+                <ReportIcon color="info" />
                 <Typography variant="body2" ml={1}>
-                  Diberikan Sebagian
+                  Informasi Belum Dikuasai
                 </Typography>
               </TableCell>
               <TableCell align="right">
-                {getJumlah(arr, "Diberikan Sebagian")}
+                {getJumlah(arr, "Informasi Belum Dikuasai")}
                 <LinearProgress
                   variant="determinate"
-                  color="warning"
-                  value={(getJumlah(arr, "Diberikan Sebagian") / jumlah) * 100}
+                  color="info"
+                  value={
+                    (getJumlah(arr, "Informasi Belum Dikuasai") / jumlah) * 100
+                  }
                 />
               </TableCell>
             </TableRow>
+            {/* Informasi Belum Didokumentasikan  */}
+            <TableRow>
+              <TableCell
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <ImageNotSupportedIcon color="info" />
+                <Typography variant="body2" ml={1}>
+                  Informasi Belum Didokumentasikan
+                </Typography>
+              </TableCell>
+              <TableCell align="right">
+                {getJumlah(arr, "Informasi Belum Didokumentasikan")}
+                <LinearProgress
+                  variant="determinate"
+                  color="info"
+                  value={
+                    (getJumlah(arr, "Informasi Belum Didokumentasikan") /
+                      jumlah) *
+                    100
+                  }
+                />
+              </TableCell>
+            </TableRow>
+            {/* Ditolak  */}
             <TableRow>
               <TableCell
                 sx={{
@@ -140,17 +151,59 @@ function DashboardCollapse({ expanded, arr, jumlah, diterima }) {
               >
                 <HighlightOffIcon color="error" />
                 <Typography variant="body2" ml={1}>
-                  Tidak Dapat Diberikan
+                  Tidak Dapat Diberikan / Ditolak
                 </Typography>
               </TableCell>
               <TableCell align="right">
-                {getJumlah(arr, "Tidak Dapat Diberikan")}
+                {getJumlah(arr, "Ditolak")}
                 <LinearProgress
                   variant="determinate"
                   color="error"
-                  value={
-                    (getJumlah(arr, "Tidak Dapat Diberikan") / jumlah) * 100
-                  }
+                  value={(getJumlah(arr, "Ditolak") / jumlah) * 100}
+                />
+              </TableCell>
+            </TableRow>
+            {/* Proses Keberatan  */}
+            <TableRow>
+              <TableCell
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <DoNotTouchIcon color="warning" />
+                <Typography variant="body2" ml={1}>
+                  Proses Keberatan
+                </Typography>
+              </TableCell>
+              <TableCell align="right">
+                {getJumlah(arr, "Proses Keberatan")}
+                <LinearProgress
+                  variant="determinate"
+                  color="warning"
+                  value={(getJumlah(arr, "Proses Keberatan") / jumlah) * 100}
+                />
+              </TableCell>
+            </TableRow>
+            {/* Sengketa  */}
+            <TableRow>
+              <TableCell
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <BalanceIcon color="warning" />
+                <Typography variant="body2" ml={1}>
+                  Sengketa
+                </Typography>
+              </TableCell>
+              <TableCell align="right">
+                {getJumlah(arr, "Sengketa")}
+                <LinearProgress
+                  variant="determinate"
+                  color="warning"
+                  value={(getJumlah(arr, "Sengketa") / jumlah) * 100}
                 />
               </TableCell>
             </TableRow>
@@ -178,9 +231,7 @@ function TableBelumRespon({ arr }) {
         {arr.result &&
           arr.result.map((item, idx) => (
             <TableRow key={idx}>
-              <TableCell>
-                {item.kepada} {item.provinsi}
-              </TableCell>
+              <TableCell>{item.nama_bawaslu}</TableCell>
               <TableCell align="right">{item.jumlah}</TableCell>
             </TableRow>
           ))}

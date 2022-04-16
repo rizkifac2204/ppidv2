@@ -17,14 +17,13 @@ import PeopleIcon from "@mui/icons-material/People";
 import PanToolIcon from "@mui/icons-material/PanTool";
 import DynamicFormIcon from "@mui/icons-material/DynamicForm";
 import WifiIcon from "@mui/icons-material/Wifi";
-import SignalWifiBadIcon from "@mui/icons-material/SignalWifiBad";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 
 // Components
 import {
   DashboardCollapse,
   TableBelumRespon,
-} from "components/DashboardComponent";
+} from "components/Dashboard/DashboardComponent";
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -99,7 +98,7 @@ function Index() {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={12} md={4}>
         <Card
           sx={{
             display: "flex",
@@ -138,7 +137,7 @@ function Index() {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={6} md={4}>
         <Card
           sx={{
             display: "flex",
@@ -177,7 +176,7 @@ function Index() {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={6} md={4}>
         <Card
           sx={{
             display: "flex",
@@ -216,19 +215,19 @@ function Index() {
         </Card>
       </Grid>
 
-      <Grid item xs={12} lg={6}>
+      <Grid item xs={12}>
         <Card sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
           <Box>
             <CardContent>
               <Typography component="div" variant="h5">
-                {main.jumlahOnline}
+                {main.jumlahPermohonan}
               </Typography>
               <Typography variant="subtitle1" color="text.secondary">
-                Pemohonan Online
+                Permohonan
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
-              <Link href="/admin/permohonan/online">
+              <Link href="/admin/permohonan">
                 <a>
                   <SettingsSuggestIcon
                     color="secondary"
@@ -258,57 +257,8 @@ function Index() {
         </Card>
         <DashboardCollapse
           expanded={expandedOnline}
-          arr={status.online}
-          jumlah={main.jumlahOnline}
-          diterima={true}
-        />
-      </Grid>
-
-      <Grid item xs={12} lg={6}>
-        <Card sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-          <Box>
-            <CardContent>
-              <Typography component="div" variant="h5">
-                {main.jumlahOffline}
-              </Typography>
-              <Typography variant="subtitle1" color="text.secondary">
-                Pemohonan Offline
-              </Typography>
-            </CardContent>
-            <CardActions disableSpacing>
-              <Link href="/admin/permohonan/offline">
-                <a>
-                  <SettingsSuggestIcon
-                    color="secondary"
-                    sx={{ cursor: "pointer" }}
-                  />
-                </a>
-              </Link>
-              <ExpandMore
-                expand={expandedOffline}
-                onClick={handleExpandOfflineClick}
-                aria-expanded={expandedOffline}
-                aria-label="show more"
-              >
-                <ExpandMoreIcon />
-              </ExpandMore>
-            </CardActions>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              alignContent: "center",
-            }}
-          >
-            <SignalWifiBadIcon color="success" sx={{ fontSize: 120 }} />
-          </Box>
-        </Card>
-        <DashboardCollapse
-          expanded={expandedOffline}
-          arr={status.offline}
-          jumlah={main.jumlahOffline}
-          diterima={false}
+          arr={status.result}
+          jumlah={main.jumlahPermohonan}
         />
       </Grid>
 
@@ -320,7 +270,7 @@ function Index() {
               color="text.secondary"
               gutterBottom
             >
-              Bawaslu Dengan Jumlah Permohonan Yang Belum Direspon Terbanyak
+              Bawaslu Dengan Jumlah Permohonan Proses Terbanyak
             </Typography>
             <TableBelumRespon arr={unresponse} />
           </CardContent>

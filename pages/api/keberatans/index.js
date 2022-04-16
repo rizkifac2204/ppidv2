@@ -6,31 +6,28 @@ export default Handler()
   .get(async (req, res) => {
     const result = await db
       .select(
-        "tbl_permohonan_keberatan.id",
-        "tbl_permohonan_keberatan.kasus",
-        "tbl_permohonan_keberatan.created_at",
-        "tbl_permohonan.tiket_number",
-        "tbl_permohonan.reg_number",
-        "tbl_permohonan.id_will"
+        "permohonan_keberatan.id",
+        "permohonan_keberatan.kasus_posisi",
+        "permohonan_keberatan.created_at",
+        "permohonan.tiket",
+        "permohonan.no_registrasi"
       )
-      .from("tbl_permohonan_keberatan")
+      .from("permohonan_keberatan")
       .innerJoin(
-        "tbl_permohonan",
-        "tbl_permohonan.id",
-        "tbl_permohonan_keberatan.id_permohonan"
+        "permohonan",
+        "permohonan.id",
+        "permohonan_keberatan.permohonan_id"
       )
       .modify((builder) =>
-        conditionWillSpesific(db, builder, req.session.user, "tbl_permohonan")
+        conditionWillSpesific(db, builder, req.session.user, "permohonan")
       )
-      .whereNull("tbl_permohonan.deleted_at");
+      .whereNull("permohonan.deleted_at");
 
     res.json(result);
   })
   .delete(async (req, res) => {
     const arrID = req.body;
-    const proses = await db("tbl_permohonan_keberatan")
-      .whereIn("id", arrID)
-      .del();
+    const proses = await db("permohonan_keberatan").whereIn("id", arrID).del();
 
     if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
 

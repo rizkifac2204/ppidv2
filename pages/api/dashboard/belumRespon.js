@@ -4,27 +4,16 @@ import { conditionWillSpesific } from "middlewares/Condition";
 
 export default Handler().get(async (req, res) => {
   const result = await db
-    .from("tbl_permohonan")
-    .count("tbl_permohonan.id", { as: "jumlah" })
-    .select(
-      "tbl_permohonan.kepada",
-      "tbl_provinsi.provinsi",
-      "tbl_kabupaten.kabupaten",
-      "tbl_permohonan_response.status"
-    )
-    .leftJoin(
-      "tbl_permohonan_response",
-      "tbl_permohonan.id",
-      "tbl_permohonan_response.id_permohonan"
-    )
-    .leftJoin("tbl_provinsi", "tbl_permohonan.id_will", "tbl_provinsi.id")
-    .leftJoin("tbl_kabupaten", "tbl_permohonan.id_will", "tbl_kabupaten.id")
+    .from("permohonan")
+    .count("permohonan.id", { as: "jumlah" })
+    .select("bawaslu.nama_bawaslu", "permohonan.status_permohonan")
+    .leftJoin("bawaslu", "permohonan.bawaslu_id", "bawaslu.id")
     .modify((builder) =>
-      conditionWillSpesific(db, builder, req.session.user, "tbl_permohonan")
+      conditionWillSpesific(db, builder, req.session.user, "permohonan")
     )
-    .whereNull("status")
-    .whereNull("tbl_permohonan.deleted_at")
-    .groupBy("tbl_permohonan.id_will")
+    .whereNull("permohonan.deleted_at")
+    .where("status_permohonan", "Proses")
+    .groupBy("permohonan.bawaslu_id")
     .orderBy("jumlah", "desc")
     .limit(5);
 

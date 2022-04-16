@@ -79,7 +79,7 @@ function KeberatanDetail() {
   const fetchProfileBawaslu = (callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
     axios
-      .get(`/api/permohonan/profileBawaslu?id=` + detail.id_will)
+      .get(`/api/services/profileBawaslu?id=` + detail.bawaslu_id)
       .then((res) => {
         setProfileBawaslu(res.data);
         toast.dismiss(toastProses);
@@ -138,7 +138,7 @@ function KeberatanDetail() {
                   Nomor Registrasi
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.reg_number}
+                  : {detail.no_registrasi}
                 </Grid>
 
                 <Grid item xs={4}>
@@ -163,35 +163,35 @@ function KeberatanDetail() {
                   Nama
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.nama}
+                  : {detail.nama_pemohon}
                 </Grid>
 
                 <Grid item xs={4}>
                   Alamat
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.alamat}
+                  : {detail.alamat_pemohon}
                 </Grid>
 
                 <Grid item xs={4}>
                   Pekerjaan
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.pekerjaan}
+                  : {detail.pekerjaann_pemohon}
                 </Grid>
 
                 <Grid item xs={4}>
                   Telp/Hp
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.telp}
+                  : {detail.telp_pemohon}
                 </Grid>
 
                 <Grid item xs={4}>
                   Email
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.email}
+                  : {detail.email_pemohon}
                 </Grid>
 
                 <Grid item xs={12} mt={2}>
@@ -228,7 +228,6 @@ function KeberatanDetail() {
                 <Grid item xs={12}>
                   <FormGroup>
                     <FormControlLabel
-                      disabled
                       control={
                         <Checkbox
                           size="small"
@@ -238,7 +237,6 @@ function KeberatanDetail() {
                       label="Permohonan Informasi ditolak"
                     />
                     <FormControlLabel
-                      disabled
                       control={
                         <Checkbox
                           size="small"
@@ -248,7 +246,6 @@ function KeberatanDetail() {
                       label="Informasi berkala tidak disediakan"
                     />
                     <FormControlLabel
-                      disabled
                       control={
                         <Checkbox
                           size="small"
@@ -258,7 +255,6 @@ function KeberatanDetail() {
                       label="Permintaan Informasi tidak ditanggapi"
                     />
                     <FormControlLabel
-                      disabled
                       control={
                         <Checkbox
                           size="small"
@@ -268,7 +264,6 @@ function KeberatanDetail() {
                       label="Permintaan Informasi ditanggapi tidak sebagaimana yang diminta"
                     />
                     <FormControlLabel
-                      disabled
                       control={
                         <Checkbox
                           size="small"
@@ -278,7 +273,6 @@ function KeberatanDetail() {
                       label="Permintaan Informasi tidak dipenuhi"
                     />
                     <FormControlLabel
-                      disabled
                       control={
                         <Checkbox
                           size="small"
@@ -288,7 +282,6 @@ function KeberatanDetail() {
                       label="Biaya yang dikenakan tidak wajar"
                     />
                     <FormControlLabel
-                      disabled
                       control={
                         <Checkbox
                           size="small"
@@ -305,7 +298,7 @@ function KeberatanDetail() {
                 </Grid>
 
                 <Grid item xs={12}>
-                  {detail.kasus}
+                  {detail.kasus_posisi}
                 </Grid>
 
                 <Grid item xs={12} mt={2}>
@@ -315,8 +308,10 @@ function KeberatanDetail() {
                 </Grid>
 
                 <Grid item xs={12}>
-                  {detail.tanggal &&
-                    new Date(detail.tanggal).toISOString().split("T")[0]}
+                  {detail.tanggal_keberatan &&
+                    new Date(detail.tanggal_keberatan)
+                      .toISOString()
+                      .split("T")[0]}
                 </Grid>
               </Grid>
             </CardContent>

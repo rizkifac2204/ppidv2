@@ -127,7 +127,11 @@ const DataPermohonan = React.forwardRef(({ detail, profileBawaslu }, ref) => {
 
         <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
           <Box>
-            <SetQRCode text={textForQrCode} />
+            <SetQRCode
+              text={
+                process.env.NEXT_PUBLIC_HOST + "/qr/permohonan/" + textForQrCode
+              }
+            />
             <Box sx={{ fontSize: 10, m: 1 }}>
               (Kode merupakan bukti Sah dari Sistem PPID Bawaslu <br /> selama
               dapat terbaca dan terscan dengan benar)

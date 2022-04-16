@@ -25,14 +25,15 @@ function DetailSurvey(props) {
         <Grid container>
           <Grid item xs={12}>
             <AccountBalanceIcon sx={{ fontSize: 15 }} /> Kepada{" "}
-            {props.detail.kepada} {props.detail.provinsi}{" "}
-            {props.detail.kabupaten}
+            {props.detail.nama_bawaslu}
           </Grid>
 
           <Grid item xs={12}>
-            <AccountBoxIcon sx={{ fontSize: 15 }} /> Oleh {props.detail.nama}{" "}
-            <br /> - {props.detail.pendidikan} <br />- {props.detail.pekerjaan}{" "}
-            <br />- {props.detail.alamat}
+            <AccountBoxIcon sx={{ fontSize: 15 }} /> Oleh{" "}
+            {props.detail.nama_pemohon} <br /> -{" "}
+            {props.detail.pendidikan_pemohon} <br />-{" "}
+            {props.detail.pekerjaan_pemohon} <br />-{" "}
+            {props.detail.alamat_pemohon}
           </Grid>
 
           <Grid item xs={6}>
@@ -42,7 +43,7 @@ function DetailSurvey(props) {
             KESESUAIAN PERSYARATAN DENGAN JENIS PELAYANANNYA?
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.satu}
+            : {props.detail.q1}
           </Grid>
 
           <Grid item xs={6}>
@@ -52,7 +53,7 @@ function DetailSurvey(props) {
             KEMUDAHAN PROSEDUR PELAYANAN
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.dua}
+            : {props.detail.q2}
           </Grid>
 
           <Grid item xs={6}>
@@ -62,7 +63,7 @@ function DetailSurvey(props) {
             KECEPATAN WAKTU
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.tiga}
+            : {props.detail.q3}
           </Grid>
 
           <Grid item xs={6}>
@@ -72,7 +73,7 @@ function DetailSurvey(props) {
             KEWAJARAN BIAYA/TARIF
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.empat}
+            : {props.detail.q4}
           </Grid>
 
           <Grid item xs={6}>
@@ -82,7 +83,7 @@ function DetailSurvey(props) {
             KESESUAIAN PRODUK PELAYANAN DENGAN HASIL YANG DIBERIKAN
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.lima}
+            : {props.detail.q5}
           </Grid>
 
           <Grid item xs={6}>
@@ -92,7 +93,7 @@ function DetailSurvey(props) {
             KOMPETENSI/KEMAMPUAN PETUGAS
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.enam}
+            : {props.detail.q6}
           </Grid>
 
           <Grid item xs={6}>
@@ -102,7 +103,7 @@ function DetailSurvey(props) {
             KESOPANAN DAN KERAMAHAN PETUGAS
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.tujuh}
+            : {props.detail.q7}
           </Grid>
 
           <Grid item xs={6}>
@@ -112,7 +113,7 @@ function DetailSurvey(props) {
             KUALITAS SARANA DAN PRASARANA
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.delapan}
+            : {props.detail.q8}
           </Grid>
 
           <Grid item xs={6}>
@@ -122,7 +123,7 @@ function DetailSurvey(props) {
             PENANGANAN PENGADUAN
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.sembilan}
+            : {props.detail.q9}
           </Grid>
 
           <Grid item xs={6}>
@@ -132,7 +133,7 @@ function DetailSurvey(props) {
             TINGKAT KEPUASAN TERHADAP KESELURUHAN
           </Grid>
           <Grid item xs={6}>
-            : {props.detail.sepuluh}
+            : {props.detail.q10}
           </Grid>
 
           <Grid item xs={12}>

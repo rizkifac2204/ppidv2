@@ -8,42 +8,43 @@ export default Handler()
 
     const data = await db
       .select(
-        "tbl_permohonan_keberatan.id",
-        "tbl_permohonan_keberatan.kasus",
-        "tbl_permohonan_keberatan.created_at",
-        "tbl_permohonan_keberatan.tanggal",
-        "tbl_permohonan_keberatan.alasan_a",
-        "tbl_permohonan_keberatan.alasan_b",
-        "tbl_permohonan_keberatan.alasan_c",
-        "tbl_permohonan_keberatan.alasan_d",
-        "tbl_permohonan_keberatan.alasan_e",
-        "tbl_permohonan_keberatan.alasan_f",
-        "tbl_permohonan_keberatan.alasan_g",
-        "tbl_permohonan.tiket_number",
-        "tbl_permohonan.reg_number",
-        "tbl_permohonan.id_will",
-        "tbl_permohonan.nama",
-        "tbl_permohonan.pekerjaan",
-        "tbl_permohonan.telp",
-        "tbl_permohonan.email",
-        "tbl_permohonan.alamat",
-        "tbl_permohonan.rincian",
-        "tbl_permohonan.tujuan",
-        "tbl_permohonan.cara_terima",
-        "tbl_permohonan.cara_dapat",
-        "tbl_permohonan.ktp"
+        "permohonan_keberatan.id",
+        "permohonan_keberatan.kasus_posisi",
+        "permohonan_keberatan.created_at",
+        "permohonan_keberatan.tanggal_keberatan",
+        "permohonan_keberatan.alasan_a",
+        "permohonan_keberatan.alasan_b",
+        "permohonan_keberatan.alasan_c",
+        "permohonan_keberatan.alasan_d",
+        "permohonan_keberatan.alasan_e",
+        "permohonan_keberatan.alasan_f",
+        "permohonan_keberatan.alasan_g",
+        "permohonan.tiket",
+        "permohonan.no_registrasi",
+        "permohonan.bawaslu_id",
+        "permohonan.rincian",
+        "permohonan.tujuan",
+        "permohonan.cara_terima",
+        "permohonan.cara_dapat",
+        "pemohon.nama_pemohon",
+        "pemohon.pekerjaan_pemohon",
+        "pemohon.telp_pemohon",
+        "pemohon.email_pemohon",
+        "pemohon.alamat_pemohon",
+        "pemohon.identitas_pemohon"
       )
-      .from("tbl_permohonan_keberatan")
+      .from("permohonan_keberatan")
       .innerJoin(
-        "tbl_permohonan",
-        "tbl_permohonan.id",
-        "tbl_permohonan_keberatan.id_permohonan"
+        "permohonan",
+        "permohonan.id",
+        "permohonan_keberatan.permohonan_id"
       )
+      .innerJoin("pemohon", "pemohon.email_pemohon", "permohonan.email_pemohon")
       .modify((builder) =>
-        conditionWillSpesific(db, builder, req.session.user, "tbl_permohonan")
+        conditionWillSpesific(db, builder, req.session.user, "permohonan")
       )
-      .whereNull("tbl_permohonan.deleted_at")
-      .where("tbl_permohonan_keberatan.id", id)
+      .whereNull("permohonan.deleted_at")
+      .where("permohonan_keberatan.id", id)
       .first();
 
     if (!data) return res.status(404).json({ message: "Tidak Ditemukan" });
@@ -52,7 +53,7 @@ export default Handler()
   })
   .delete(async (req, res) => {
     const { id } = req.query;
-    const proses = await db("tbl_permohonan_keberatan").where("id", id).del();
+    const proses = await db("permohonan_keberatan").where("id", id).del();
 
     if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
 
