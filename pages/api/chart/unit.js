@@ -1,36 +1,34 @@
 import db from "libs/db";
 import Handler from "middlewares/Handler";
 
-function filter(table, will, unit, tahun) {
-  var lanjutan = `(SELECT COUNT(id) FROM ${table} where`;
+function filter(will, unit, tahun) {
+  var lanjutan = `(SELECT COUNT(id) FROM permohonan where 1`;
   // filter unit
   if (!unit) {
-    lanjutan += ` id_will LIKE CONCAT(${will}.id, '%')`;
+    lanjutan += ` AND bawaslu_id LIKE CONCAT(${will}.id, '%')`;
   } else {
-    lanjutan += ` id_will = ${will}.id`;
+    lanjutan += ` AND bawaslu_id = ${will}.id`;
   }
   // filter tahun
-  if (tahun) lanjutan += ` AND YEAR(${table}.tanggal) = ${tahun}`;
+  if (tahun) lanjutan += ` AND YEAR(permohonan.created_at) = ${tahun}`;
   // penutup
-  lanjutan += ` and ${table}.deleted_at IS NULL) as value`;
+  lanjutan += ` and permohonan.deleted_at IS NULL) as value`;
   return lanjutan;
 }
 
 export default Handler().get(async (req, res) => {
-  const { chart, tahun, unit, prov } = req.query;
-  const table =
-    chart === "online" ? "tbl_permohonan" : "tbl_permohonan_offline";
-  const will = unit === "Bawaslu" ? "tbl_kabupaten" : "tbl_provinsi";
-  const label = unit === "Bawaslu" ? "kabupaten" : "provinsi";
+  const { tahun, unit, prov } = req.query;
+  const will = unit === "3" ? "kabkota" : "provinsi";
+  const label = unit === "3" ? "kabkota" : "provinsi";
 
   const result = await db(will)
     .select(
       `${will}.id`,
       db.raw(`${will}.${label} AS label`),
-      db.raw(filter(table, will, unit, tahun))
+      db.raw(filter(will, unit, tahun))
     )
     .modify((builder) => {
-      if (unit === "Bawaslu") builder.whereRaw(`${will}.id_prov = ?`, [prov]);
+      if (unit === "3") builder.whereRaw(`${will}.provinsi_id = ?`, [prov]);
     });
 
   return res.json(result);

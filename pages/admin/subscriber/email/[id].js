@@ -57,7 +57,7 @@ function EmailDetail() {
   useEffect(() => {
     if (!detail.listPenerima) return;
     const email = detail.listPenerima.map((item) => {
-      return item.email;
+      return item.email_subscriber;
     });
     const text = email.join(", ");
     setList(text);

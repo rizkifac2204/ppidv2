@@ -1,10 +1,6 @@
 import db from "libs/db";
 import Handler from "middlewares/Handler";
-import {
-  conditionWillSpesific,
-  labelKepada,
-  createWill,
-} from "middlewares/Condition";
+import { conditionWillSpesific } from "middlewares/Condition";
 import sendingMail, { mailOption } from "services/Email";
 
 async function kirim(send, setMailOption, id) {
@@ -26,26 +22,21 @@ export default Handler()
   .get(async (req, res) => {
     const { status } = req.query;
     const result = await db
-      .select(
-        "tbl_email_send.*",
-        "tbl_provinsi.provinsi",
-        "tbl_kabupaten.kabupaten"
-      )
-      .from("tbl_email_send")
-      .leftJoin("tbl_provinsi", "tbl_email_send.id_will", "tbl_provinsi.id")
-      .leftJoin("tbl_kabupaten", "tbl_email_send.id_will", "tbl_kabupaten.id")
+      .select("subscriber_email.*", "bawaslu.nama_bawaslu")
+      .from("subscriber_email")
+      .leftJoin("bawaslu", "bawaslu.id", "subscriber_email.bawaslu_id")
       .modify((builder) =>
-        conditionWillSpesific(db, builder, req.session.user, "tbl_email_send")
+        conditionWillSpesific(db, builder, req.session.user, "subscriber_email")
       )
       .modify((builder) => {
-        if (status) builder.where("tbl_email_send.status", status);
+        if (status) builder.where("subscriber_email.status", status);
       })
-      .orderBy("tbl_email_send.created_at", "desc");
+      .orderBy("subscriber_email.created_at", "desc");
 
     res.json(result);
   })
   .post(async (req, res) => {
-    const { level, id_prov, id_kabkot } = req.session.user;
+    const { level, bawaslu_id } = req.session.user;
     const { id, penerima, subjek, isi, send } = req.body;
     const sended_at = send ? new Date() : null;
 
@@ -63,9 +54,9 @@ export default Handler()
           message: "Daftar Penerima Tidak Terdeteksi",
         });
       // jika ada, loop subscriber dan push id ke listIDPenerima
-      const getIDSubscriber = await db("tbl_email_subscribe")
+      const getIDSubscriber = await db("subscriber")
         .select("id")
-        .whereIn("email", listEmailPenerima);
+        .whereIn("email_subscriber", listEmailPenerima);
       getIDSubscriber.map((item) => {
         listIDPenerima.push(item.id);
       });
@@ -74,21 +65,21 @@ export default Handler()
       listIDPenerima = [];
       // dan buat list email untuk kirim
       const getEmailSubscriber = await db
-        .select("email")
-        .from("tbl_email_subscribe")
+        .select("email_subscriber")
+        .from("subscriber")
         .modify((builder) => {
-          if (req.session.user.level <= 2) {
-            builder.where(`id_will`, "=", 0);
+          if (req.session.user.level === 1) {
+            builder.where(`bawaslu_id`, "=", 0);
+          }
+          if (req.session.user.level === 2) {
+            builder.where(`bawaslu_id`, "=", bawaslu_id);
           }
           if (req.session.user.level === 3) {
-            builder.where(`id_will`, "=", id_prov);
-          }
-          if (req.session.user.level === 4) {
-            builder.where(`id_will`, "=", id_kabkot);
+            builder.where(`bawaslu_id`, "=", bawaslu_id);
           }
         });
       getEmailSubscriber.map((item) => {
-        listEmailPenerima.push(item.email);
+        listEmailPenerima.push(item.email_subscriber);
       });
     }
 
@@ -97,11 +88,10 @@ export default Handler()
 
     if (id) {
       // proses Edit
-      const proses = await db("tbl_email_send")
+      const proses = await db("subscriber_email")
         .where("id", id)
         .update({
-          oleh: labelKepada(level),
-          id_will: createWill(level, id_prov, id_kabkot),
+          bawaslu_id,
           penerima,
           daftar_penerima:
             listIDPenerima.length === 0 ? null : `${listIDPenerima}`,
@@ -121,10 +111,9 @@ export default Handler()
       await kirim(send, setMailOption, id);
     } else {
       // proses simpan
-      const proses = await db("tbl_email_send").insert([
+      const proses = await db("subscriber_email").insert([
         {
-          oleh: labelKepada(level),
-          id_will: createWill(level, id_prov, id_kabkot),
+          bawaslu_id,
           penerima,
           daftar_penerima:
             listIDPenerima.length === 0 ? null : `${listIDPenerima}`,
@@ -148,10 +137,9 @@ export default Handler()
     // success
     res.json({ message: "Berhasil Proses Data", type: "success" });
   })
-  // proses hapus data terpilih
   .delete(async (req, res) => {
     const arrID = req.body;
-    const proses = await db("tbl_email_send").whereIn("id", arrID).del();
+    const proses = await db("subscriber_email").whereIn("id", arrID).del();
 
     if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
 

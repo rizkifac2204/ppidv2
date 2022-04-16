@@ -15,7 +15,7 @@ import SendIcon from "@mui/icons-material/Send";
 import DraftsIcon from "@mui/icons-material/Drafts";
 // Components
 import { CustomToolbar } from "components/TableComponents";
-import EmailForm from "components/EmailForm";
+import EmailForm from "components/Subscriber/EmailForm";
 
 function Email() {
   const router = useRouter();
@@ -136,7 +136,7 @@ function Email() {
 
   const columns = [
     {
-      field: "oleh",
+      field: "nama_bawaslu",
       headerName: "Oleh",
       minWidth: 200,
     },

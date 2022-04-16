@@ -1,11 +1,6 @@
 import db from "libs/db";
 import Handler from "middlewares/Handler";
-import {
-  conditionWillSpesific,
-  buatTiketByAdmin,
-  labelKepada,
-  createWill,
-} from "middlewares/Condition";
+import { conditionWillSpesific, buatTiketByAdmin } from "middlewares/Condition";
 
 export default Handler()
   .get(async (req, res) => {

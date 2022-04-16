@@ -9,7 +9,7 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 // Components
 import { CustomToolbar } from "components/TableComponents";
-import SubscriberFormAdd from "components/SubscriberFormAdd";
+import SubscriberFormAdd from "components/Subscriber/SubscriberFormAdd";
 
 function Subscriber() {
   const [data, setData] = useState([]);
@@ -91,29 +91,17 @@ function Subscriber() {
 
   const columns = [
     {
-      field: "kepada",
+      field: "nama_bawaslu",
       headerName: "Subscriber",
       minWidth: 200,
     },
     {
-      field: "provinsi",
-      headerName: "Provinsi",
-      minWidth: 180,
-      hide: true,
-    },
-    {
-      field: "kabupaten",
-      headerName: "Kabupaten/Kota",
-      minWidth: 180,
-      hide: true,
-    },
-    {
-      field: "nama",
+      field: "nama_subscriber",
       headerName: "Nama",
       width: 220,
     },
     {
-      field: "email",
+      field: "email_subscriber",
       headerName: "Email",
       minWidth: 180,
       flex: 1,
@@ -194,7 +182,7 @@ Subscriber.breadcrumb = [
     title: "Home",
   },
   {
-    path: "/admin/sahabat/subscriber",
+    path: "/admin/subscriber",
     title: "Subscriber",
   },
 ];

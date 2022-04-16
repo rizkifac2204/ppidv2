@@ -173,13 +173,15 @@ function EmailForm(props) {
                 }}
               >
                 {props.subscriber.map((item) => (
-                  <MenuItem key={item.id} value={item.email}>
+                  <MenuItem key={item.id} value={item.email_subscriber}>
                     <Checkbox
                       checked={
-                        formik.values.list_penerima.indexOf(item.email) > -1
+                        formik.values.list_penerima.indexOf(
+                          item.email_subscriber
+                        ) > -1
                       }
                     />
-                    <ListItemText primary={item.email} />
+                    <ListItemText primary={item.email_subscriber} />
                   </MenuItem>
                 ))}
               </Select>

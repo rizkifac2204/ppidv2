@@ -6,18 +6,13 @@ export default Handler()
   .get(async (req, res) => {
     const { id } = req.query;
     const result = await db
-      .select(
-        "tbl_email_send.*",
-        "tbl_provinsi.provinsi",
-        "tbl_kabupaten.kabupaten"
-      )
-      .from("tbl_email_send")
-      .leftJoin("tbl_provinsi", "tbl_email_send.id_will", "tbl_provinsi.id")
-      .leftJoin("tbl_kabupaten", "tbl_email_send.id_will", "tbl_kabupaten.id")
+      .select("subscriber_email.*", "bawaslu.nama_bawaslu")
+      .from("subscriber_email")
+      .leftJoin("bawaslu", "bawaslu.id", "subscriber_email.bawaslu_id")
       .modify((builder) =>
-        conditionWillSpesific(db, builder, req.session.user, "tbl_email_send")
+        conditionWillSpesific(db, builder, req.session.user, "subscriber_email")
       )
-      .where("tbl_email_send.id", id)
+      .where("subscriber_email.id", id)
       .first();
 
     if (!result) return res.status(404).json({ message: "Tidak Ditemukan" });
@@ -26,9 +21,9 @@ export default Handler()
       const arrID = result.daftar_penerima.split(",");
       const listPenerima = await db
         .select("*")
-        .from("tbl_email_subscribe")
+        .from("subscriber")
         .whereIn("id", arrID)
-        .orderBy("email", "asc");
+        .orderBy("email_subscriber", "asc");
       result.listPenerima = listPenerima;
     }
 
@@ -36,7 +31,7 @@ export default Handler()
   })
   .delete(async (req, res) => {
     const { id } = req.query;
-    const proses = await db("tbl_email_send").where("id", id).del();
+    const proses = await db("subscriber_email").where("id", id).del();
 
     if (!proses) return res.status(400).json({ message: "Gagal Hapus" });
 

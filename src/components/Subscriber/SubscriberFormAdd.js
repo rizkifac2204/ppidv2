@@ -37,8 +37,8 @@ const handleSubmit = (values, props) => {
 };
 
 const validationSchema = yup.object({
-  nama: yup.string(),
-  email: yup
+  nama_subscriber: yup.string(),
+  email_subscriber: yup
     .string("Masukan Email")
     .email("Email Tidak Valid")
     .required("Email Harus Diisi"),
@@ -51,8 +51,8 @@ function SubscriberFormAdd(props) {
 
   const formik = useFormik({
     initialValues: {
-      nama: "",
-      email: "",
+      nama_subscriber: "",
+      email_subscriber: "",
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
@@ -72,12 +72,17 @@ function SubscriberFormAdd(props) {
             fullWidth
             margin="normal"
             label="Nama"
-            name="nama"
-            value={formik.values.nama}
+            name="nama_subscriber"
+            value={formik.values.nama_subscriber}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            error={formik.touched.nama && Boolean(formik.errors.nama)}
-            helperText={formik.touched.nama && formik.errors.nama}
+            error={
+              formik.touched.nama_subscriber &&
+              Boolean(formik.errors.nama_subscriber)
+            }
+            helperText={
+              formik.touched.nama_subscriber && formik.errors.nama_subscriber
+            }
           />
           <TextField
             fullWidth
@@ -85,12 +90,17 @@ function SubscriberFormAdd(props) {
             type="email"
             margin="normal"
             label="Email"
-            name="email"
-            value={formik.values.email}
+            name="email_subscriber"
+            value={formik.values.email_subscriber}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
+            error={
+              formik.touched.email_subscriber &&
+              Boolean(formik.errors.email_subscriber)
+            }
+            helperText={
+              formik.touched.email_subscriber && formik.errors.email_subscriber
+            }
           />
         </DialogContent>
         <DialogActions>
