@@ -12,6 +12,8 @@ import DataArrayIcon from "@mui/icons-material/DataArray";
 import AddIcon from "@mui/icons-material/Add";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import WifiIcon from "@mui/icons-material/Wifi";
+import SafetyDividerIcon from "@mui/icons-material/SafetyDivider";
+import DataSaverOnIcon from "@mui/icons-material/DataSaverOn";
 
 export const mainRoutes = [
   {
@@ -74,6 +76,25 @@ export const mainRoutes = [
   },
 ];
 
+export const dipRoutes = [
+  {
+    title: "DIP",
+    icon: <DataSaverOnIcon />,
+    children: [
+      {
+        title: "Data",
+        path: "/admin/dip",
+        icon: <DataArrayIcon sx={{ fontSize: 12 }} />,
+      },
+      {
+        title: "Tambah",
+        path: "/admin/dip/add",
+        icon: <AddIcon sx={{ fontSize: 12 }} />,
+      },
+    ],
+  },
+];
+
 export const settingRoutes = [
   {
     title: "Users",
@@ -97,7 +118,12 @@ export const settingRoutes = [
     icon: <HomeWorkIcon />,
   },
   {
-    title: "Sampah",
+    title: "Divisi",
+    path: "/admin/setting/divisi",
+    icon: <SafetyDividerIcon />,
+  },
+  {
+    title: "Dibuang",
     path: "/admin/setting/trash",
     icon: <AutoDeleteIcon />,
   },

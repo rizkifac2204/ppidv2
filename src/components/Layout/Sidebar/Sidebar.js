@@ -13,7 +13,7 @@ import ListSubheader from "@mui/material/ListSubheader";
 import { styled } from "@mui/material/styles";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 // LIST
-import { MainList, SettingList, ChartList } from "./MainList";
+import { MainList, DipList, SettingList, ChartList } from "./MainList";
 
 const openedMixin = (theme, close, drawerWidth) => ({
   width: close ? 0 : drawerWidth,
@@ -122,11 +122,23 @@ function Sidebar(props) {
             aria-labelledby="subheaderGeneral"
             subheader={
               <ListSubheader component="div" id="subheaderGeneral">
-                General
+                Permohonan
               </ListSubheader>
             }
           >
             <MainList />
+          </List>
+          <Divider />
+          <List
+            component="nav"
+            aria-labelledby="subheaderDip"
+            subheader={
+              <ListSubheader component="div" id="subheaderDiv">
+                DIP
+              </ListSubheader>
+            }
+          >
+            <DipList />
           </List>
           <Divider />
           <List
