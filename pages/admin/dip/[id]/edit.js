@@ -20,10 +20,6 @@ import InputLabel from "@mui/material/InputLabel";
 // ICONS
 import EditIcon from "@mui/icons-material/Edit";
 
-function getID() {
-  return "id";
-}
-
 const handleSubmit = (values, setSubmitting) => {
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
@@ -65,14 +61,10 @@ const validationSchema = yup.object({
   link_file: yup.string().required("Harus Diisi"),
 });
 
-//mulai dari sini
-// ambil id untuk over ke breadcum
-
 function DipEdit() {
   const router = useRouter();
   const { id } = router.query;
   const [divisis, setDivisis] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [initialValues, setInitialValues] = useState({
     id: "",
     divisi_id: "",
@@ -364,7 +356,7 @@ DipEdit.breadcrumb = [
     title: "Daftar Informasi Publik",
   },
   {
-    path: "/admin/dip/" + getID(),
+    path: "/admin/dip/getID",
     title: "Detail",
   },
   {

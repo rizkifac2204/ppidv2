@@ -55,7 +55,6 @@ function Unit() {
         .get(`/api/chart/unit`, { params: filter })
         .then((res) => {
           setData((prevData) => res.data);
-          console.log(res.data);
         })
         .catch((err) => {
           toast.error("Terjadi Kesalahan");
