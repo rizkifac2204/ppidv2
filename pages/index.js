@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
@@ -17,6 +18,10 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 // COMPONENTS
 import Thumb from "components/Thumb";
 import ResponsePermohonan from "components/PublicComponents/ResponsePermohonan";
@@ -32,22 +37,31 @@ const config = {
   },
 };
 
-const handleSubmit = (values, recaptchaRef, afterSubmit) => {
+const handleSubmit = (
+  values,
+  recaptchaRef,
+  afterSubmit,
+  setSubmitting,
+  formik
+) => {
   const recaptchaValue = recaptchaRef.current.getValue();
   if (!recaptchaValue) {
     toast.info("Mohon Validasi");
+    setSubmitting(false);
     return;
   }
-
   const form = new FormData();
   for (var key in values) {
-    if (key === "file") {
-      form.append(key, values[key], values[key].name);
-    } else {
-      form.append(key, values[key]);
-    }
+    // if (key === "file") {
+    //   form.append(key, values[key], values[key].name);
+    // } else {
+    form.append(key, values[key]);
+    // }
   }
-
+  // Display the key/value pairs
+  // for (var pair of form.entries()) {
+  //   console.log(pair[0] + ", " + pair[1]);
+  // }
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
     .post(`/api/public/permohonan`, form, config)
@@ -61,6 +75,12 @@ const handleSubmit = (values, recaptchaRef, afterSubmit) => {
       });
     })
     .catch((err) => {
+      if (err.response.data.currentData) {
+        formik.setFieldValue(
+          "identitas_pemohon",
+          err.response.data.currentData.identitas_pemohon
+        );
+      }
       console.log(err.response.data);
       toast.update(toastProses, {
         render: err.response.data.message,
@@ -70,26 +90,22 @@ const handleSubmit = (values, recaptchaRef, afterSubmit) => {
       });
     })
     .then(() => {
+      setSubmitting(false);
       if (recaptchaRef.current) recaptchaRef.current.reset();
     });
 };
 
 const validationSchema = yup.object({
-  kepada: yup.string().required("Harus Diisi"),
-  nama_pemohon: yup.string("Masukan Nama").required("Harus Diisi"),
-  pekerjaan_pemohon: yup.string("Masukan Pekerjaan").required("Harus Diisi"),
-  pendidikan_pemohon: yup.string("Masukan Pendidikan").required("Harus Diisi"),
-  telp_pemohon: yup.string("Masukan Telp/HP").required("Telp Harus Diisi"),
   email_pemohon: yup
     .string()
     .email("Email Tidak Valid")
     .required("Harus Diisi"),
+  nama_pemohon: yup.string("Masukan Nama").required("Harus Diisi"),
+  pekerjaan_pemohon: yup.string("Masukan Pekerjaan").required("Harus Diisi"),
+  pendidikan_pemohon: yup.string("Masukan Pendidikan").required("Harus Diisi"),
+  telp_pemohon: yup.string("Masukan Telp/HP").required("Telp Harus Diisi"),
   alamat_pemohon: yup.string().required("Alamat Harus Diisi"),
-  rincian: yup.string().required("Harus Diisi"),
-  tujuan: yup.string().required("Harus Diisi"),
-  cara_terima: yup.string().required("Harus Diisi"),
-  cara_dapat: yup.string().required("Harus Diisi"),
-  file: yup.mixed().required("Harus Upload"),
+  kepada: yup.string().required("Harus Diisi"),
   id_prov: yup.number().when("kepada", {
     is: (kepada) => kepada !== "Bawaslu Republik Indonesia",
     then: yup.number().required("Provinsi Harus Dipilih"),
@@ -100,40 +116,103 @@ const validationSchema = yup.object({
     then: yup.number().required("Kabupaten/Kota Harus Diisi"),
     otherwise: yup.number(),
   }),
+  rincian: yup.string().required("Harus Diisi"),
+  tujuan: yup.string().required("Harus Diisi"),
+  cara_terima: yup.string().required("Harus Diisi"),
+  cara_dapat: yup.string().required("Harus Diisi"),
+  identitas_pemohon: yup.string(),
+  file: yup
+    .mixed()
+    .test(
+      "FILE_SIZE",
+      "Ukuran Gambar Melebihi 4mb.",
+      (value) => !value || (value && value.size <= 4194304) // 4 mb
+    )
+    .test(
+      "FILE_FORMAT",
+      "Format Gambar Tidak Sesuai.",
+      (value) =>
+        !value ||
+        (value &&
+          [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/gif",
+            "image/bmp",
+          ].includes(value.type))
+    )
+    .when("identitas_pemohon", {
+      is: (identitas_pemohon) => !identitas_pemohon,
+      then: yup.mixed().required("Harus Upload"),
+      otherwise: yup.mixed(),
+    }),
 });
 
 const Permohonan = () => {
+  // prepare
+  const router = useRouter();
+  const { q } = router.query;
   const [curData, setCurData] = useState({});
   const [provinsis, setProvinsis] = useState([]);
   const [kabkotas, setKabkotas] = useState([]);
+  const [loadPemohon, setLoadPemohon] = useState({
+    open: false,
+    message: "",
+    attr: {},
+    used: false,
+  });
   const [profileBawaslu, setProfileBawaslu] = useState({});
+  const [initialValues, setInitialValues] = useState({
+    email_pemohon: "",
+    nama_pemohon: "",
+    pekerjaan_pemohon: "",
+    pendidikan_pemohon: "",
+    telp_pemohon: "",
+    alamat_pemohon: "",
+    kepada: "",
+    id_prov: "",
+    id_kabkota: "",
+    rincian: "",
+    tujuan: "",
+    cara_terima: "",
+    cara_dapat: "",
+    identitas_pemohon: "",
+    file: null,
+  });
 
+  // useRef
   const recaptchaRef = useRef(null);
   const answerRef = useRef(null);
   const printBuktiRef = useRef();
 
-  const fetchProv = () => {
+  // fetching wilayah
+  const fetchProv = (cb) => {
+    if (provinsis.length !== 0) {
+      if (cb) cb();
+      return;
+    }
     axios
       .get(`/api/services/provinsis`)
       .then((res) => {
-        setProvinsis(res.data);
+        setProvinsis(() => res.data);
+        if (cb) cb();
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
-  const fetchKabkot = (id) => {
+  const fetchKabkot = (id, cb) => {
     axios
       .get(`/api/services/provinsis/` + id)
       .then((res) => {
-        setKabkotas(res.data.kabkot);
+        setKabkotas(() => res.data.kabkota);
+        if (cb) cb();
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
   const fetchProfileBawaslu = (callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
     axios
@@ -164,32 +243,16 @@ const Permohonan = () => {
     content: () => printBuktiRef.current,
   });
 
+  // formik dan submit
   const formik = useFormik({
-    initialValues: {
-      kepada: "",
-      id_prov: "",
-      id_kabkota: "",
-      nama_pemohon: "",
-      pekerjaan_pemohon: "",
-      pendidikan_pemohon: "",
-      telp_pemohon: "",
-      email_pemohon: "",
-      alamat_pemohon: "",
-      rincian: "",
-      tujuan: "",
-      cara_terima: "",
-      cara_dapat: "",
-      file: null,
-    },
+    initialValues: initialValues,
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: (values) => handleSubmit(values, recaptchaRef, afterSubmit),
+    onSubmit: (values, { setSubmitting }) => {
+      setCurData({});
+      handleSubmit(values, recaptchaRef, afterSubmit, setSubmitting, formik);
+    },
   });
-
-  const captchaChange = () => {
-    toast.dismiss();
-  };
-
   const afterSubmit = (data) => {
     setCurData(() => data);
     formik.resetForm();
@@ -199,15 +262,64 @@ const Permohonan = () => {
     });
   };
 
+  // Utils
+  const captchaChange = () => {
+    toast.dismiss();
+  };
+
+  // load Pemohon
+  const handleUsePemohon = (event) => {
+    event.preventDefault();
+    const initAgain = { ...formik.values, ...loadPemohon.attr };
+    setInitialValues(() => initAgain);
+    setLoadPemohon({ ...loadPemohon, open: false, used: true });
+  };
+  const hanldeConfirmPemohon = (data) => {
+    const tempPemohon = {
+      ...loadPemohon,
+      open: true,
+      attr: data,
+      message: "Gunakan Data " + data.nama_pemohon + "?",
+    };
+    setLoadPemohon(tempPemohon);
+  };
+  const action = (
+    <>
+      <Button color="secondary" size="small" onClick={handleUsePemohon}>
+        Gunakan
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={() => setLoadPemohon({ ...loadPemohon, open: false })}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
+  const getPemohonByEmail = (e) => {
+    var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (emailPattern.test(e.target.value)) {
+      axios
+        .post(`/api/public/getPemohon`, {
+          email_pemohon: e.target.value,
+        })
+        .then((res) => {
+          hanldeConfirmPemohon(res.data);
+        })
+        .catch((err) => {
+          // console.log(err);
+        });
+    }
+  };
+
+  // EFFECT
   useEffect(() => {
     if (!formik.values.kepada) return;
     formik.setFieldValue("id_prov", "");
     formik.setFieldValue("id_kabkota", "");
-    if (
-      formik.values.kepada !== "Bawaslu Republik Indonesia" &&
-      provinsis.length === 0
-    )
-      fetchProv();
+    if (formik.values.kepada !== "Bawaslu Republik Indonesia") fetchProv();
   }, [formik.values.kepada]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -215,6 +327,30 @@ const Permohonan = () => {
     if (!formik.values.id_prov) return;
     if (formik.values.kepada === "Bawaslu") fetchKabkot(formik.values.id_prov);
   }, [formik.values.id_prov]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!q) return;
+    if (q == 0) formik.setFieldValue("kepada", "Bawaslu Republik Indonesia");
+    if (q.length === 2) {
+      formik.setFieldValue("kepada", "Bawaslu Provinsi");
+      fetchProv(() => {
+        const arrayID = provinsis.map((a) => a.id);
+        if (arrayID.includes(q)) formik.setFieldValue("id_prov", q);
+      });
+    }
+    if (q.length === 4) {
+      formik.setFieldValue("kepada", "Bawaslu");
+      fetchProv(() => {
+        const arrayID = provinsis.map((a) => a.id);
+        if (arrayID.includes(q.substring(0, 2)))
+          formik.setFieldValue("id_prov", q.substring(0, 2));
+      });
+      fetchKabkot(q.substring(0, 2), () => {
+        const arrayID = kabkotas.map((a) => a.id);
+        if (arrayID.includes(q)) formik.setFieldValue("id_kabkota", q);
+      });
+    }
+  }, [q, provinsis]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div id="block-form">
@@ -235,107 +371,32 @@ const Permohonan = () => {
         <div style={{ marginTop: "20px" }}>
           <form onSubmit={formik.handleSubmit}>
             <div className="row">
-              {/* kepada */}
+              {/* email  */}
               <div className="col-xs-12">
-                <FormControl
+                <TextField
                   fullWidth
-                  error={formik.touched.kepada && Boolean(formik.errors.kepada)}
-                >
-                  <InputLabel>
-                    <p>Penerima *</p>
-                  </InputLabel>
-                  <Select
-                    name="kepada"
-                    label={<p>Penerima</p>}
-                    value={formik.values.kepada}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  >
-                    <MenuItem value="Bawaslu Republik Indonesia">
-                      <p>Bawaslu Republik Indonesia</p>
-                    </MenuItem>
-                    <MenuItem value="Bawaslu Provinsi">
-                      <p>Bawaslu Provinsi</p>
-                    </MenuItem>
-                    <MenuItem value="Bawaslu">
-                      <p>Bawaslu Kabupaten/Kota</p>
-                    </MenuItem>
-                  </Select>
-                  <FormHelperText>
-                    {formik.touched.kepada && formik.errors.kepada}
-                  </FormHelperText>
-                </FormControl>
+                  required
+                  margin="normal"
+                  type="email"
+                  label="Email"
+                  name="email_pemohon"
+                  value={formik.values.email_pemohon}
+                  onChange={formik.handleChange}
+                  onBlur={(e) => {
+                    formik.handleBlur(e);
+                    getPemohonByEmail(e);
+                  }}
+                  error={
+                    formik.touched.email_pemohon &&
+                    Boolean(formik.errors.email_pemohon)
+                  }
+                  helperText={
+                    formik.touched.email_pemohon && formik.errors.email_pemohon
+                  }
+                  inputProps={{ style: { fontSize: 14 } }}
+                  InputLabelProps={{ style: { fontSize: 14 } }}
+                />
               </div>
-              {/* provinsi  */}
-              {formik.values.kepada &&
-                formik.values.kepada !== "Bawaslu Republik Indonesia" && (
-                  <div className="col-xs-12">
-                    <FormControl
-                      fullWidth
-                      sx={{ mt: 2 }}
-                      error={
-                        formik.touched.id_prov && Boolean(formik.errors.id_prov)
-                      }
-                    >
-                      <InputLabel>
-                        <p>Provinsi *</p>
-                      </InputLabel>
-                      <Select
-                        name="id_prov"
-                        label={<p>Provinsi</p>}
-                        value={formik.values.id_prov}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                      >
-                        <MenuItem value="">--Pilih--</MenuItem>
-                        {provinsis.length !== 0 &&
-                          provinsis.map((item, idx) => (
-                            <MenuItem key={idx} value={item.id}>
-                              <p>{item.provinsi}</p>
-                            </MenuItem>
-                          ))}
-                      </Select>
-                      <FormHelperText>
-                        {formik.touched.id_prov && formik.errors.id_prov}
-                      </FormHelperText>
-                    </FormControl>
-                  </div>
-                )}
-              {/* kabkot */}
-              {formik.values.kepada && formik.values.kepada === "Bawaslu" && (
-                <div className="col-xs-12">
-                  <FormControl
-                    fullWidth
-                    sx={{ mt: 2 }}
-                    error={
-                      formik.touched.id_kabkota &&
-                      Boolean(formik.errors.id_kabkota)
-                    }
-                  >
-                    <InputLabel>
-                      <p>Kabupaten/Kota *</p>
-                    </InputLabel>
-                    <Select
-                      name="id_kabkota"
-                      label={<p>Kabupaten/Kota</p>}
-                      value={formik.values.id_kabkota}
-                      onChange={formik.handleChange}
-                    >
-                      {kabkotas.length !== 0 &&
-                        kabkotas.map((item) => (
-                          <MenuItem key={item.id} value={item.id}>
-                            {item.kabkota}
-                          </MenuItem>
-                        ))}
-                    </Select>
-                    <FormHelperText>
-                      {formik.touched.id_kabkota && formik.errors.id_kabkota}
-                    </FormHelperText>
-                  </FormControl>
-                </div>
-              )}
-            </div>
-            <div className="row">
               {/* nama */}
               <div className="col-xs-12 col-sm-6">
                 <TextField
@@ -426,29 +487,6 @@ const Permohonan = () => {
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
               </div>
-              {/* email  */}
-              <div className="col-xs-12 col-sm-6">
-                <TextField
-                  fullWidth
-                  required
-                  margin="normal"
-                  type="email"
-                  label="Email"
-                  name="email_pemohon"
-                  value={formik.values.email_pemohon}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.email_pemohon &&
-                    Boolean(formik.errors.email_pemohon)
-                  }
-                  helperText={
-                    formik.touched.email_pemohon && formik.errors.email_pemohon
-                  }
-                  inputProps={{ style: { fontSize: 14 } }}
-                  InputLabelProps={{ style: { fontSize: 14 } }}
-                />
-              </div>
               {/* alamat  */}
               <div className="col-xs-12">
                 <TextField
@@ -474,6 +512,109 @@ const Permohonan = () => {
                   InputLabelProps={{ style: { fontSize: 14 } }}
                 />
               </div>
+            </div>
+
+            <div className="row">
+              {/* kepada */}
+              <div className="col-xs-12">
+                <FormControl
+                  fullWidth
+                  sx={{ mt: 1.5 }}
+                  error={formik.touched.kepada && Boolean(formik.errors.kepada)}
+                >
+                  <InputLabel>
+                    <p>Ditujukan Kepada *</p>
+                  </InputLabel>
+                  <Select
+                    name="kepada"
+                    label={<p>Ditujukan Kepada</p>}
+                    value={formik.values.kepada}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  >
+                    <MenuItem value="Bawaslu Republik Indonesia">
+                      <p>Bawaslu Republik Indonesia</p>
+                    </MenuItem>
+                    <MenuItem value="Bawaslu Provinsi">
+                      <p>Bawaslu Provinsi</p>
+                    </MenuItem>
+                    <MenuItem value="Bawaslu">
+                      <p>Bawaslu Kabupaten/Kota</p>
+                    </MenuItem>
+                  </Select>
+                  <FormHelperText>
+                    {formik.touched.kepada && formik.errors.kepada}
+                  </FormHelperText>
+                </FormControl>
+              </div>
+              {/* provinsi  */}
+              {formik.values.kepada &&
+                formik.values.kepada !== "Bawaslu Republik Indonesia" && (
+                  <div className="col-xs-12">
+                    <FormControl
+                      fullWidth
+                      sx={{ mt: 2 }}
+                      error={
+                        formik.touched.id_prov && Boolean(formik.errors.id_prov)
+                      }
+                    >
+                      <InputLabel>
+                        <p>Provinsi *</p>
+                      </InputLabel>
+                      <Select
+                        name="id_prov"
+                        label={<p>Provinsi</p>}
+                        value={formik.values.id_prov}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      >
+                        <MenuItem value="">--Pilih--</MenuItem>
+                        {provinsis.length !== 0 &&
+                          provinsis.map((item, idx) => (
+                            <MenuItem key={idx} value={item.id}>
+                              <p>{item.provinsi}</p>
+                            </MenuItem>
+                          ))}
+                      </Select>
+                      <FormHelperText>
+                        {formik.touched.id_prov && formik.errors.id_prov}
+                      </FormHelperText>
+                    </FormControl>
+                  </div>
+                )}
+              {/* kabkot */}
+              {formik.values.kepada && formik.values.kepada === "Bawaslu" && (
+                <div className="col-xs-12">
+                  <FormControl
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    error={
+                      formik.touched.id_kabkota &&
+                      Boolean(formik.errors.id_kabkota)
+                    }
+                  >
+                    <InputLabel>
+                      <p>Kabupaten/Kota *</p>
+                    </InputLabel>
+                    <Select
+                      name="id_kabkota"
+                      label={<p>Kabupaten/Kota</p>}
+                      value={formik.values.id_kabkota}
+                      onChange={formik.handleChange}
+                    >
+                      {kabkotas.length !== 0 &&
+                        kabkotas.map((item) => (
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.kabkota}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                    <FormHelperText>
+                      {formik.touched.id_kabkota && formik.errors.id_kabkota}
+                    </FormHelperText>
+                  </FormControl>
+                </div>
+              )}
               {/* rincian  */}
               <div className="col-xs-12">
                 <TextField
@@ -602,13 +743,16 @@ const Permohonan = () => {
                   </FormHelperText>
                 </FormControl>
               </div>
-              {/* ktp */}
+              {/* tanda pengenal */}
               <div className="col-xs-12" style={{ marginTop: 2 }}>
                 <div className="form-group">
-                  <label>Upload Tanda Pengenal</label>
+                  <label>
+                    {loadPemohon.used
+                      ? "Biarkan atau Upload ulang jika ingin mengganti Tanda Pengenal"
+                      : "Upload Tanda Pengenal"}
+                  </label>
                   <input
                     className="form form-control"
-                    required
                     type="file"
                     id="file"
                     name="file"
@@ -621,7 +765,15 @@ const Permohonan = () => {
                       );
                     }}
                   />
-                  <Thumb file={formik.values.file} />
+                  <Thumb
+                    file={
+                      formik.values.file
+                        ? formik.values.file
+                        : formik.values.identitas_pemohon
+                    }
+                  />
+                  <br />
+                  {formik.touched.file && formik.errors.file}
                 </div>
               </div>
             </div>
@@ -636,6 +788,7 @@ const Permohonan = () => {
               </div>
               <div className="col-xs-12 col-sm-6">
                 <Button
+                  disabled={formik.isSubmitting}
                   type="submit"
                   variant="contained"
                   className="btn btn-info"
@@ -681,6 +834,15 @@ const Permohonan = () => {
           profileBawaslu={profileBawaslu}
         />
       )}
+
+      <Snackbar
+        open={loadPemohon.open}
+        onClose={() =>
+          setLoadPemohon((prev) => (prev = { ...loadPemohon, open: false }))
+        }
+        message={loadPemohon.message}
+        action={action}
+      />
     </div>
   );
 };

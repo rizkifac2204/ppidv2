@@ -12,6 +12,26 @@ import Button from "@mui/material/Button";
 // COMPONENTS
 import BuktiPermohonan from "components/PrintPage/BuktiPermohonan";
 
+function getValueResponse(obj, param, download) {
+  if (!obj.responses) return "Tidak Tersedia";
+  if (obj.responses[0][param]) {
+    if (download) {
+      return (
+        <a
+          className="phone-mail-link"
+          href={`/${download}/${obj.responses[0][param]}`}
+          download
+        >
+          <i className="fa fa-download"></i>
+        </a>
+      );
+    } else {
+      return obj.responses[0][param];
+    }
+  }
+  return "Tidak Ditemukan";
+}
+
 const handleSubmit = (values, recaptchaRef, afterSubmit, setCurData) => {
   const recaptchaValue = recaptchaRef.current.getValue();
   if (!recaptchaValue) {
@@ -64,14 +84,14 @@ function Cek() {
   const fetchProfileBawaslu = (callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
     axios
-      .get(`/api/permohonan/profileBawaslu?id=` + curData.bawaslu_id)
+      .get(`/api/services/profileBawaslu?id=` + curData.bawaslu_id)
       .then((res) => {
         setProfileBawaslu(res.data);
         toast.dismiss(toastProses);
         callback();
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.data);
         toast.update(toastProses, {
           render: "Terjadi Kesalahan",
           type: "error",
@@ -223,28 +243,6 @@ function Cek() {
                     <td>{curData.status_permohonan}</td>
                   </tr>
                   <tr>
-                    <td>Balasan Admin</td>
-                    <td>
-                      {curData.pesan}{" "}
-                      {!curData.pesan &&
-                        "Sedang dalam proses verifikasi data diri pemohon dan verifikasi permohonan yang diajukan"}
-                    </td>
-                  </tr>
-                  {curData.file_informasi && (
-                    <tr>
-                      <td>Berikut File Yang Bisa Kamu Download</td>
-                      <td>
-                        <a
-                          className="phone-mail-link"
-                          href={`/response/${curData.file_informasi}`}
-                          download
-                        >
-                          <i className="fa fa-download"></i>
-                        </a>
-                      </td>
-                    </tr>
-                  )}
-                  <tr>
                     <td>Cetak Bukti Permohonan</td>
                     <td>
                       <a
@@ -254,6 +252,30 @@ function Cek() {
                         <i>Cetak</i>
                       </a>
                     </td>
+                  </tr>
+                  <tr>
+                    <td>Surat Pemberitahuan</td>
+                    <td>
+                      {getValueResponse(
+                        curData,
+                        "file_surat_pemberitahuan",
+                        "pemberitahuan"
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>File Informasi</td>
+                    <td>
+                      {getValueResponse(curData, "file_informasi", "response")}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Pesan</td>
+                    <td>{getValueResponse(curData, "pesan")}</td>
+                  </tr>
+                  <tr>
+                    <td>Jumlah Response</td>
+                    <td>{curData.responses ? curData.responses.length : 0}</td>
                   </tr>
                 </tbody>
               </table>

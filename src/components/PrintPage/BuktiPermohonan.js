@@ -11,7 +11,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 // Components
-import { SetQRCode, CurrentDate } from "components/Attributes";
+import { SetQRCode, CurrentDate, FormatedDate } from "components/Attributes";
 
 const themeLight = createTheme({
   palette: {
@@ -73,7 +73,10 @@ const BuktiPermohonan = React.forwardRef(({ detail, profileBawaslu }, ref) => {
               <TableRow>
                 <TableCell>Tanggal penyerahan formulir permohonan</TableCell>
                 <TableCell>
-                  : <b>{detail.tanggal_permohonan}</b>
+                  :{" "}
+                  <b>
+                    <FormatedDate tanggal={detail.tanggal_permohonan} />
+                  </b>
                 </TableCell>
               </TableRow>
               <TableRow>

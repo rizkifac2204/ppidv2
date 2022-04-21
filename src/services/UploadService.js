@@ -38,7 +38,7 @@ export const UploadPublic = () =>
   multer({
     storage: storage(),
     fileFilter: filterFile,
-    limits: { fileSize: 3145728 }, // hanya dibatasi 3mb
+    limits: { fileSize: 4194304 }, // hanya dibatasi 4mb
   });
 
 function prosesDelete(path, file) {
