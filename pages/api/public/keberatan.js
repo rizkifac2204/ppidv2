@@ -9,7 +9,7 @@ import { buatCurTime } from "middlewares/PublicCondition";
 
 export default PublicHandler()
   .get(async (req, res) => {
-    const { no_registrasi } = req.query;
+    const { nomor } = req.query;
 
     const data = await db
       .select(
@@ -27,8 +27,9 @@ export default PublicHandler()
       .from("permohonan")
       .innerJoin("pemohon", "pemohon.email_pemohon", "permohonan.email_pemohon")
       .leftJoin("bawaslu", "bawaslu.id", "permohonan.bawaslu_id")
+      .where("permohonan.no_registrasi", nomor)
+      .orWhere("permohonan.tiket", nomor)
       .whereNull("permohonan.deleted_at")
-      .andWhere("permohonan.no_registrasi", no_registrasi)
       .first();
 
     if (!data) return res.status(404).json({ message: "Tidak Ditemukan" });

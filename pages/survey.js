@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
@@ -16,11 +17,21 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
-const handleSubmit = (values, recaptchaRef, afterSubmit, setResponse) => {
+const handleSubmit = (
+  values,
+  recaptchaRef,
+  afterSubmit,
+  setResponse,
+  setSubmitting
+) => {
   const recaptchaValue = recaptchaRef.current.getValue();
   if (!recaptchaValue) {
     toast.info("Mohon Validasi");
+    setSubmitting(false);
     return;
   }
   setResponse(false);
@@ -29,7 +40,6 @@ const handleSubmit = (values, recaptchaRef, afterSubmit, setResponse) => {
   axios
     .post(`/api/public/survey`, values)
     .then((res) => {
-      console.log(res);
       afterSubmit(res);
       toast.update(toastProses, {
         render: res.data.message,
@@ -48,6 +58,7 @@ const handleSubmit = (values, recaptchaRef, afterSubmit, setResponse) => {
       });
     })
     .then(() => {
+      setSubmitting(false);
       if (recaptchaRef.current) recaptchaRef.current.reset();
     });
 };
@@ -87,67 +98,86 @@ const validationSchema = yup.object({
 });
 
 function Survey() {
+  // prepare
+  const router = useRouter();
+  const { q } = router.query;
   const [response, setResponse] = useState(false);
   const [provinsis, setProvinsis] = useState([]);
   const [kabkotas, setKabkotas] = useState([]);
+  const [loadPemohon, setLoadPemohon] = useState({
+    open: false,
+    message: "",
+    attr: {},
+    used: false,
+  });
+  const [initialValues, setInitialValues] = useState({
+    kepada: "",
+    id_prov: "",
+    id_kabkota: "",
+    nama_pemohon: "",
+    jenis_kelamin_pemohon: "",
+    pendidikan_pemohon: "",
+    email_pemohon: "",
+    pekerjaan_pemohon: "",
+    alamat_pemohon: "",
+    q1: "",
+    q2: "",
+    q3: "",
+    q4: "",
+    q5: "",
+    q6: "",
+    q7: "",
+    q8: "",
+    q9: "",
+    q10: "",
+    saran: "",
+  });
   const recaptchaRef = useRef(null);
   const answerRef = useRef(null);
 
-  const fetchProv = () => {
+  // fetching wilayah
+  const fetchProv = (cb) => {
+    if (provinsis.length !== 0) {
+      if (cb) cb();
+      return;
+    }
     axios
-      .get(`/api/setting/wilayah/provinsis`)
+      .get(`/api/services/provinsis`)
       .then((res) => {
-        setProvinsis(res.data);
+        setProvinsis(() => res.data);
+        if (cb) cb();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const fetchKabkota = (id, cb) => {
+    axios
+      .get(`/api/services/provinsis/` + id)
+      .then((res) => {
+        setKabkotas(() => res.data.kabkota);
+        if (cb) cb();
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const fetchKabkota = (id) => {
-    axios
-      .get(`/api/setting/wilayah/provinsis/` + id)
-      .then((res) => {
-        setKabkotas(res.data.kabkot);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
+  // formik dan submit
   const formik = useFormik({
-    initialValues: {
-      kepada: "",
-      id_prov: "",
-      id_kabkota: "",
-      nama_pemohon: "",
-      jenis_kelamin_pemohon: "",
-      pendidikan_pemohon: "",
-      email_pemohon: "",
-      pekerjaan_pemohon: "",
-      alamat_pemohon: "",
-      q1: "",
-      q2: "",
-      q3: "",
-      q4: "",
-      q5: "",
-      q6: "",
-      q7: "",
-      q8: "",
-      q9: "",
-      q10: "",
-      saran: "",
-    },
+    initialValues: initialValues,
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: (values) =>
-      handleSubmit(values, recaptchaRef, afterSubmit, setResponse),
+    onSubmit: (values, { setSubmitting }) => {
+      handleSubmit(
+        values,
+        recaptchaRef,
+        afterSubmit,
+        setResponse,
+        setSubmitting
+      );
+    },
   });
-
-  const captchaChange = () => {
-    toast.dismiss();
-  };
-
   const afterSubmit = (res) => {
     setResponse(true);
     formik.resetForm();
@@ -157,15 +187,65 @@ function Survey() {
     });
   };
 
+  // Utils
+
+  const captchaChange = () => {
+    toast.dismiss();
+  };
+
+  // load Pemohon
+  const handleUsePemohon = (event) => {
+    event.preventDefault();
+    const initAgain = { ...formik.values, ...loadPemohon.attr };
+    setInitialValues(() => initAgain);
+    setLoadPemohon({ ...loadPemohon, open: false, used: true });
+  };
+  const hanldeConfirmPemohon = (data) => {
+    const tempPemohon = {
+      ...loadPemohon,
+      open: true,
+      attr: data,
+      message: "Gunakan Data " + data.nama_pemohon + "?",
+    };
+    setLoadPemohon(tempPemohon);
+  };
+  const action = (
+    <>
+      <Button color="secondary" size="small" onClick={handleUsePemohon}>
+        Gunakan
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={() => setLoadPemohon({ ...loadPemohon, open: false })}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
+  const getPemohonByEmail = (e) => {
+    var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (emailPattern.test(e.target.value)) {
+      axios
+        .post(`/api/public/getPemohon`, {
+          email_pemohon: e.target.value,
+        })
+        .then((res) => {
+          hanldeConfirmPemohon(res.data);
+        })
+        .catch((err) => {
+          // console.log(err);
+        });
+    }
+  };
+
+  // EFFECT
   useEffect(() => {
     if (!formik.values.kepada) return;
     formik.setFieldValue("id_prov", "");
     formik.setFieldValue("id_kabkota", "");
-    if (
-      formik.values.kepada !== "Bawaslu Republik Indonesia" &&
-      provinsis.length === 0
-    )
-      fetchProv();
+    if (formik.values.kepada !== "Bawaslu Republik Indonesia") fetchProv();
   }, [formik.values.kepada]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -173,6 +253,30 @@ function Survey() {
     if (!formik.values.id_prov) return;
     if (formik.values.kepada === "Bawaslu") fetchKabkota(formik.values.id_prov);
   }, [formik.values.id_prov]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!q) return;
+    if (q == 0) formik.setFieldValue("kepada", "Bawaslu Republik Indonesia");
+    if (q.length === 2) {
+      formik.setFieldValue("kepada", "Bawaslu Provinsi");
+      fetchProv(() => {
+        const arrayID = provinsis.map((a) => a.id);
+        if (arrayID.includes(q)) formik.setFieldValue("id_prov", q);
+      });
+    }
+    if (q.length === 4) {
+      formik.setFieldValue("kepada", "Bawaslu");
+      fetchProv(() => {
+        const arrayID = provinsis.map((a) => a.id);
+        if (arrayID.includes(q.substring(0, 2)))
+          formik.setFieldValue("id_prov", q.substring(0, 2));
+      });
+      fetchKabkota(q.substring(0, 2), () => {
+        const arrayID = kabkotas.map((a) => a.id);
+        if (arrayID.includes(q)) formik.setFieldValue("id_kabkota", q);
+      });
+    }
+  }, [q, provinsis]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div id="block-form">
@@ -184,11 +288,167 @@ function Survey() {
       </p>
       <div style={{ marginTop: "20px" }}>
         <form onSubmit={formik.handleSubmit}>
+          {/* DATA DIRI */}
+          <div className="row">
+            {/* email  */}
+            <div className="col-xs-12 col-sm-6">
+              <TextField
+                fullWidth
+                required
+                margin="normal"
+                type="email"
+                label="Email"
+                name="email_pemohon"
+                value={formik.values.email_pemohon}
+                onChange={formik.handleChange}
+                onBlur={(e) => {
+                  formik.handleBlur(e);
+                  getPemohonByEmail(e);
+                }}
+                error={
+                  formik.touched.email_pemohon &&
+                  Boolean(formik.errors.email_pemohon)
+                }
+                helperText={
+                  formik.touched.email_pemohon && formik.errors.email_pemohon
+                }
+                inputProps={{ style: { fontSize: 14 } }}
+                InputLabelProps={{ style: { fontSize: 14 } }}
+              />
+            </div>
+            {/* nama */}
+            <div className="col-xs-12 col-sm-6">
+              <TextField
+                fullWidth
+                required
+                margin="normal"
+                label="Nama"
+                name="nama_pemohon"
+                value={formik.values.nama_pemohon}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.nama_pemohon &&
+                  Boolean(formik.errors.nama_pemohon)
+                }
+                helperText={
+                  formik.touched.nama_pemohon && formik.errors.nama_pemohon
+                }
+                inputProps={{ style: { fontSize: 14 } }}
+                InputLabelProps={{ style: { fontSize: 14 } }}
+              />
+            </div>
+            {/* jenis_kelamin  */}
+            <div className="col-xs-12">
+              <FormControl
+                component="fieldset"
+                error={
+                  formik.touched.jenis_kelamin_pemohon &&
+                  Boolean(formik.errors.jenis_kelamin_pemohon)
+                }
+                variant="standard"
+              >
+                <RadioGroup
+                  aria-label="jenis_kelamin"
+                  name="jenis_kelamin_pemohon"
+                  value={formik.values.jenis_kelamin_pemohon}
+                  onChange={formik.handleChange}
+                >
+                  <FormControlLabel
+                    value="Laki-laki"
+                    control={<Radio />}
+                    label={<p>Laki-laki</p>}
+                  />
+                  <FormControlLabel
+                    value="Perempuan"
+                    control={<Radio />}
+                    label={<p>Perempuan</p>}
+                  />
+                </RadioGroup>
+                <FormHelperText>
+                  {formik.touched.jenis_kelamin_pemohon &&
+                    formik.errors.jenis_kelamin_pemohon}
+                </FormHelperText>
+              </FormControl>
+            </div>
+            {/* pendidikan */}
+            <div className="col-xs-12 col-sm-6">
+              <TextField
+                fullWidth
+                required
+                margin="normal"
+                label="Pendidikan"
+                name="pendidikan_pemohon"
+                value={formik.values.pendidikan_pemohon}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.pendidikan_pemohon &&
+                  Boolean(formik.errors.pendidikan_pemohon)
+                }
+                helperText={
+                  formik.touched.pendidikan_pemohon &&
+                  formik.errors.pendidikan_pemohon
+                }
+                inputProps={{ style: { fontSize: 14 } }}
+                InputLabelProps={{ style: { fontSize: 14 } }}
+              />
+            </div>
+            {/* pekerjaan  */}
+            <div className="col-xs-12 col-sm-6">
+              <TextField
+                fullWidth
+                required
+                margin="normal"
+                label="Pekerjaan"
+                name="pekerjaan_pemohon"
+                value={formik.values.pekerjaan_pemohon}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.pekerjaan_pemohon &&
+                  Boolean(formik.errors.pekerjaan_pemohon)
+                }
+                helperText={
+                  formik.touched.pekerjaan_pemohon &&
+                  formik.errors.pekerjaan_pemohon
+                }
+                inputProps={{ style: { fontSize: 14 } }}
+                InputLabelProps={{ style: { fontSize: 14 } }}
+              />
+            </div>
+            {/* alamat  */}
+            <div className="col-xs-12">
+              <TextField
+                fullWidth
+                required
+                multiline
+                rows={4}
+                margin="normal"
+                label="Alamat"
+                name="alamat_pemohon"
+                value={formik.values.alamat_pemohon}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.alamat_pemohon &&
+                  Boolean(formik.errors.alamat_pemohon)
+                }
+                helperText={
+                  formik.touched.alamat_pemohon && formik.errors.alamat_pemohon
+                }
+                inputProps={{ style: { fontSize: 14 } }}
+                InputLabelProps={{ style: { fontSize: 14 } }}
+              />
+            </div>
+          </div>
+          {/* DATA BAWASLU  */}
           <div className="row">
             {/* kepada */}
             <div className="col-xs-12">
               <FormControl
                 fullWidth
+                sx={{ mt: 2 }}
                 error={formik.touched.kepada && Boolean(formik.errors.kepada)}
               >
                 <InputLabel>
@@ -285,159 +545,13 @@ function Survey() {
               </div>
             )}
           </div>
+          {/* DATA PERTANYAAN  */}
           <div className="row">
-            {/* nama */}
-            <div className="col-xs-12">
-              <TextField
-                fullWidth
-                required
-                margin="normal"
-                label="Nama"
-                name="nama_pemohon"
-                value={formik.values.nama_pemohon}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.nama_pemohon &&
-                  Boolean(formik.errors.nama_pemohon)
-                }
-                helperText={
-                  formik.touched.nama_pemohon && formik.errors.nama_pemohon
-                }
-                inputProps={{ style: { fontSize: 14 } }}
-                InputLabelProps={{ style: { fontSize: 14 } }}
-              />
-            </div>
-            {/* jenis_kelamin  */}
-            <div className="col-xs-12">
-              <FormControl
-                component="fieldset"
-                error={
-                  formik.touched.jenis_kelamin_pemohon &&
-                  Boolean(formik.errors.jenis_kelamin_pemohon)
-                }
-                variant="standard"
-              >
-                <RadioGroup
-                  aria-label="jenis_kelamin"
-                  name="jenis_kelamin_pemohon"
-                  value={formik.values.jenis_kelamin_pemohon}
-                  onChange={formik.handleChange}
-                >
-                  <FormControlLabel
-                    value="Laki-laki"
-                    control={<Radio />}
-                    label={<p>Laki-laki</p>}
-                  />
-                  <FormControlLabel
-                    value="Perempuan"
-                    control={<Radio />}
-                    label={<p>Perempuan</p>}
-                  />
-                </RadioGroup>
-                <FormHelperText>
-                  {formik.touched.jenis_kelamin_pemohon &&
-                    formik.errors.jenis_kelamin_pemohon}
-                </FormHelperText>
-              </FormControl>
-            </div>
-            {/* pendidikan */}
-            <div className="col-xs-12 col-sm-6">
-              <TextField
-                fullWidth
-                required
-                margin="normal"
-                label="Pendidikan"
-                name="pendidikan_pemohon"
-                value={formik.values.pendidikan_pemohon}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.pendidikan_pemohon &&
-                  Boolean(formik.errors.pendidikan_pemohon)
-                }
-                helperText={
-                  formik.touched.pendidikan_pemohon &&
-                  formik.errors.pendidikan_pemohon
-                }
-                inputProps={{ style: { fontSize: 14 } }}
-                InputLabelProps={{ style: { fontSize: 14 } }}
-              />
-            </div>
-            {/* email  */}
-            <div className="col-xs-12 col-sm-6">
-              <TextField
-                fullWidth
-                required
-                margin="normal"
-                type="email"
-                label="Email"
-                name="email_pemohon"
-                value={formik.values.email_pemohon}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.email_pemohon &&
-                  Boolean(formik.errors.email_pemohon)
-                }
-                helperText={
-                  formik.touched.email_pemohon && formik.errors.email_pemohon
-                }
-                inputProps={{ style: { fontSize: 14 } }}
-                InputLabelProps={{ style: { fontSize: 14 } }}
-              />
-            </div>
-            {/* pekerjaan  */}
-            <div className="col-xs-12 col-sm-6">
-              <TextField
-                fullWidth
-                required
-                margin="normal"
-                label="Pekerjaan"
-                name="pekerjaan_pemohon"
-                value={formik.values.pekerjaan_pemohon}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.pekerjaan_pemohon &&
-                  Boolean(formik.errors.pekerjaan_pemohon)
-                }
-                helperText={
-                  formik.touched.pekerjaan_pemohon &&
-                  formik.errors.pekerjaan_pemohon
-                }
-                inputProps={{ style: { fontSize: 14 } }}
-                InputLabelProps={{ style: { fontSize: 14 } }}
-              />
-            </div>
-            {/* alamat  */}
-            <div className="col-xs-12">
-              <TextField
-                fullWidth
-                required
-                multiline
-                rows={4}
-                margin="normal"
-                label="Alamat"
-                name="alamat_pemohon"
-                value={formik.values.alamat_pemohon}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.alamat_pemohon &&
-                  Boolean(formik.errors.alamat_pemohon)
-                }
-                helperText={
-                  formik.touched.alamat_pemohon && formik.errors.alamat_pemohon
-                }
-                inputProps={{ style: { fontSize: 14 } }}
-                InputLabelProps={{ style: { fontSize: 14 } }}
-              />
-            </div>
             {/* q1  */}
             <div className="col-xs-12">
               <FormControl
                 component="fieldset"
+                sx={{ mt: 2 }}
                 error={formik.touched.q1 && Boolean(formik.errors.q1)}
                 variant="standard"
               >
@@ -905,6 +1019,7 @@ function Survey() {
               />
             </div>
           </div>
+          {/* Captcha submit  */}
           <div className="row">
             <div className="col-xs-12 col-sm-6">
               <ReCAPTCHA
@@ -915,6 +1030,7 @@ function Survey() {
             </div>
             <div className="col-xs-12 col-sm-6">
               <Button
+                disabled={formik.isSubmitting}
                 type="submit"
                 variant="contained"
                 className="btn btn-info"
@@ -939,6 +1055,15 @@ function Survey() {
           </div>
         </div>
       </div>
+
+      <Snackbar
+        open={loadPemohon.open}
+        onClose={() =>
+          setLoadPemohon((prev) => (prev = { ...loadPemohon, open: false }))
+        }
+        message={loadPemohon.message}
+        action={action}
+      />
     </div>
   );
 }

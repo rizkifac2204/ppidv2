@@ -19,7 +19,13 @@ function isTrue(element, index, array) {
   return element;
 }
 
-const handleSubmit = (values, data, recaptchaRef, afterSubmit, setCurData) => {
+const handleSubmit = (
+  values,
+  data,
+  recaptchaRef,
+  afterSubmit,
+  setSubmitting
+) => {
   const arr = ["a", "b", "c", "d", "e", "f", "g"];
   const temArr = [];
   arr.map((item) => {
@@ -27,6 +33,7 @@ const handleSubmit = (values, data, recaptchaRef, afterSubmit, setCurData) => {
   });
   if (!temArr.some(isTrue)) {
     toast.error("Pilih Minimal 1 Alasan Keberatan");
+    setSubmitting(false);
     return;
   }
   const postValues = {
@@ -39,9 +46,9 @@ const handleSubmit = (values, data, recaptchaRef, afterSubmit, setCurData) => {
   const recaptchaValue = recaptchaRef.current.getValue();
   if (!recaptchaValue) {
     toast.info("Mohon Validasi Captcha");
+    setSubmitting(false);
     return;
   }
-  setCurData(() => {});
 
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
@@ -64,6 +71,7 @@ const handleSubmit = (values, data, recaptchaRef, afterSubmit, setCurData) => {
       });
     })
     .then(() => {
+      setSubmitting(false);
       if (recaptchaRef.current) recaptchaRef.current.reset();
     });
 };
@@ -72,11 +80,10 @@ const validationSchema = yup.object({
   kasus_posisi: yup.string().required("Harus Diisi"),
 });
 
-function Keberatan({ isUser = "Kosong" }) {
+function Keberatan() {
   const [data, setData] = useState({});
   const [curData, setCurData] = useState({});
-  const [noRegistrasi, setNoRegistrasi] = useState("");
-  const [profileBawaslu, setProfileBawaslu] = useState({});
+  const [regOrTiket, setRegOrTiket] = useState("");
   const recaptchaRef = useRef(null);
   const printBuktiRef = useRef(null);
   const answerRef = useRef(null);
@@ -85,9 +92,8 @@ function Keberatan({ isUser = "Kosong" }) {
     e.preventDefault();
     const toastProses = toast.loading("Mencari Data...");
     axios
-      .get(`/api/public/keberatan?no_registrasi=${noRegistrasi}`)
+      .get(`/api/public/keberatan?nomor=${regOrTiket}`)
       .then((res) => {
-        console.log(res.data);
         setData(() => res.data);
         toast.update(toastProses, {
           render: "Ditemukan, Lanjutkan Mengisi Formulir",
@@ -97,7 +103,6 @@ function Keberatan({ isUser = "Kosong" }) {
         });
       })
       .catch((err) => {
-        console.log(err);
         toast.update(toastProses, {
           render: err.response.data.message,
           type: "error",
@@ -112,28 +117,7 @@ function Keberatan({ isUser = "Kosong" }) {
   };
 
   // PRINT
-  // const fetchProfileBawaslu = (callback) => {
-  //   const toastProses = toast.loading("Menyiapkan Format...");
-  //   axios
-  //     .get(`/api/permohonan/profileBawaslu?id=` + curData.bawaslu_id)
-  //     .then((res) => {
-  //       setProfileBawaslu(res.data);
-  //       toast.dismiss(toastProses);
-  //       callback();
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       toast.update(toastProses, {
-  //         render: "Terjadi Kesalahan",
-  //         type: "error",
-  //         isLoading: false,
-  //         autoClose: 2000,
-  //       });
-  //     });
-  // };
   const handlePrint = () => {
-    // return fetchProfileBawaslu(() => {
-    // });
     processPrintBukti();
   };
   const processPrintBukti = useReactToPrint({
@@ -163,8 +147,10 @@ function Keberatan({ isUser = "Kosong" }) {
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
-    onSubmit: (values) =>
-      handleSubmit(values, data, recaptchaRef, afterSubmit, setCurData),
+    onSubmit: (values, { setSubmitting }) => {
+      setCurData({});
+      handleSubmit(values, data, recaptchaRef, afterSubmit, setSubmitting);
+    },
   });
 
   return (
@@ -190,11 +176,11 @@ function Keberatan({ isUser = "Kosong" }) {
                 required
                 fullWidth
                 margin="normal"
-                label="Nomor Registrasi"
-                name="noRegistrasi"
-                value={noRegistrasi}
+                label="Nomor Registrasi / Nomor Tiket"
+                name="regOrTiket"
+                value={regOrTiket}
                 onChange={(e) => {
-                  setNoRegistrasi(e.target.value);
+                  setRegOrTiket(e.target.value);
                   setData({});
                   formik.resetForm();
                 }}

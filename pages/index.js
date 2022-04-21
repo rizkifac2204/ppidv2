@@ -202,7 +202,7 @@ const Permohonan = () => {
         console.log(err);
       });
   };
-  const fetchKabkot = (id, cb) => {
+  const fetchkabkota = (id, cb) => {
     axios
       .get(`/api/services/provinsis/` + id)
       .then((res) => {
@@ -325,7 +325,7 @@ const Permohonan = () => {
   useEffect(() => {
     formik.setFieldValue("id_kabkota", "");
     if (!formik.values.id_prov) return;
-    if (formik.values.kepada === "Bawaslu") fetchKabkot(formik.values.id_prov);
+    if (formik.values.kepada === "Bawaslu") fetchkabkota(formik.values.id_prov);
   }, [formik.values.id_prov]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -345,7 +345,7 @@ const Permohonan = () => {
         if (arrayID.includes(q.substring(0, 2)))
           formik.setFieldValue("id_prov", q.substring(0, 2));
       });
-      fetchKabkot(q.substring(0, 2), () => {
+      fetchkabkota(q.substring(0, 2), () => {
         const arrayID = kabkotas.map((a) => a.id);
         if (arrayID.includes(q)) formik.setFieldValue("id_kabkota", q);
       });
