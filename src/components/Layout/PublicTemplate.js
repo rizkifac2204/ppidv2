@@ -1,201 +1,271 @@
 import Link from "next/link";
-import { useSession } from "next-auth/react";
-// ICON
-import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import YouTubeIcon from "@mui/icons-material/YouTube";
-import CloseIcon from "@mui/icons-material/Close";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import $ from "jquery";
+// MUI
+import Dialog from "@mui/material/Dialog";
+import Slide from "@mui/material/Slide";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  props.timeout.enter = 0;
+  props.timeout.exit = 600;
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const Template = ({ children }) => {
-  const { data: session } = useSession();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [pageReady, setPageReady] = useState(false);
+  const [currentFormulir, setCurrentFormulir] = useState({
+    currentUrl: "/",
+    head: "Permohonan",
+    foot: "Pengajuan Permohoan Informasi",
+  });
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    setTimeout(function () {
+      $(".item-list").each(function (i) {
+        (function (self) {
+          setTimeout(function () {
+            $(self).addClass("show-ready");
+          }, i * 150 + 150);
+        })(this);
+      });
+    }, 250);
+    setTimeout(function () {
+      $(".overlay-prevent").removeClass("").addClass("display-none");
+    }, 600);
+  }, []);
+
+  useEffect(() => {
+    if (open) {
+      $("#nav-item")
+        .removeClass("fadeOutUp opacity-0")
+        .addClass("fadeInDown index9999");
+      $(".list-sections").removeClass("").addClass("fadeOutDown");
+      setTimeout(function () {
+        $(".item-list").removeClass("show-ready").addClass("");
+      }, 800);
+    } else {
+      $("#nav-item").removeClass("fadeInDown").addClass("fadeOutUp");
+      setTimeout(function () {
+        $("#nav-item").removeClass("index9999").addClass("");
+        $(".list-sections").removeClass("fadeOutDown").addClass("");
+        $(".item-list").each(function (i) {
+          (function (self) {
+            setTimeout(function () {
+              $(self).addClass("show-ready");
+            }, i * 150 + 150);
+          })(this);
+        });
+      }, 100);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    router.events.on("routeChangeStart", () => setPageReady(() => false));
+    router.events.on("routeChangeComplete", () => {
+      setPageReady(() => true);
+      $("#loading-popup").fadeOut(2000);
+    });
+    router.events.on("routeChangeError", () => {
+      setPageReady(() => true);
+      $("#loading-popup").fadeOut(2000);
+    });
+
+    if (router.pathname === "/")
+      setCurrentFormulir({
+        currentUrl: "/",
+        head: "Permohonan",
+        foot: "Permohoan Informasi",
+      });
+    if (router.pathname === "/cek")
+      setCurrentFormulir({
+        currentUrl: "/cek",
+        head: "Cek Permohonan",
+        foot: "Cek Permohoan Informasi",
+      });
+    if (router.pathname === "/keberatan")
+      setCurrentFormulir({
+        currentUrl: "/keberatan",
+        head: "Keberatan",
+        foot: "Pengajuan Keberatan",
+      });
+    if (router.pathname === "/survey")
+      setCurrentFormulir({
+        currentUrl: "/survey",
+        head: "Survey",
+        foot: "Survey Layanan",
+      });
+  }, [router]);
+
   return (
     <>
-      <div id="container">
-        <div id="output" className="back-fss"></div>
-      </div>
-      <div id="loading">
-        <div id="preloader">
-          <span></span>
-          <span></span>
-        </div>
-      </div>
+      <div>
+        <div className="overlay-prevent" />
 
-      <div className="outer-home">
-        <section id="home">
-          <div id="vegas-background"></div>
-
-          <div className="global-overlay"></div>
-
-          <img
-            src="/images/logo-white.png"
-            alt=""
-            className="brand-logo text-intro opacity-0"
-          />
-
-          <div className="content">
-            <h1 className="text-intro opacity-0">Selamat Datang</h1>
-
-            <p className="text-intro opacity-0">
-              Dilayanan PPID Bawaslu Terintegrasi
-            </p>
-
-            <nav>
-              <ul>
-                <li>
-                  <a
-                    id="open-more-info"
-                    data-target="right-side"
-                    className="light-btn text-intro opacity-0"
-                  >
-                    Formulir
-                  </a>
-                </li>
-                <li>
-                  <a
-                    data-dialog="somedialog"
-                    className="action-btn trigger text-intro opacity-0"
-                  >
-                    Berlangganan
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-          <div className="bottom-home">
-            <div className="social-icons">
-              <a href="#">
-                <FacebookIcon />
-              </a>
-              <a href="#">
-                <TwitterIcon />
-              </a>
-              <a href="#">
-                <InstagramIcon />
-              </a>
-              <a href="#">
-                <YouTubeIcon />
-              </a>
-            </div>
-            <p className="copyright">
-              © Bawaslu - Badan Pengawas Pemilihan Umum
-            </p>
-          </div>
-        </section>
-      </div>
-
-      <div className="close-right-part layer-left hide-layer-left"></div>
-
-      <div className="border-right-side hide-border"></div>
-
-      <section id="right-side" className="hide-right">
-        <div className="content">
-          {children}
-
-          <br />
-          <br />
-          <h4>PPID Bawaslu</h4>
-          <p>
-            Terimakasih sudah menggunakan layanan kami. Untuk memberikan
-            kritikan dan saran, anda dapat menghubungi kami melalui :
-          </p>
-          <p>
-            <i className="icon ion-ios-telephone"></i> <strong>Phone :</strong>
-            08xxxxx <br />
-            <i className="icon ion-ios-email"></i> <strong>Email :</strong>
-            <a
-              ng-href="mailto:rizkifac2204@gmail.com"
-              className="phone-mail-link"
-            >
-              Email
-            </a>
-            <br />
-            <i className="icon ion-ios-location"></i> <strong>Lokasi :</strong>
-            alamat
-          </p>
-          <br />
-          <h4>Layanan Terkait</h4>
+        <div className="list-sections animated-middle">
           <ul>
-            <li>
-              <Link href="/">
-                <a className="phone-mail-link">Formulir Pemohonan Informasi</a>
+            <li className="item-list">
+              <Link href={currentFormulir.currentUrl}>
+                <a className="open-popup-link" onClick={handleClickOpen}>
+                  <div className="item-title">
+                    <h2>
+                      <i className="fa fa-file-text" />
+                      <br />
+                      <span className="point">.F</span>ormulir
+                    </h2>
+                    <p>{currentFormulir.head}</p>
+                  </div>
+                  <div className="item-plus">
+                    <p>{currentFormulir.foot}</p>
+                    <br />
+                    <i className="fa fa-plus-circle fa-2x" />
+                  </div>
+                </a>
               </Link>
             </li>
-            <li>
-              <Link href="/cek">
-                <a className="phone-mail-link">Cek Pemohonan Informasi</a>
+            <li className="item-list">
+              <Link href="/dip">
+                <a className="open-popup-link" onClick={handleClickOpen}>
+                  <div className="item-title">
+                    <h2>
+                      <i className="fa fa-list-ul" />
+                      <br />
+                      <span className="point">.D</span>IP
+                    </h2>
+                    <p>Daftar Informasi Publik</p>
+                  </div>
+                  <div className="item-plus">
+                    <p>Cari Data Disini</p>
+                    <br />
+                    <i className="fa fa-plus-circle fa-2x" />
+                  </div>
+                </a>
               </Link>
             </li>
-            <li>
-              <Link href="/survey">
-                <a className="phone-mail-link">Survey Layanan</a>
+            <li className="item-list">
+              <Link href="/news">
+                <a
+                  href="/news"
+                  className="open-popup-link"
+                  onClick={handleClickOpen}
+                >
+                  <div className="item-title">
+                    <h2>
+                      <i className="fa fa-newspaper-o" />
+                      <br />
+                      <span className="point">.N</span>ews!
+                    </h2>
+                    <p>Berlangganan Kabar Berita</p>
+                  </div>
+                  <div className="item-plus">
+                    <p>Update Kabar Terbaru</p>
+                    <br />
+                    <i className="fa fa-plus-circle fa-2x" />
+                  </div>
+                </a>
               </Link>
             </li>
-            <li>
-              <Link href="/keberatan">
-                <a className="phone-mail-link">Pengajuan Keberatan</a>
+            <li className="item-list">
+              <Link href="/lokasi">
+                <a className="open-popup-link" onClick={handleClickOpen}>
+                  <div className="item-title">
+                    <h2>
+                      <i className="fa fa-location-arrow" />
+                      <br />
+                      <span className="point">.L</span>okasi
+                    </h2>
+                    <p>Bawaslu</p>
+                  </div>
+                  <div className="item-plus">
+                    <p>Alamat Bawaslu.</p>
+                    <br />
+                    <i className="fa fa-plus-circle fa-2x" />
+                  </div>
+                </a>
               </Link>
-            </li>
-            <li>
-              {session ? (
-                <Link href="/admin">
-                  <a className="phone-mail-link">Halaman Admin</a>
-                </Link>
-              ) : (
-                <Link href="/login">
-                  <a className="phone-mail-link">Login</a>
-                </Link>
-              )}
             </li>
           </ul>
         </div>
-      </section>
 
-      <button id="close-more-info" className="close-right-part hide-close">
-        <CloseIcon />
-      </button>
-
-      <div id="somedialog" className="dialog">
-        <div className="dialog__overlay"></div>
-        <div className="dialog__content">
-          <div className="dialog-inner">
-            <h4>Sahabat Bawaslu</h4>
-            <p>
-              Selalu update informasi terbaru dengan manjadi bagian dari kami
-            </p>
-            <div id="subscribe">
-              <form id="notifyMe" onSubmit={() => console.log("submit")}>
-                <div className="form-group">
-                  <div className="controls">
-                    <input
-                      type="text"
-                      id="mail-sub"
-                      name="email"
-                      placeholder="Masukan Email Kamu Disini"
-                      // onfocus="this.placeholder = ''"
-                      // onblur="this.placeholder = 'Masukan Email Kamu Disini'"
-                      className="form-control email srequiredField"
-                    />
-                    <i className="fa fa-spinner opacity-0"></i>
-                    <button className="btn btn-lg submit">Subscribe</button>
-                    <div className="clear"></div>
-                  </div>
-                </div>
-              </form>
-              <div className="block-message">
-                <div className="message">
-                  <p className="notify-valid"></p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button className="close-newsletter" data-dialog-close>
-            <CloseIcon />
+        <nav id="nav-item" className="animated-middle opacity-0">
+          <button type="button" className="mfp-close" onClick={handleClose}>
+            <i className="fa fa-bars fa-2x" />
           </button>
-        </div>
+          <div className="social-icons">
+            <Link href="/">
+              <a
+                style={
+                  currentFormulir.currentUrl === "/"
+                    ? { color: "#2b2d35", background: "#ffffff" }
+                    : {}
+                }
+              >
+                Permohonan
+              </a>
+            </Link>
+            <Link href="/cek">
+              <a
+                style={
+                  currentFormulir.currentUrl === "/cek"
+                    ? { color: "#2b2d35", background: "#ffffff" }
+                    : {}
+                }
+              >
+                Cek
+              </a>
+            </Link>
+            <Link href="/keberatan">
+              <a
+                style={
+                  currentFormulir.currentUrl === "/keberatan"
+                    ? { color: "#2b2d35", background: "#ffffff" }
+                    : {}
+                }
+              >
+                Keberatan
+              </a>
+            </Link>
+            <Link href="/survey">
+              <a
+                style={
+                  currentFormulir.currentUrl === "/survey"
+                    ? { color: "#2b2d35", background: "#ffffff" }
+                    : {}
+                }
+              >
+                Survey
+              </a>
+            </Link>
+          </div>
+        </nav>
       </div>
+
+      <Dialog
+        PaperProps={{
+          style: {
+            backgroundColor: "transparent",
+            boxShadow: "none",
+          },
+        }}
+        fullScreen
+        disableEnforceFocus
+        open={open}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+      >
+        <div id="loading-popup">
+          <div className="background-top"></div>
+        </div>
+        {pageReady && children}
+      </Dialog>
     </>
   );
 };

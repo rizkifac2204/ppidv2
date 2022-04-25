@@ -1,43 +1,13 @@
-import Link from "next/link";
-function Cek() {
+const News = () => {
   return (
     <>
-      <div>
-        <nav id="nav-item" className="animated-middle">
-          {" "}
-          {/* Info on top */}
-          <a href="mailto:myemail@epic.com" className="email-us">
-            <i className="fa fa-envelope-o fa-2x" />
-          </a>
-          <div className="social-icons">
-            <Link href="/">
-              <a href="#">eh</a>
-            </Link>
-            <a href="#">
-              <i className="fa fa-twitter" />
-            </a>
-            <a href="#">
-              <i className="fa fa-google-plus" />
-            </a>
-            <a href="#">
-              <i className="fa fa-linkedin" />
-            </a>
-          </div>
-          {/* .social-icons */}
-        </nav>
-        {/* #nav-item */}
+      <div id="news-popup">
         <div className="background-top">
           <div className="item-title">
-            <img
-              alt=""
-              className="img-responsive logo-home"
-              src="uis/img/logo-demo.jpg"
-            />
             <h2>
-              <span className="point">W&amp;W</span> is Coming!
-              <Link href="/">
-                <a>HOME</a>
-              </Link>
+              <i className="fa fa-newspaper-o fa-2x" />
+              <br />
+              <span className="point">Berlangganan</span> Berita Bawaslu.
             </h2>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
@@ -45,9 +15,10 @@ function Cek() {
               enim ad minim veniam, quis nostrud exercitation ullamco laboris
               nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
               reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur.
+              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+              sunt in culpa qui officia deserunt mollit anim id est laborum.
             </p>
-          </div>{" "}
+          </div>
           {/* .item-title */}
           <button className="scroll-chevron">
             <i className="fa fa-chevron-down fa-2x" />
@@ -67,7 +38,7 @@ function Cek() {
               <h3>
                 <span className="point">
                   <i className="fa fa-clock-o" />
-                </span>{" "}
+                </span>
                 Launching Informations
                 <br />
                 <small>December 14th, 2018</small>
@@ -115,7 +86,7 @@ function Cek() {
                     <span className="dash_title">Seconds</span>
                   </div>
                 </div>
-              </div>{" "}
+              </div>
               {/* .countdown_dashboard */}
             </div>
           </div>
@@ -123,7 +94,7 @@ function Cek() {
           <div className="newsletter-block">
             <div className="col-xs-12 col-sm-12 col-lg-5 block-left-newsletter">
               <i className="fa fa-bell" />
-            </div>{" "}
+            </div>
             {/* .block-left-newsletter */}
             <div className="col-xs-12 col-sm-12 col-lg-7 block-right-newsletter">
               <div id="subscribe">
@@ -135,9 +106,24 @@ function Cek() {
                 <p>
                   Don't miss your chance, <strong>Subscribe now!</strong>
                 </p>
-              </div>{" "}
+                <form action="php/notify-me.php" id="notifyMe" method="POST">
+                  <div className="form-group">
+                    <div className="controls">
+                      <input
+                        type="text"
+                        id="mail-sub"
+                        name="email"
+                        placeholder="Write your email and stay tuned!"
+                        className="form-control email srequiredField"
+                      />
+                      <button className="btn btn-lg submit">Subscribe</button>
+                      <div className="clear" />
+                    </div>
+                  </div>
+                </form>
+              </div>
               {/* .subscribe */}
-            </div>{" "}
+            </div>
             {/* .block-right-newsletter */}
             <div className="clear" />
             <div className="legal-info col-md-12">
@@ -147,17 +133,15 @@ function Cek() {
                   will be used only for this alert.
                 </p>
               </div>
-            </div>{" "}
+            </div>
             {/* .legal-info */}
-            <div className="clear" />
-          </div>{" "}
+          </div>
           {/* .newsletter-block */}
-        </div>{" "}
-        {/* .info-item */}
+        </div>
       </div>
     </>
   );
-}
+};
 
-Cek.public = true;
-export default Cek;
+News.public = true;
+export default News;

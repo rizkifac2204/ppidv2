@@ -125,7 +125,7 @@ export default PublicHandler().post(
       }
       // berhasil update hapus file lama jika upload
       if (req.file) {
-        DeleteUpload("./public/upload", req.body.identitas_pemohon);
+        DeleteUpload("./public/upload", cekDataPemohon.identitas_pemohon);
       }
     } else {
       // proses simpan
@@ -156,8 +156,8 @@ export default PublicHandler().post(
           message: "Gagal Mengirim Permohonan",
         });
       }
-      await sendingMail(setMailOptionPemohon);
-      await sendingMail(setMailOptionAdmin);
+      // await sendingMail(setMailOptionPemohon);
+      // await sendingMail(setMailOptionAdmin);
 
       // success
       res.json({

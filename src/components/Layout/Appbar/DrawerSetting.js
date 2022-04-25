@@ -9,7 +9,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { red } from "@mui/material/colors";
 import IconButton from "@mui/material/IconButton";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
 import CircleIcon from "@mui/icons-material/Circle";
 import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";

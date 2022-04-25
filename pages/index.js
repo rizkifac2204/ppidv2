@@ -7,17 +7,9 @@ import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useReactToPrint } from "react-to-print";
 // MUI
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 import FormHelperText from "@mui/material/FormHelperText";
-import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 
 import Snackbar from "@mui/material/Snackbar";
 import IconButton from "@mui/material/IconButton";
@@ -26,16 +18,16 @@ import CloseIcon from "@mui/icons-material/Close";
 import Thumb from "components/Thumb";
 import ResponsePermohonan from "components/PublicComponents/ResponsePermohonan";
 import BuktiPermohonan from "components/PrintPage/BuktiPermohonan";
-
-const config = {
-  headers: { "content-type": "multipart/form-data", destinationfile: "upload" },
-  onUploadProgress: (event) => {
-    // console.log(
-    //   `Current progress:`,
-    //   Math.round((event.loaded * 100) / event.total)
-    // );
-  },
-};
+import {
+  TextFieldCustom,
+  FormControlCustom,
+  InputLabelCustom,
+  FormLabelCustom,
+  SelectCustom,
+  MenuItemCustom,
+  FormControlLabelCustom,
+  TextRadioCustom,
+} from "components/PublicComponents/FieldCustom";
 
 const handleSubmit = (
   values,
@@ -64,7 +56,18 @@ const handleSubmit = (
   // }
   const toastProses = toast.loading("Tunggu Sebentar...");
   axios
-    .post(`/api/public/permohonan`, form, config)
+    .post(`/api/public/permohonan`, form, {
+      headers: {
+        "content-type": "multipart/form-data",
+        destinationfile: "upload",
+      },
+      onUploadProgress: (event) => {
+        // console.log(
+        //   `Current progress:`,
+        //   Math.round((event.loaded * 100) / event.total)
+        // );
+      },
+    })
     .then((res) => {
       afterSubmit(res.data.currentData);
       toast.update(toastProses, {
@@ -75,13 +78,13 @@ const handleSubmit = (
       });
     })
     .catch((err) => {
+      console.log(err);
       if (err.response.data.currentData) {
         formik.setFieldValue(
           "identitas_pemohon",
           err.response.data.currentData.identitas_pemohon
         );
       }
-      console.log(err.response.data);
       toast.update(toastProses, {
         render: err.response.data.message,
         type: "error",
@@ -149,7 +152,7 @@ const validationSchema = yup.object({
     }),
 });
 
-const Permohonan = () => {
+const Index = (props) => {
   // prepare
   const router = useRouter();
   const { q } = router.query;
@@ -184,6 +187,7 @@ const Permohonan = () => {
   // useRef
   const recaptchaRef = useRef(null);
   const answerRef = useRef(null);
+  const formRef = useRef(null);
   const printBuktiRef = useRef();
 
   // fetching wilayah
@@ -256,6 +260,9 @@ const Permohonan = () => {
   const afterSubmit = (data) => {
     setCurData(() => data);
     formik.resetForm();
+    if (data.identitas_pemohon) {
+      formik.setFieldValue("identitas_pemohon", data.identitas_pemohon);
+    }
     answerRef.current.scrollIntoView({
       behavior: "smooth",
       block: "start",
@@ -285,7 +292,11 @@ const Permohonan = () => {
   };
   const action = (
     <>
-      <Button color="secondary" size="small" onClick={handleUsePemohon}>
+      <Button
+        color="secondary"
+        onClick={handleUsePemohon}
+        style={{ fontSize: 14 }}
+      >
         Gunakan
       </Button>
       <IconButton
@@ -353,499 +364,504 @@ const Permohonan = () => {
   }, [q, provinsis]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div id="block-form">
-      <div
-        style={{
-          display:
-            curData && Object.keys(curData).length === 0 ? "block" : "none",
-        }}
-      >
-        <h2>Formulir Pengajuan Permohonan Informasi</h2>
-
-        <p>
-          Isi Formulir untuk melakukan Permohonan Informasi <br />
-          <strong>Pelayanan Kantor</strong> pukul 08:00 AM s.d 16:00 PM. Kamu
-          juga dapat melakukan permohonan dengan menghubungi 08777.
-        </p>
-
-        <div style={{ marginTop: "20px" }}>
-          <form onSubmit={formik.handleSubmit}>
-            <div className="row">
-              {/* email  */}
-              <div className="col-xs-12">
-                <TextField
-                  fullWidth
-                  required
-                  margin="normal"
-                  type="email"
-                  label="Email"
-                  name="email_pemohon"
-                  value={formik.values.email_pemohon}
-                  onChange={formik.handleChange}
-                  onBlur={(e) => {
-                    formik.handleBlur(e);
-                    getPemohonByEmail(e);
-                  }}
-                  error={
-                    formik.touched.email_pemohon &&
-                    Boolean(formik.errors.email_pemohon)
-                  }
-                  helperText={
-                    formik.touched.email_pemohon && formik.errors.email_pemohon
-                  }
-                  inputProps={{ style: { fontSize: 14 } }}
-                  InputLabelProps={{ style: { fontSize: 14 } }}
-                />
-              </div>
-              {/* nama */}
-              <div className="col-xs-12 col-sm-6">
-                <TextField
-                  fullWidth
-                  required
-                  margin="normal"
-                  label="Nama"
-                  name="nama_pemohon"
-                  value={formik.values.nama_pemohon}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.nama_pemohon &&
-                    Boolean(formik.errors.nama_pemohon)
-                  }
-                  helperText={
-                    formik.touched.nama_pemohon && formik.errors.nama_pemohon
-                  }
-                  inputProps={{ style: { fontSize: 14 } }}
-                  InputLabelProps={{ style: { fontSize: 14 } }}
-                />
-              </div>
-              {/* pekerjaan  */}
-              <div className="col-xs-12 col-sm-6">
-                <TextField
-                  fullWidth
-                  required
-                  margin="normal"
-                  label="Pekerjaan"
-                  name="pekerjaan_pemohon"
-                  value={formik.values.pekerjaan_pemohon}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.pekerjaan &&
-                    Boolean(formik.errors.pekerjaan_pemohon)
-                  }
-                  helperText={
-                    formik.touched.pekerjaan_pemohon &&
-                    formik.errors.pekerjaan_pemohon
-                  }
-                  inputProps={{ style: { fontSize: 14 } }}
-                  InputLabelProps={{ style: { fontSize: 14 } }}
-                />
-              </div>
-              {/* pekerjaan  */}
-              <div className="col-xs-12 col-sm-6">
-                <TextField
-                  fullWidth
-                  required
-                  margin="normal"
-                  label="Pendidikan"
-                  name="pendidikan_pemohon"
-                  value={formik.values.pendidikan_pemohon}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.pendidikan_pemohon &&
-                    Boolean(formik.errors.pendidikan_pemohon)
-                  }
-                  helperText={
-                    formik.touched.pendidikan_pemohon &&
-                    formik.errors.pendidikan_pemohon
-                  }
-                  inputProps={{ style: { fontSize: 14 } }}
-                  InputLabelProps={{ style: { fontSize: 14 } }}
-                />
-              </div>
-              {/* telp  */}
-              <div className="col-xs-12 col-sm-6">
-                <TextField
-                  fullWidth
-                  required
-                  margin="normal"
-                  label="Telp/Hp"
-                  name="telp_pemohon"
-                  value={formik.values.telp_pemohon}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.telp_pemohon &&
-                    Boolean(formik.errors.telp_pemohon)
-                  }
-                  helperText={
-                    formik.touched.telp_pemohon && formik.errors.telp_pemohon
-                  }
-                  inputProps={{ style: { fontSize: 14 } }}
-                  InputLabelProps={{ style: { fontSize: 14 } }}
-                />
-              </div>
-              {/* alamat  */}
-              <div className="col-xs-12">
-                <TextField
-                  fullWidth
-                  required
-                  multiline
-                  rows={4}
-                  margin="normal"
-                  label="Alamat"
-                  name="alamat_pemohon"
-                  value={formik.values.alamat_pemohon}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.alamat_pemohon &&
-                    Boolean(formik.errors.alamat_pemohon)
-                  }
-                  helperText={
-                    formik.touched.alamat_pemohon &&
-                    formik.errors.alamat_pemohon
-                  }
-                  inputProps={{ style: { fontSize: 14 } }}
-                  InputLabelProps={{ style: { fontSize: 14 } }}
-                />
-              </div>
-            </div>
-
-            <div className="row">
-              {/* kepada */}
-              <div className="col-xs-12">
-                <FormControl
-                  fullWidth
-                  sx={{ mt: 1.5 }}
-                  error={formik.touched.kepada && Boolean(formik.errors.kepada)}
-                >
-                  <InputLabel>
-                    <p>Ditujukan Kepada *</p>
-                  </InputLabel>
-                  <Select
-                    name="kepada"
-                    label={<p>Ditujukan Kepada</p>}
-                    value={formik.values.kepada}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  >
-                    <MenuItem value="Bawaslu Republik Indonesia">
-                      <p>Bawaslu Republik Indonesia</p>
-                    </MenuItem>
-                    <MenuItem value="Bawaslu Provinsi">
-                      <p>Bawaslu Provinsi</p>
-                    </MenuItem>
-                    <MenuItem value="Bawaslu">
-                      <p>Bawaslu Kabupaten/Kota</p>
-                    </MenuItem>
-                  </Select>
-                  <FormHelperText>
-                    {formik.touched.kepada && formik.errors.kepada}
-                  </FormHelperText>
-                </FormControl>
-              </div>
-              {/* provinsi  */}
-              {formik.values.kepada &&
-                formik.values.kepada !== "Bawaslu Republik Indonesia" && (
-                  <div className="col-xs-12">
-                    <FormControl
-                      fullWidth
-                      sx={{ mt: 2 }}
-                      error={
-                        formik.touched.id_prov && Boolean(formik.errors.id_prov)
-                      }
-                    >
-                      <InputLabel>
-                        <p>Provinsi *</p>
-                      </InputLabel>
-                      <Select
-                        name="id_prov"
-                        label={<p>Provinsi</p>}
-                        value={formik.values.id_prov}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                      >
-                        <MenuItem value="">--Pilih--</MenuItem>
-                        {provinsis.length !== 0 &&
-                          provinsis.map((item, idx) => (
-                            <MenuItem key={idx} value={item.id}>
-                              <p>{item.provinsi}</p>
-                            </MenuItem>
-                          ))}
-                      </Select>
-                      <FormHelperText>
-                        {formik.touched.id_prov && formik.errors.id_prov}
-                      </FormHelperText>
-                    </FormControl>
-                  </div>
-                )}
-              {/* kabkot */}
-              {formik.values.kepada && formik.values.kepada === "Bawaslu" && (
-                <div className="col-xs-12">
-                  <FormControl
-                    fullWidth
-                    sx={{ mt: 2 }}
-                    error={
-                      formik.touched.id_kabkota &&
-                      Boolean(formik.errors.id_kabkota)
-                    }
-                  >
-                    <InputLabel>
-                      <p>Kabupaten/Kota *</p>
-                    </InputLabel>
-                    <Select
-                      name="id_kabkota"
-                      label={<p>Kabupaten/Kota</p>}
-                      value={formik.values.id_kabkota}
-                      onChange={formik.handleChange}
-                    >
-                      {kabkotas.length !== 0 &&
-                        kabkotas.map((item) => (
-                          <MenuItem key={item.id} value={item.id}>
-                            {item.kabkota}
-                          </MenuItem>
-                        ))}
-                    </Select>
-                    <FormHelperText>
-                      {formik.touched.id_kabkota && formik.errors.id_kabkota}
-                    </FormHelperText>
-                  </FormControl>
-                </div>
-              )}
-              {/* rincian  */}
-              <div className="col-xs-12">
-                <TextField
-                  fullWidth
-                  required
-                  multiline
-                  rows={4}
-                  margin="normal"
-                  label="Rincian Informasi"
-                  name="rincian"
-                  value={formik.values.rincian}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.rincian && Boolean(formik.errors.rincian)
-                  }
-                  helperText={formik.touched.rincian && formik.errors.rincian}
-                  inputProps={{ style: { fontSize: 14 } }}
-                  InputLabelProps={{ style: { fontSize: 14 } }}
-                />
-              </div>
-              {/* tujuan  */}
-              <div className="col-xs-12">
-                <TextField
-                  fullWidth
-                  required
-                  multiline
-                  rows={4}
-                  margin="normal"
-                  label="Tujuan Informasi"
-                  name="tujuan"
-                  value={formik.values.tujuan}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.tujuan && Boolean(formik.errors.tujuan)}
-                  helperText={formik.touched.tujuan && formik.errors.tujuan}
-                  inputProps={{ style: { fontSize: 14 } }}
-                  InputLabelProps={{ style: { fontSize: 14 } }}
-                />
-              </div>
-              {/* cara terima  */}
-              <div className="col-xs-12">
-                <FormControl
-                  sx={{ my: 2 }}
-                  component="fieldset"
-                  error={
-                    formik.touched.cara_terima &&
-                    Boolean(formik.errors.cara_terima)
-                  }
-                  variant="standard"
-                >
-                  <FormLabel>
-                    <p>Cara Memperoleh Informasi *</p>
-                  </FormLabel>
-                  <RadioGroup
-                    aria-label="cara_terima"
-                    name="cara_terima"
-                    value={formik.values.cara_terima}
-                    onChange={formik.handleChange}
-                  >
-                    <FormControlLabel
-                      value="Melihat/Membaca/Mendengarkan/Mencatat"
-                      control={<Radio />}
-                      label={<p>Melihat/Membaca/Mendengarkan/Mencatat</p>}
-                    />
-                    <FormControlLabel
-                      value="Mendapatkan salinan Informasi (hardcopy/softcopy)"
-                      control={<Radio />}
-                      label={
-                        <p>Mendapatkan salinan Informasi (hardcopy/softcopy)</p>
-                      }
-                    />
-                  </RadioGroup>
-                  <FormHelperText>
-                    {formik.touched.cara_terima && formik.errors.cara_terima}
-                  </FormHelperText>
-                </FormControl>
-              </div>
-              {/* cara dapat  */}
-              <div className="col-xs-12">
-                <FormControl
-                  component="fieldset"
-                  error={
-                    formik.touched.cara_dapat &&
-                    Boolean(formik.errors.cara_dapat)
-                  }
-                  variant="standard"
-                >
-                  <FormLabel>
-                    <p>Cara Mendapatkan Salinan Informasi *</p>
-                  </FormLabel>
-                  <RadioGroup
-                    aria-label="cara_dapat"
-                    name="cara_dapat"
-                    value={formik.values.cara_dapat}
-                    onChange={formik.handleChange}
-                  >
-                    <FormControlLabel
-                      value="Mengambil Langsung"
-                      control={<Radio />}
-                      label={<p>Mengambil Langsung</p>}
-                    />
-                    <FormControlLabel
-                      value="Pos"
-                      control={<Radio />}
-                      label={<p>Pos</p>}
-                    />
-                    <FormControlLabel
-                      value="Email"
-                      control={<Radio />}
-                      label={<p>Email</p>}
-                    />
-                    <FormControlLabel
-                      value="Kurir"
-                      control={<Radio />}
-                      label={<p>Kurir</p>}
-                    />
-                    <FormControlLabel
-                      value="Faksimili"
-                      control={<Radio />}
-                      label={<p>Faksimili</p>}
-                    />
-                  </RadioGroup>
-                  <FormHelperText>
-                    {formik.touched.cara_dapat && formik.errors.cara_dapat}
-                  </FormHelperText>
-                </FormControl>
-              </div>
-              {/* tanda pengenal */}
-              <div className="col-xs-12" style={{ marginTop: 2 }}>
-                <div className="form-group">
-                  <label>
-                    {loadPemohon.used
-                      ? "Biarkan atau Upload ulang jika ingin mengganti Tanda Pengenal"
-                      : "Upload Tanda Pengenal"}
-                  </label>
-                  <input
-                    className="form form-control"
-                    type="file"
-                    id="file"
-                    name="file"
-                    accept="image/*"
-                    onBlur={formik.handleBlur}
-                    onChange={(event) => {
-                      formik.setFieldValue(
-                        "file",
-                        event.currentTarget.files[0]
-                      );
-                    }}
-                  />
-                  <Thumb
-                    file={
-                      formik.values.file
-                        ? formik.values.file
-                        : formik.values.identitas_pemohon
-                    }
-                  />
-                  <br />
-                  {formik.touched.file && formik.errors.file}
-                </div>
-              </div>
-            </div>
-
-            <div className="row">
-              <div className="col-xs-12 col-sm-6">
-                <ReCAPTCHA
-                  sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
-                  ref={recaptchaRef}
-                  onChange={captchaChange}
-                />
-              </div>
-              <div className="col-xs-12 col-sm-6">
-                <Button
-                  disabled={formik.isSubmitting}
-                  type="submit"
-                  variant="contained"
-                  className="btn btn-info"
-                >
-                  Kirim
-                </Button>
-              </div>
-            </div>
-          </form>
+    <>
+      <div id="formulir-popup">
+        <div className="background-top">
+          <div className="item-title">
+            <h2>
+              <i className="fa fa-file-text fa-2x" />
+              <br />
+              <span className="point">Formulir</span> Permohonan Informasi
+            </h2>
+            <p>
+              Isi Formulir untuk melakukan Pengajuan Permohonan Informasi.
+              Pelayanan Kantor pukul 08:00 AM s.d 16:00 PM. Kamu juga dapat
+              melakukan pengajuan permohonan dengan menghubungi Nomor
+              masing-masing Bawaslu
+            </p>
+          </div>
+          {/* .item-title */}
+          <button className="scroll-chevron">
+            <i className="fa fa-chevron-down fa-2x" />
+          </button>
         </div>
-      </div>
+        <div className="info-item">
+          <div ref={answerRef}>
+            {curData && Object.keys(curData).length !== 0 && (
+              <>
+                <ResponsePermohonan
+                  curData={curData}
+                  handlePrint={handlePrint}
+                  reset={() => {
+                    setTimeout(() => {
+                      setCurData({});
+                    }, 500);
+                    formRef.current.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
+                />
+                <BuktiPermohonan
+                  ref={printBuktiRef}
+                  detail={curData}
+                  profileBawaslu={profileBawaslu}
+                />
+              </>
+            )}
+          </div>
 
-      <div id="block-answer" ref={answerRef}>
-        {curData && Object.keys(curData).length !== 0 && (
-          <ResponsePermohonan curData={curData} handlePrint={handlePrint} />
-        )}
-        <div
-          style={{
-            display:
-              curData && Object.keys(curData).length !== 0 ? "block" : "none",
-          }}
-        >
-          <Button
-            id="isilagi"
-            type="button"
-            variant="contained"
-            className="btn btn-info"
-            onClick={() => {
-              setTimeout(() => {
-                setCurData({});
-              }, 500);
+          <div
+            className="newsletter-block"
+            ref={formRef}
+            style={{
+              display:
+                curData && Object.keys(curData).length === 0 ? "block" : "none",
             }}
           >
-            Ajukan Permohonan Kembali
-          </Button>
+            {/* Formulir Start  */}
+            <div className="col-xs-12 block-right-newsletter">
+              <div id="subscribe">
+                <h2>Formulir Pemohonan Informasi</h2>
+                <p>Isi Data Dengan Lengkap dan Jelas</p>
+
+                <form
+                  onSubmit={formik.handleSubmit}
+                  id="contact-form"
+                  style={{ marginTop: "20px" }}
+                >
+                  <div className="row">
+                    {/* email  */}
+                    <div className="col-xs-12">
+                      <TextFieldCustom
+                        type="email"
+                        label="Email"
+                        name="email_pemohon"
+                        value={formik.values.email_pemohon}
+                        onChange={formik.handleChange}
+                        onBlur={(e) => {
+                          formik.handleBlur(e);
+                          getPemohonByEmail(e);
+                        }}
+                        error={
+                          formik.touched.email_pemohon &&
+                          Boolean(formik.errors.email_pemohon)
+                        }
+                        helperText={
+                          formik.touched.email_pemohon &&
+                          formik.errors.email_pemohon
+                        }
+                      />
+                    </div>
+
+                    {/* nama */}
+                    <div className="col-xs-12 col-sm-6">
+                      <TextFieldCustom
+                        label="Nama"
+                        name="nama_pemohon"
+                        value={formik.values.nama_pemohon}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.nama_pemohon &&
+                          Boolean(formik.errors.nama_pemohon)
+                        }
+                        helperText={
+                          formik.touched.nama_pemohon &&
+                          formik.errors.nama_pemohon
+                        }
+                      />
+                    </div>
+
+                    {/* pekerjaan  */}
+                    <div className="col-xs-12 col-sm-6">
+                      <TextFieldCustom
+                        fullWidth
+                        label="Pekerjaan"
+                        name="pekerjaan_pemohon"
+                        value={formik.values.pekerjaan_pemohon}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.pekerjaan_pemohon &&
+                          Boolean(formik.errors.pekerjaan_pemohon)
+                        }
+                        helperText={
+                          formik.touched.pekerjaan_pemohon &&
+                          formik.errors.pekerjaan_pemohon
+                        }
+                      />
+                    </div>
+
+                    {/* pendidikan  */}
+                    <div className="col-xs-12 col-sm-6">
+                      <TextFieldCustom
+                        label="Pendidikan"
+                        name="pendidikan_pemohon"
+                        value={formik.values.pendidikan_pemohon}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.pendidikan_pemohon &&
+                          Boolean(formik.errors.pendidikan_pemohon)
+                        }
+                        helperText={
+                          formik.touched.pendidikan_pemohon &&
+                          formik.errors.pendidikan_pemohon
+                        }
+                      />
+                    </div>
+
+                    {/* telp  */}
+                    <div className="col-xs-12 col-sm-6">
+                      <TextFieldCustom
+                        label="Telp/Hp"
+                        name="telp_pemohon"
+                        value={formik.values.telp_pemohon}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.telp_pemohon &&
+                          Boolean(formik.errors.telp_pemohon)
+                        }
+                        helperText={
+                          formik.touched.telp_pemohon &&
+                          formik.errors.telp_pemohon
+                        }
+                      />
+                    </div>
+
+                    {/* alamat  */}
+                    <div className="col-xs-12">
+                      <TextFieldCustom
+                        multiline
+                        label="Alamat"
+                        name="alamat_pemohon"
+                        value={formik.values.alamat_pemohon}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.alamat_pemohon &&
+                          Boolean(formik.errors.alamat_pemohon)
+                        }
+                        helperText={
+                          formik.touched.alamat_pemohon &&
+                          formik.errors.alamat_pemohon
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    {/* kepada */}
+                    <div className="col-xs-12">
+                      <FormControlCustom
+                        error={
+                          formik.touched.kepada && Boolean(formik.errors.kepada)
+                        }
+                      >
+                        <InputLabelCustom>Ditujukan Kepada *</InputLabelCustom>
+                        <SelectCustom
+                          name="kepada"
+                          value={formik.values.kepada}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                        >
+                          <MenuItemCustom value="Bawaslu Republik Indonesia">
+                            Bawaslu Republik Indonesia
+                          </MenuItemCustom>
+                          <MenuItemCustom value="Bawaslu Provinsi">
+                            Bawaslu Provinsi
+                          </MenuItemCustom>
+                          <MenuItemCustom value="Bawaslu">
+                            Bawaslu Kabupaten/Kota
+                          </MenuItemCustom>
+                        </SelectCustom>
+                        <FormHelperText>
+                          {formik.touched.kepada && formik.errors.kepada}
+                        </FormHelperText>
+                      </FormControlCustom>
+                    </div>
+
+                    {/* provinsi  */}
+                    {formik.values.kepada &&
+                      formik.values.kepada !== "Bawaslu Republik Indonesia" && (
+                        <div className="col-xs-12">
+                          <FormControlCustom
+                            error={
+                              formik.touched.id_prov &&
+                              Boolean(formik.errors.id_prov)
+                            }
+                          >
+                            <InputLabelCustom>Provinsi *</InputLabelCustom>
+                            <SelectCustom
+                              name="id_prov"
+                              value={formik.values.id_prov}
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                            >
+                              <MenuItemCustom value="">
+                                --Pilih--
+                              </MenuItemCustom>
+                              {provinsis.length !== 0 &&
+                                provinsis.map((item, idx) => (
+                                  <MenuItemCustom key={idx} value={item.id}>
+                                    {formik.values.kepada ===
+                                      "Bawaslu Provinsi" && "Bawaslu"}{" "}
+                                    {item.provinsi}
+                                  </MenuItemCustom>
+                                ))}
+                            </SelectCustom>
+                            <FormHelperText>
+                              {formik.touched.id_prov && formik.errors.id_prov}
+                            </FormHelperText>
+                          </FormControlCustom>
+                        </div>
+                      )}
+
+                    {/* kabkot */}
+                    {formik.values.kepada &&
+                      formik.values.kepada === "Bawaslu" && (
+                        <div className="col-xs-12">
+                          <FormControlCustom
+                            error={
+                              formik.touched.id_kabkota &&
+                              Boolean(formik.errors.id_kabkota)
+                            }
+                          >
+                            <InputLabelCustom>
+                              Kabupaten/Kota *
+                            </InputLabelCustom>
+                            <SelectCustom
+                              name="id_kabkota"
+                              value={formik.values.id_kabkota}
+                              onChange={formik.handleChange}
+                            >
+                              {kabkotas.length !== 0 &&
+                                kabkotas.map((item) => (
+                                  <MenuItemCustom key={item.id} value={item.id}>
+                                    Bawaslu {item.kabkota}
+                                  </MenuItemCustom>
+                                ))}
+                            </SelectCustom>
+                            <FormHelperText>
+                              {formik.touched.id_kabkota &&
+                                formik.errors.id_kabkota}
+                            </FormHelperText>
+                          </FormControlCustom>
+                        </div>
+                      )}
+
+                    {/* rincian  */}
+                    <div className="col-xs-12">
+                      <TextFieldCustom
+                        multiline
+                        rows={4}
+                        label="Rincian Informasi"
+                        name="rincian"
+                        value={formik.values.rincian}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.rincian &&
+                          Boolean(formik.errors.rincian)
+                        }
+                        helperText={
+                          formik.touched.rincian && formik.errors.rincian
+                        }
+                      />
+                    </div>
+
+                    {/* tujuan  */}
+                    <div className="col-xs-12">
+                      <TextFieldCustom
+                        multiline
+                        rows={4}
+                        label="Tujuan Informasi"
+                        name="tujuan"
+                        value={formik.values.tujuan}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.tujuan && Boolean(formik.errors.tujuan)
+                        }
+                        helperText={
+                          formik.touched.tujuan && formik.errors.tujuan
+                        }
+                      />
+                    </div>
+
+                    {/* cara terima  */}
+                    <div className="col-xs-12">
+                      <FormControlCustom
+                        component="fieldset"
+                        error={
+                          formik.touched.cara_terima &&
+                          Boolean(formik.errors.cara_terima)
+                        }
+                      >
+                        <FormLabelCustom>
+                          Cara Memperoleh Informasi *
+                        </FormLabelCustom>
+                        <RadioGroup
+                          aria-label="cara_terima"
+                          name="cara_terima"
+                          value={formik.values.cara_terima}
+                          onChange={formik.handleChange}
+                        >
+                          <FormControlLabelCustom
+                            value="Melihat/Membaca/Mendengarkan/Mencatat"
+                            label={
+                              <TextRadioCustom text="Melihat/Membaca/Mendengarkan/Mencatat" />
+                            }
+                          />
+                          <FormControlLabelCustom
+                            value="Mendapatkan salinan Informasi (hardcopy/softcopy)"
+                            label={
+                              <TextRadioCustom text="Mendapatkan salinan Informasi (hardcopy/softcopy)" />
+                            }
+                          />
+                        </RadioGroup>
+                        <FormHelperText>
+                          {formik.touched.cara_terima &&
+                            formik.errors.cara_terima}
+                        </FormHelperText>
+                      </FormControlCustom>
+                    </div>
+
+                    {/* cara dapat  */}
+                    <div className="col-xs-12">
+                      <FormControlCustom
+                        component="fieldset"
+                        error={
+                          formik.touched.cara_dapat &&
+                          Boolean(formik.errors.cara_dapat)
+                        }
+                      >
+                        <FormLabelCustom>
+                          Cara Mendapatkan Salinan Informasi *
+                        </FormLabelCustom>
+                        <RadioGroup
+                          aria-label="cara_dapat"
+                          name="cara_dapat"
+                          value={formik.values.cara_dapat}
+                          onChange={formik.handleChange}
+                        >
+                          <FormControlLabelCustom
+                            value="Mengambil Langsung"
+                            label={
+                              <TextRadioCustom text="Mengambil Langsung" />
+                            }
+                          />
+                          <FormControlLabelCustom
+                            value="Pos"
+                            label={<TextRadioCustom text="Pos" />}
+                          />
+                          <FormControlLabelCustom
+                            value="Email"
+                            label={<TextRadioCustom text="Email" />}
+                          />
+                          <FormControlLabelCustom
+                            value="Kurir"
+                            label={<TextRadioCustom text="Kurir" />}
+                          />
+                          <FormControlLabelCustom
+                            value="Faksimili"
+                            label={<TextRadioCustom text="Faksimili" />}
+                          />
+                        </RadioGroup>
+                        <FormHelperText>
+                          {formik.touched.cara_dapat &&
+                            formik.errors.cara_dapat}
+                        </FormHelperText>
+                      </FormControlCustom>
+                    </div>
+
+                    {/* tanda pengenal */}
+                    <div className="col-xs-12" style={{ marginTop: "10px" }}>
+                      <p>ini {formik.values.identitas_pemohon} mana</p>
+                      <Thumb
+                        file={
+                          formik.values.file
+                            ? formik.values.file
+                            : formik.values.identitas_pemohon
+                        }
+                      />
+                      <div className="form-group">
+                        <FormLabelCustom>
+                          {loadPemohon.used
+                            ? "Biarkan atau Upload ulang jika ingin mengganti Tanda Pengenal"
+                            : "Upload Tanda Pengenal"}
+                        </FormLabelCustom>
+                        <input
+                          style={{ marginBottom: 2 }}
+                          className="form form-control"
+                          type="file"
+                          id="file"
+                          name="file"
+                          accept="image/*"
+                          onBlur={formik.handleBlur}
+                          onChange={(event) => {
+                            formik.setFieldValue(
+                              "file",
+                              event.currentTarget.files[0]
+                            );
+                          }}
+                        />
+                        <FormHelperText style={{ color: "red" }}>
+                          {formik.touched.file && formik.errors.file}
+                        </FormHelperText>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-xs-12 col-lg-3">
+                      <ReCAPTCHA
+                        sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
+                        ref={recaptchaRef}
+                        onChange={captchaChange}
+                      />
+                    </div>
+                    <div className="col-xs-12 col-lg-9">
+                      <Button
+                        style={{ marginTop: 10 }}
+                        disabled={formik.isSubmitting}
+                        type="submit"
+                        variant="contained"
+                      >
+                        Kirim
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            {/* Formulir End  */}
+            <div className="clear" />
+            <div className="legal-info col-md-12">
+              <div className="text-center">
+                <p>
+                  * You will be alerted 1 day before the launch, your e-mail
+                  will be used only for this alert.
+                </p>
+              </div>
+            </div>
+            {/* .legal-info */}
+          </div>
+          <div className="clear" />
         </div>
       </div>
-
-      {curData && Object.keys(curData).length !== 0 && (
-        <BuktiPermohonan
-          ref={printBuktiRef}
-          detail={curData}
-          profileBawaslu={profileBawaslu}
-        />
-      )}
 
       <Snackbar
         open={loadPemohon.open}
         onClose={() =>
           setLoadPemohon((prev) => (prev = { ...loadPemohon, open: false }))
         }
-        message={loadPemohon.message}
+        message={<p style={{ fontSize: 14 }}>{loadPemohon.message}</p>}
         action={action}
       />
-    </div>
+    </>
   );
 };
 
-Permohonan.public = true;
-export default Permohonan;
+Index.public = true;
+export default Index;
