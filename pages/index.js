@@ -152,7 +152,7 @@ const validationSchema = yup.object({
     }),
 });
 
-const Index = (props) => {
+const Index = () => {
   // prepare
   const router = useRouter();
   const { q } = router.query;
@@ -270,6 +270,13 @@ const Index = (props) => {
   };
 
   // Utils
+  const scrollToForm = () => {
+    formRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
   const captchaChange = () => {
     toast.dismiss();
   };
@@ -365,7 +372,7 @@ const Index = (props) => {
 
   return (
     <>
-      <div id="formulir-popup">
+      <div id="formulir-popup" style={{ overflowY: "auto", height: "100%" }}>
         <div className="background-top">
           <div className="item-title">
             <h2>
@@ -381,7 +388,7 @@ const Index = (props) => {
             </p>
           </div>
           {/* .item-title */}
-          <button className="scroll-chevron">
+          <button className="scroll-chevron" onClick={scrollToForm}>
             <i className="fa fa-chevron-down fa-2x" />
           </button>
         </div>

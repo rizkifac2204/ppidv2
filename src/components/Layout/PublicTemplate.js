@@ -6,6 +6,44 @@ import $ from "jquery";
 import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
 
+function initPgae() {
+  setTimeout(function () {
+    $(".item-list").each(function (i) {
+      (function (self) {
+        setTimeout(function () {
+          $(self).addClass("show-ready");
+        }, i * 150 + 150);
+      })(this);
+    });
+  }, 250);
+  setTimeout(function () {
+    $(".overlay-prevent").removeClass("").addClass("display-none");
+  }, 600);
+}
+function openPage() {
+  $("#nav-item")
+    .removeClass("fadeOutUp opacity-0")
+    .addClass("fadeInDown index9999");
+  $(".list-sections").removeClass("").addClass("fadeOutDown");
+  setTimeout(function () {
+    $(".item-list").removeClass("show-ready").addClass("");
+  }, 800);
+}
+function closePage() {
+  $("#nav-item").removeClass("fadeInDown").addClass("fadeOutUp");
+  setTimeout(function () {
+    $("#nav-item").removeClass("index9999").addClass("");
+    $(".list-sections").removeClass("fadeOutDown").addClass("");
+    $(".item-list").each(function (i) {
+      (function (self) {
+        setTimeout(function () {
+          $(self).addClass("show-ready");
+        }, i * 150 + 150);
+      })(this);
+    });
+  }, 100);
+}
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   props.timeout.enter = 0;
   props.timeout.exit = 600;
@@ -14,6 +52,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const Template = ({ children }) => {
   const router = useRouter();
+  const [first, setFirst] = useState(true);
   const [open, setOpen] = useState(false);
   const [pageReady, setPageReady] = useState(false);
   const [currentFormulir, setCurrentFormulir] = useState({
@@ -29,46 +68,24 @@ const Template = ({ children }) => {
   };
 
   useEffect(() => {
-    setTimeout(function () {
-      $(".item-list").each(function (i) {
-        (function (self) {
-          setTimeout(function () {
-            $(self).addClass("show-ready");
-          }, i * 150 + 150);
-        })(this);
-      });
-    }, 250);
-    setTimeout(function () {
-      $(".overlay-prevent").removeClass("").addClass("display-none");
-    }, 600);
+    initPgae();
   }, []);
 
   useEffect(() => {
-    if (open) {
-      $("#nav-item")
-        .removeClass("fadeOutUp opacity-0")
-        .addClass("fadeInDown index9999");
-      $(".list-sections").removeClass("").addClass("fadeOutDown");
-      setTimeout(function () {
-        $(".item-list").removeClass("show-ready").addClass("");
-      }, 800);
-    } else {
-      $("#nav-item").removeClass("fadeInDown").addClass("fadeOutUp");
-      setTimeout(function () {
-        $("#nav-item").removeClass("index9999").addClass("");
-        $(".list-sections").removeClass("fadeOutDown").addClass("");
-        $(".item-list").each(function (i) {
-          (function (self) {
-            setTimeout(function () {
-              $(self).addClass("show-ready");
-            }, i * 150 + 150);
-          })(this);
-        });
-      }, 100);
-    }
+    open ? openPage() : closePage();
   }, [open]);
 
   useEffect(() => {
+    if (!router.isReady) return;
+    // fisrt bite / first window load
+    if (Object.keys(router.query).length !== 0 && first) {
+      setTimeout(() => {
+        setOpen(() => true);
+        setPageReady(() => true);
+        $("#loading-popup").fadeOut(2000);
+      }, 800);
+    }
+    // router change
     router.events.on("routeChangeStart", () => setPageReady(() => false));
     router.events.on("routeChangeComplete", () => {
       setPageReady(() => true);
@@ -79,30 +96,33 @@ const Template = ({ children }) => {
       $("#loading-popup").fadeOut(2000);
     });
 
+    // setting text dan link untuk formulir section
     if (router.pathname === "/")
       setCurrentFormulir({
-        currentUrl: "/",
+        currentUrl: router.asPath,
         head: "Permohonan",
         foot: "Permohoan Informasi",
       });
     if (router.pathname === "/cek")
       setCurrentFormulir({
-        currentUrl: "/cek",
+        currentUrl: router.asPath,
         head: "Cek Permohonan",
         foot: "Cek Permohoan Informasi",
       });
     if (router.pathname === "/keberatan")
       setCurrentFormulir({
-        currentUrl: "/keberatan",
+        currentUrl: router.asPath,
         head: "Keberatan",
         foot: "Pengajuan Keberatan",
       });
     if (router.pathname === "/survey")
       setCurrentFormulir({
-        currentUrl: "/survey",
+        currentUrl: router.asPath,
         head: "Survey",
         foot: "Survey Layanan",
       });
+
+    return () => setFirst(false);
   }, [router]);
 
   return (
