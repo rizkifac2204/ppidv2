@@ -88,8 +88,8 @@ export default PublicHandler()
         });
       }
 
-      await sendingMail(setMailOptionPemohon);
-      await sendingMail(setMailOptionAdmin);
+      // await sendingMail(setMailOptionPemohon);
+      // await sendingMail(setMailOptionAdmin);
 
       // success
       res.json({

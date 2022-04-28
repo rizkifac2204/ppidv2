@@ -1,9 +1,167 @@
-import React from "react";
+import { useRef, useState } from "react";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { toast } from "react-toastify";
+import axios from "axios";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useReactToPrint } from "react-to-print";
+// MUI
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Button from "@mui/material/Button";
+// CMPONENTS
+import BuktiPengajuanKeberatan from "components/PrintPage/BuktiPengajuanKeberatan";
+import ResponseKeberatan from "components/PublicComponents/ResponseKeberatan";
+import {
+  TextFieldCustom,
+  CheckBoxCustom,
+  CheckBoxTex,
+} from "components/PublicComponents/FieldCustom";
+
+function isTrue(element, index, array) {
+  return element;
+}
+
+const handleSubmit = (
+  values,
+  data,
+  recaptchaRef,
+  afterSubmit,
+  setSubmitting
+) => {
+  const arr = ["a", "b", "c", "d", "e", "f", "g"];
+  const temArr = [];
+  arr.map((item) => {
+    temArr.push(values[`alasan_${item}`]);
+  });
+  if (!temArr.some(isTrue)) {
+    toast.error("Pilih Minimal 1 Alasan Keberatan");
+    setSubmitting(false);
+    return;
+  }
+  const postValues = {
+    ...values,
+    id: data.id,
+    no_registrasi: data.no_registrasi,
+    email_pemohon: data.email_pemohon,
+    email_bawaslu: data.email_bawaslu,
+  };
+  const recaptchaValue = recaptchaRef.current.getValue();
+  if (!recaptchaValue) {
+    toast.info("Mohon Validasi Captcha");
+    setSubmitting(false);
+    return;
+  }
+
+  const toastProses = toast.loading("Tunggu Sebentar...");
+  axios
+    .post(`/api/public/keberatan`, postValues)
+    .then((res) => {
+      afterSubmit(res.data.currentData);
+      toast.update(toastProses, {
+        render: res.data.message,
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    })
+    .catch((err) => {
+      toast.update(toastProses, {
+        render: err.response.data.message,
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    })
+    .then(() => {
+      setSubmitting(false);
+      if (recaptchaRef.current) recaptchaRef.current.reset();
+    });
+};
+
+const validationSchema = yup.object({
+  kasus_posisi: yup.string().required("Harus Diisi"),
+});
 
 function Keberatan() {
+  const [data, setData] = useState({});
+  const [curData, setCurData] = useState({});
+  const [regOrTiket, setRegOrTiket] = useState("");
+  // useRef
+  const recaptchaRef = useRef(null);
+  const answerRef = useRef(null);
+  const formAwalRef = useRef(null);
+  const formRef = useRef(null);
+  const printBuktiRef = useRef();
+
+  const handleGetData = (e) => {
+    e.preventDefault();
+    const toastProses = toast.loading("Mencari Data...");
+    axios
+      .get(`/api/public/keberatan?nomor=${regOrTiket}`)
+      .then((res) => {
+        setData(() => res.data);
+        formRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        toast.update(toastProses, {
+          render: "Ditemukan, Lanjutkan Mengisi Formulir",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      })
+      .catch((err) => {
+        toast.update(toastProses, {
+          render: err.response.data.message,
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      });
+  };
+
+  // PRINT
+  const handlePrint = () => {
+    processPrintBukti();
+  };
+  const processPrintBukti = useReactToPrint({
+    content: () => printBuktiRef.current,
+  });
+
+  const afterSubmit = (resData) => {
+    const curTemp = { ...data, ...resData };
+    setCurData(() => curTemp);
+    formik.resetForm();
+    answerRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      alasan_a: false,
+      alasan_b: false,
+      alasan_c: false,
+      alasan_d: false,
+      alasan_e: false,
+      alasan_f: false,
+      alasan_g: false,
+      kasus_posisi: "",
+    },
+    enableReinitialize: true,
+    validationSchema: validationSchema,
+    onSubmit: (values, { setSubmitting }) => {
+      setCurData({});
+      handleSubmit(values, data, recaptchaRef, afterSubmit, setSubmitting);
+    },
+  });
+
   return (
     <>
-      <>
+      <div id="formulir-popup" style={{ overflowY: "auto", height: "100%" }}>
         <div className="background-top">
           <div className="item-title">
             <h2>
@@ -18,186 +176,342 @@ function Keberatan() {
             </p>
           </div>
           {/* .item-title */}
-          <button className="scroll-chevron">
+          <button
+            className="scroll-chevron"
+            onClick={() => {
+              formAwalRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
             <i className="fa fa-chevron-down fa-2x" />
           </button>
         </div>
         <div className="info-item">
-          <div className="first-block">
-            <div className="container container-wide spec-sm">
-              <div className="col-md-12">
-                <h2>
-                  <small>
-                    Formulir Cek Permohonan Informasi <br />
-                    <small>Isi Data Dengan Lengkap</small>
-                  </small>
-                </h2>
+          <div
+            className="newsletter-block"
+            style={{
+              display:
+                curData && Object.keys(curData).length === 0 ? "block" : "none",
+            }}
+          >
+            {/* Formulir Start  */}
+            <div className="col-xs-12 block-right-newsletter" ref={formAwalRef}>
+              <div id="subscribe">
+                <h2>Formulir Pengajuan Keberatan</h2>
+                <p>Isi Data Dengan Lengkap dan Jelas</p>
+
+                <form onSubmit={handleGetData}>
+                  <div className="row">
+                    <div className="col-xs-10">
+                      <TextFieldCustom
+                        label="Nomor Registrasi / Nomor Tiket"
+                        name="regOrTiket"
+                        value={regOrTiket}
+                        onChange={(e) => {
+                          setRegOrTiket(e.target.value);
+                          setData({});
+                          formik.resetForm();
+                        }}
+                      />
+                    </div>
+                    <div className="col-xs-2" style={{ marginTop: 30 }}>
+                      {data && Object.keys(data).length === 0 && (
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          className="btn btn-info"
+                        >
+                          Cari
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </form>
+
+                <div className="clear" />
+
+                {data && Object.keys(data).length !== 0 && (
+                  <form
+                    ref={formRef}
+                    onSubmit={formik.handleSubmit}
+                    id="contact-form"
+                    style={{ marginTop: "20px" }}
+                  >
+                    <div className="row">
+                      <div className="col-xs-12">
+                        <p> A. INFORMASI PENGAJUAN KEBERATAN</p>
+                      </div>
+
+                      {/* rincian  */}
+                      <div className="col-xs-12">
+                        <TextFieldCustom
+                          disabled
+                          multiline
+                          label="Rincian Informasi"
+                          name="rincian"
+                          value={data.rincian}
+                        />
+                      </div>
+
+                      {/* tujuan  */}
+                      <div className="col-xs-12">
+                        <TextFieldCustom
+                          disabled
+                          multiline
+                          label="Tujuan Informasi"
+                          name="tujuan"
+                          value={data.tujuan}
+                        />
+                      </div>
+
+                      <div className="col-xs-12" style={{ marginTop: "20px" }}>
+                        <p>Identitas Pemohon</p>
+                      </div>
+
+                      {/* nama */}
+                      <div className="col-xs-12 col-sm-6">
+                        <TextFieldCustom
+                          disabled
+                          label="Nama"
+                          name="nama_pemohon"
+                          value={data.nama_pemohon}
+                        />
+                      </div>
+
+                      {/* pekerjaan  */}
+                      <div className="col-xs-12 col-sm-6">
+                        <TextFieldCustom
+                          disabled
+                          label="Pekerjaan"
+                          name="pekerjaan_pemohon"
+                          value={data.pekerjaan_pemohon}
+                        />
+                      </div>
+
+                      <div className="col-xs-12 col-sm-6">
+                        <TextFieldCustom
+                          disabled
+                          label="Telp/Hp"
+                          name="telp_pemohon"
+                          value={data.telp_pemohon}
+                        />
+                      </div>
+
+                      {/* alamat  */}
+                      <div className="col-xs-12">
+                        <TextFieldCustom
+                          disabled
+                          multiline
+                          label="Alamat"
+                          name="alamat_pemohon"
+                          value={data.alamat_pemohon}
+                        />
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-xs-12" style={{ marginTop: "20px" }}>
+                        <p>B. ALASAN PENGAJUAN KEBERATAN</p>
+                      </div>
+                      <div className="col-xs-12" style={{ marginTop: "10px" }}>
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <CheckBoxCustom
+                                name="alasan_a"
+                                checked={formik.values.alasan_a}
+                                onChange={(e) => {
+                                  formik.handleChange(e);
+                                  toast.dismiss();
+                                }}
+                              />
+                            }
+                            label={
+                              <CheckBoxTex text="Permohonan Informasi ditolak" />
+                            }
+                          />
+                          <FormControlLabel
+                            control={
+                              <CheckBoxCustom
+                                name="alasan_b"
+                                checked={formik.values.alasan_b}
+                                onChange={(e) => {
+                                  formik.handleChange(e);
+                                  toast.dismiss();
+                                }}
+                              />
+                            }
+                            label={
+                              <CheckBoxTex text="Informasi berkala tidak disediakan" />
+                            }
+                          />
+                          <FormControlLabel
+                            control={
+                              <CheckBoxCustom
+                                name="alasan_c"
+                                checked={formik.values.alasan_c}
+                                onChange={(e) => {
+                                  formik.handleChange(e);
+                                  toast.dismiss();
+                                }}
+                              />
+                            }
+                            label={
+                              <CheckBoxTex text="Permintaan Informasi tidak ditanggapi" />
+                            }
+                          />
+                          <FormControlLabel
+                            control={
+                              <CheckBoxCustom
+                                name="alasan_d"
+                                checked={formik.values.alasan_d}
+                                onChange={(e) => {
+                                  formik.handleChange(e);
+                                  toast.dismiss();
+                                }}
+                              />
+                            }
+                            label={
+                              <CheckBoxTex
+                                text="Permintaan Informasi ditanggapi tidak sebagaimana yang
+                              diminta"
+                              />
+                            }
+                          />
+                          <FormControlLabel
+                            control={
+                              <CheckBoxCustom
+                                name="alasan_e"
+                                checked={formik.values.alasan_e}
+                                onChange={(e) => {
+                                  formik.handleChange(e);
+                                  toast.dismiss();
+                                }}
+                              />
+                            }
+                            label={
+                              <CheckBoxTex text="Permintaan Informasi tidak dipenuhi" />
+                            }
+                          />
+                          <FormControlLabel
+                            control={
+                              <CheckBoxCustom
+                                name="alasan_f"
+                                checked={formik.values.alasan_f}
+                                onChange={(e) => {
+                                  formik.handleChange(e);
+                                  toast.dismiss();
+                                }}
+                              />
+                            }
+                            label={
+                              <CheckBoxTex text="Biaya yang dikenakan tidak wajar" />
+                            }
+                          />
+                          <FormControlLabel
+                            control={
+                              <CheckBoxCustom
+                                name="alasan_g"
+                                checked={formik.values.alasan_g}
+                                onChange={(e) => {
+                                  formik.handleChange(e);
+                                  toast.dismiss();
+                                }}
+                              />
+                            }
+                            label={
+                              <CheckBoxTex
+                                text="Informasi disampaikan melebihi jangka waktu yang
+                              ditentukan"
+                              />
+                            }
+                          />
+                        </FormGroup>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-xs-12" style={{ marginTop: "20px" }}>
+                        <p>C. KASUS POSISI</p>
+                      </div>
+
+                      {/* kasus posisi  */}
+                      <div className="col-xs-12">
+                        <TextFieldCustom
+                          multiline
+                          rows={4}
+                          label="Kasus Posisi"
+                          name="kasus_posisi"
+                          value={formik.values.kasus_posisi}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                        />
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-xs-12 col-lg-3">
+                        <ReCAPTCHA
+                          sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
+                          ref={recaptchaRef}
+                          onChange={() => toast.dismiss()}
+                        />
+                      </div>
+                      <div className="col-xs-12 col-lg-9">
+                        <Button
+                          style={{ marginTop: 10 }}
+                          disabled={formik.isSubmitting}
+                          type="submit"
+                          variant="contained"
+                        >
+                          Kirim
+                        </Button>
+                      </div>
+                    </div>
+                  </form>
+                )}
               </div>
             </div>
-          </div>
-          {/* .first-block */}
-          <div className="contact-block">
-            <div className="col-xs-12 col-sm-12 col-lg-5 info-solutions">
-              <h3>
-                <span className="point">
-                  <i className="fa fa-bookmark" />
-                </span>
-                Contact Informations
-                <br />
-                <small>Postal, E-mail, Phone, FAX.</small>
-              </h3>
-              <p className="contact-p">
-                Opening Hours : 9.00 - 18.00
-                <br />
-                Monday <i className="fa fa-arrow-right" /> Saturday
-              </p>
-              <span className="border-light" />
-              <div className="col-xs-12 col-sm-12 col-lg-12 contact-solution no-padding">
-                <h4>
-                  <i className="fa fa-envelope-o" /> Postal Address
-                </h4>
-                <p>
-                  PO Box 16122 Collins Street West
-                  <br />
-                  Victoria 8007 Australia
-                </p>
-              </div>
-              <div className="col-xs-12 col-sm-12 col-lg-12 contact-solution no-padding">
-                <h4>
-                  <i className="fa fa-paper-plane-o" /> E-mail
-                </h4>
-                <p>
-                  Merchandising :
-                  <a href="mailto:info@wwww.com">info@wwww.com</a>
-                  <br />
-                  Webmaster : <a href="mailto:web@wwww.com">web@wwww.com</a>
-                </p>
-              </div>
-              <div className="col-xs-12 col-sm-12 col-lg-12 contact-solution no-padding">
-                <h4>
-                  <i className="fa fa-phone" /> Phone
-                </h4>
-                <p>
-                  Customer : <a href="tel:+3354737263">+33 (00) 547 372 63</a>
-                  <br />
-                  Profesional :<a href="tel:+6678764543">+66 (87) 7876 4543</a>
-                </p>
-              </div>
-              <div className="col-xs-12 col-sm-12 col-lg-12 contact-solution no-padding">
-                <h4>
-                  <i className="fa fa-keyboard-o" /> FAX
-                </h4>
-                <p>Main Line : 0-987-998-675</p>
-              </div>
-            </div>
-            {/* .info-solutions */}
-            <div className="col-xs-12 col-sm-12 col-lg-7 contact-part">
-              <h3>
-                <span className="point-gold">
-                  <i className="fa fa-bookmark" />
-                </span>
-                Say Hello!
-                <br />
-                <small>Response in less than 24Hrs.</small>
-              </h3>
-              <p className="contact-p-right">
-                If you want to collaborate on crafting amazing experience for
-                people, you are very welcome to contact our group. We are
-                available for freelance projects and full-time employment.
-                <br />
-                Just use the form below!
-              </p>
-              {/* Contact form */}
-              <form
-                id="contact-form"
-                name="contact-form"
-                method="POST"
-                data-name="Contact Form"
-              >
-                {/* Full name */}
-                <div className="col-xs-12 col-sm-12 col-lg-12 no-padding">
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      id="name"
-                      className="form form-control"
-                      placeholder="Write your name"
-                      onFocus={(e) => (e.target.placeholder = "")}
-                      onBlur={(e) => (e.target.placeholder = "Write your name")}
-                      name="name"
-                      data-name="Name"
-                      required
-                    />
-                  </div>
-                </div>
-                {/* E-mail */}
-                <div className="col-xs-12 col-sm-12 col-lg-12 no-padding">
-                  <div className="form-group">
-                    <input
-                      type="email"
-                      id="email"
-                      className="form form-control"
-                      placeholder="Write your email address"
-                      onFocus={(e) => (e.target.placeholder = "")}
-                      onBlur={(e) =>
-                        (e.target.placeholder = "Write your email address")
-                      }
-                      name="email-address"
-                      data-name="Email Address"
-                      required
-                    />
-                  </div>
-                </div>
-                {/* Subject */}
-                <div className="col-xs-12 col-sm-12 col-lg-12 no-padding">
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      id="subject"
-                      className="form form-control"
-                      placeholder="Write the subject"
-                      onFocus={(e) => (e.target.placeholder = "")}
-                      onBlur={(e) =>
-                        (e.target.placeholder = "Write the subject")
-                      }
-                      name="subject"
-                      data-name="Subject"
-                    />
-                  </div>
-                </div>
-                {/* Message */}
-                <div className="col-xs-12 col-sm-12 col-lg-12 no-padding">
-                  <div className="form-group">
-                    <textarea
-                      id="text-area"
-                      className="form textarea form-control"
-                      placeholder="Your message here... 20 characters Min."
-                      onFocus={(e) => (e.target.placeholder = "")}
-                      onBlur={(e) =>
-                        (e.target.placeholder =
-                          "Your message here... 20 characters Min.")
-                      }
-                      name="message"
-                      data-name="Text Area"
-                      required
-                      defaultValue={""}
-                    />
-                  </div>
-                </div>
-                {/* Button submit */}
-                <button type="submit" id="valid-form" className="btn btn-large">
-                  Send my Message
-                </button>
-              </form>
-              {/* /. Contact form */}
-              <div id="answer" />
-            </div>
-            {/* .contact-part */}
+            {/* Formulir End  */}
             <div className="clear" />
           </div>
-          {/* .contact-block */}
+
+          <div ref={answerRef}>
+            {curData && Object.keys(curData).length !== 0 && (
+              <>
+                <ResponseKeberatan
+                  curData={curData}
+                  handlePrint={handlePrint}
+                  reset={() => {
+                    setTimeout(() => {
+                      setCurData({});
+                    }, 500);
+                    setTimeout(() => {
+                      formRef.current.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }, 800);
+                  }}
+                />
+
+                <BuktiPengajuanKeberatan
+                  ref={printBuktiRef}
+                  detail={curData}
+                  profileBawaslu={data}
+                />
+              </>
+            )}
+          </div>
+          <div className="clear" />
+          <div className="legal-info col-md-12">
+            <div className="text-center">
+              <p>
+                Pejabat Pengelola Informasi dan Dokumentasi Bawaslu Terintegrasi
+              </p>
+            </div>
+          </div>
         </div>
-      </>
+      </div>
     </>
   );
 }

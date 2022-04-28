@@ -45,15 +45,6 @@ export default PublicHandler().post(async (req, res) => {
     saran,
   };
 
-  const dataForInsertPemohon = {
-    email_pemohon,
-    nama_pemohon,
-    jenis_kelamin_pemohon,
-    pekerjaan_pemohon,
-    pendidikan_pemohon,
-    alamat_pemohon,
-  };
-
   // proses simpan data pemohon
   const cekDataPemohon = await db("pemohon")
     .where({ email_pemohon: email_pemohon })
@@ -76,14 +67,9 @@ export default PublicHandler().post(async (req, res) => {
         message: "Gagal Proses Input Pemohon",
       });
   } else {
-    // proses simpan
-    const simpan = await db("pemohon").insert(dataForInsertPemohon);
-
-    // failed
-    if (!simpan)
-      return res.status(400).json({
-        message: "Gagal Menyimpan Data Pemohon",
-      });
+    return res.status(400).json({
+      message: "Anda Belum Pernah Melakukan Permohonan Informasi",
+    });
   }
 
   // proses simpan

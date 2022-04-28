@@ -123,7 +123,7 @@ const Template = ({ children }) => {
       });
 
     return () => setFirst(false);
-  }, [router]);
+  }, [router]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
@@ -172,11 +172,7 @@ const Template = ({ children }) => {
             </li>
             <li className="item-list">
               <Link href="/news">
-                <a
-                  href="/news"
-                  className="open-popup-link"
-                  onClick={handleClickOpen}
-                >
+                <a className="open-popup-link" onClick={handleClickOpen}>
                   <div className="item-title">
                     <h2>
                       <i className="fa fa-newspaper-o" />

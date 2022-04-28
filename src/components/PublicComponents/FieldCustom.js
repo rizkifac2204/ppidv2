@@ -6,6 +6,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Checkbox from "@mui/material/Checkbox";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles(() => ({
@@ -63,12 +64,22 @@ const MenuItemCustom = (props) => {
   return <MenuItem style={{ fontSize: 14 }} {...props} />;
 };
 
-const FormControlLabelCustom = (props) => {
+const FormControlLabelRadioCustom = (props) => {
   return <FormControlLabel control={<Radio required={true} />} {...props} />;
 };
 
 const TextRadioCustom = (props) => {
   return <p style={{ fontSize: 14, color: "grey" }}>{props.text}</p>;
+};
+
+const CheckBoxCustom = (props) => {
+  return (
+    <Checkbox sx={{ "& .MuiSvgIcon-root": { fontSize: 18 } }} {...props} />
+  );
+};
+
+const CheckBoxTex = ({ text }) => {
+  return <p style={{ fontSize: 14, color: "grey" }}>{text}</p>;
 };
 
 export {
@@ -78,6 +89,8 @@ export {
   FormLabelCustom,
   SelectCustom,
   MenuItemCustom,
-  FormControlLabelCustom,
+  FormControlLabelRadioCustom,
   TextRadioCustom,
+  CheckBoxCustom,
+  CheckBoxTex,
 };

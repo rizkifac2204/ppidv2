@@ -1,163 +1,272 @@
-import Link from "next/link";
-function Cek() {
+import { useRef, useState } from "react";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { toast } from "react-toastify";
+import axios from "axios";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useReactToPrint } from "react-to-print";
+// MUI
+import Button from "@mui/material/Button";
+// COMPONENTS
+import ResponseCek from "components/PublicComponents/ResponseCek";
+import BuktiPermohonan from "components/PrintPage/BuktiPermohonan";
+import { TextFieldCustom } from "components/PublicComponents/FieldCustom";
+
+const handleSubmit = (
+  values,
+  recaptchaRef,
+  afterSubmit,
+  setCurData,
+  setSubmitting
+) => {
+  const recaptchaValue = recaptchaRef.current.getValue();
+  if (!recaptchaValue) {
+    toast.info("Mohon Validasi Captcha");
+    setSubmitting(false);
+    return;
+  }
+  setCurData(() => {});
+
+  const toastProses = toast.loading("Tunggu Sebentar...");
+  axios
+    .post(`/api/public/cek`, values)
+    .then((res) => {
+      afterSubmit(res.data);
+      toast.update(toastProses, {
+        render: "Ditemukan",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    })
+    .catch((err) => {
+      toast.update(toastProses, {
+        render: err.response.data.message,
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    })
+    .then(() => {
+      setSubmitting(false);
+      if (recaptchaRef.current) recaptchaRef.current.reset();
+    });
+};
+
+const validationSchema = yup.object({
+  tiket: yup.string().required("Harus Diisi"),
+  email_pemohon: yup
+    .string()
+    .email("Email Tidak Valid")
+    .required("Harus Diisi"),
+});
+
+const Cek = () => {
+  const [curData, setCurData] = useState({});
+  const [profileBawaslu, setProfileBawaslu] = useState({});
+
+  // useRef
+  const recaptchaRef = useRef(null);
+  const answerRef = useRef(null);
+  const formRef = useRef(null);
+  const printBuktiRef = useRef();
+
+  const fetchProfileBawaslu = (callback) => {
+    const toastProses = toast.loading("Menyiapkan Format...");
+    axios
+      .get(`/api/services/profileBawaslu?id=` + curData.bawaslu_id)
+      .then((res) => {
+        setProfileBawaslu(res.data);
+        toast.dismiss(toastProses);
+        callback();
+      })
+      .catch((err) => {
+        toast.update(toastProses, {
+          render: "Terjadi Kesalahan",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      });
+  };
+  // PRINT
+  const handlePrint = () => {
+    return fetchProfileBawaslu(() => {
+      processPrintBukti();
+    });
+  };
+  const processPrintBukti = useReactToPrint({
+    content: () => printBuktiRef.current,
+  });
+
+  const afterSubmit = (data) => {
+    setCurData(() => data);
+    formik.resetForm();
+    answerRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      tiket: "",
+      email_pemohon: "",
+    },
+    enableReinitialize: true,
+    validationSchema: validationSchema,
+    onSubmit: (values, { setSubmitting }) =>
+      handleSubmit(
+        values,
+        recaptchaRef,
+        afterSubmit,
+        setCurData,
+        setSubmitting
+      ),
+  });
+
   return (
     <>
-      <div>
-        <nav id="nav-item" className="animated-middle">
-          {" "}
-          {/* Info on top */}
-          <a href="mailto:myemail@epic.com" className="email-us">
-            <i className="fa fa-envelope-o fa-2x" />
-          </a>
-          <div className="social-icons">
-            <Link href="/">
-              <a href="#">eh</a>
-            </Link>
-            <a href="#">
-              <i className="fa fa-twitter" />
-            </a>
-            <a href="#">
-              <i className="fa fa-google-plus" />
-            </a>
-            <a href="#">
-              <i className="fa fa-linkedin" />
-            </a>
-          </div>
-          {/* .social-icons */}
-        </nav>
-        {/* #nav-item */}
+      <div id="formulir-popup" style={{ overflowY: "auto", height: "100%" }}>
         <div className="background-top">
           <div className="item-title">
-            <img
-              alt=""
-              className="img-responsive logo-home"
-              src="uis/img/logo-demo.jpg"
-            />
             <h2>
-              <span className="point">W&amp;W</span> is Coming!
-              <Link href="/">
-                <a>HOME</a>
-              </Link>
+              <i className="fa fa-file-text fa-2x" />
+              <br />
+              <span className="point">Formulir</span> Cek Permohonan Informasi
             </h2>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur.
+              Isi Formulir untuk melakukan Cek Status Permohonan Informasi.
+              Pelayanan Kantor pukul 08:00 AM s.d 16:00 PM. Kamu juga dapat
+              melakukan cek status permohonan dengan menghubungi Nomor
+              masing-masing Bawaslu
             </p>
-          </div>{" "}
+          </div>
           {/* .item-title */}
-          <button className="scroll-chevron">
+          <button
+            className="scroll-chevron"
+            onClick={() => {
+              formRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
             <i className="fa fa-chevron-down fa-2x" />
           </button>
         </div>
         <div className="info-item">
-          <div className="first-block">
-            <div className="container">
-              <div className="col-md-12">
-                <h2>We are Coming Soon.</h2>
+          <div className="newsletter-block">
+            {/* Formulir Start  */}
+            <div className="col-xs-12 block-right-newsletter" ref={formRef}>
+              <div id="subscribe">
+                <h2>Formulir Cek Pemohonan Informasi</h2>
+                <p>Isi Data Tiket dan Email</p>
+
+                <form
+                  onSubmit={formik.handleSubmit}
+                  id="contact-form"
+                  style={{ marginTop: "20px" }}
+                >
+                  <div className="row">
+                    {/* tiket */}
+                    <div className="col-xs-12">
+                      <TextFieldCustom
+                        label="Tiket"
+                        name="tiket"
+                        value={formik.values.tiket}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.tiket && Boolean(formik.errors.tiket)
+                        }
+                        helperText={formik.touched.tiket && formik.errors.tiket}
+                      />
+                    </div>
+
+                    {/* email  */}
+                    <div className="col-xs-12">
+                      <TextFieldCustom
+                        type="email"
+                        label="Email"
+                        name="email_pemohon"
+                        value={formik.values.email_pemohon}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.email_pemohon &&
+                          Boolean(formik.errors.email_pemohon)
+                        }
+                        helperText={
+                          formik.touched.email_pemohon &&
+                          formik.errors.email_pemohon
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-xs-12 col-lg-3">
+                      <ReCAPTCHA
+                        sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
+                        ref={recaptchaRef}
+                        onChange={() => toast.dismiss()}
+                      />
+                    </div>
+                    <div className="col-xs-12 col-lg-9">
+                      <Button
+                        style={{ marginTop: 10 }}
+                        disabled={formik.isSubmitting}
+                        type="submit"
+                        variant="contained"
+                      >
+                        Cari
+                      </Button>
+                    </div>
+                  </div>
+                </form>
               </div>
             </div>
+            {/* Formulir End  */}
+            <div className="clear" />
           </div>
-          {/* .first-block */}
-          <div className="container countdown-block">
-            <div className="col-md-4">
-              <h3>
-                <span className="point">
-                  <i className="fa fa-clock-o" />
-                </span>{" "}
-                Launching Informations
-                <br />
-                <small>December 14th, 2018</small>
-              </h3>
-              <h4>
-                <i className="fa fa-bullhorn" /> Meet us during this event.
-              </h4>
-              <p className="countdown-p">
-                If you want to collaborate on crafting amazing experience for
-                people – you are very welcome to join us.
+
+          <div ref={answerRef}>
+            {curData && Object.keys(curData).length !== 0 && (
+              <>
+                <ResponseCek
+                  curData={curData}
+                  handlePrint={handlePrint}
+                  reset={() => {
+                    setTimeout(() => {
+                      setCurData({});
+                    }, 500);
+                    formRef.current.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
+                />
+                <BuktiPermohonan
+                  ref={printBuktiRef}
+                  detail={curData}
+                  profileBawaslu={profileBawaslu}
+                />
+              </>
+            )}
+          </div>
+          <div className="clear" />
+          <div className="legal-info col-md-12">
+            <div className="text-center">
+              <p>
+                Pejabat Pengelola Informasi dan Dokumentasi Bawaslu Terintegrasi
               </p>
             </div>
-            <div className="col-md-8">
-              <div id="countdown_dashboard">
-                {/* Days / if you need only 2 figures for the day, delete the first line <div class="digit">0</div> */}
-                <div className="col-xs-6 col-sm-3 col-lg-3 dash-glob">
-                  <div className="dash days_dash">
-                    <div className="digit">0</div>
-                    <div className="digit">0</div>
-                    <div className="digit">0</div>
-                    <span className="dash_title">Days</span>
-                  </div>
-                </div>
-                {/* Hours */}
-                <div className="col-xs-6 col-sm-3 col-lg-3 dash-glob">
-                  <div className="dash hours_dash">
-                    <div className="digit">0</div>
-                    <div className="digit">0</div>
-                    <span className="dash_title">Hours</span>
-                  </div>
-                </div>
-                {/* Minutes */}
-                <div className="col-xs-6 col-sm-3 col-lg-3 dash-glob">
-                  <div className="dash minutes_dash">
-                    <div className="digit">0</div>
-                    <div className="digit">0</div>
-                    <span className="dash_title">Minutes</span>
-                  </div>
-                </div>
-                {/* Seconds */}
-                <div className="col-xs-6 col-sm-3 col-lg-3 dash-glob">
-                  <div className="dash seconds_dash">
-                    <div className="digit">0</div>
-                    <div className="digit">0</div>
-                    <span className="dash_title">Seconds</span>
-                  </div>
-                </div>
-              </div>{" "}
-              {/* .countdown_dashboard */}
-            </div>
           </div>
-          {/* .countdown-block */}
-          <div className="newsletter-block">
-            <div className="col-xs-12 col-sm-12 col-lg-5 block-left-newsletter">
-              <i className="fa fa-bell" />
-            </div>{" "}
-            {/* .block-left-newsletter */}
-            <div className="col-xs-12 col-sm-12 col-lg-7 block-right-newsletter">
-              <div id="subscribe">
-                <h2>Be alert!*</h2>
-                <p>
-                  Subscribe to receive new ideas, inspiration and our weekly
-                  news!
-                </p>
-                <p>
-                  Don't miss your chance, <strong>Subscribe now!</strong>
-                </p>
-              </div>{" "}
-              {/* .subscribe */}
-            </div>{" "}
-            {/* .block-right-newsletter */}
-            <div className="clear" />
-            <div className="legal-info col-md-12">
-              <div className="text-center">
-                <p>
-                  * You will be alerted 1 day before the launch, your e-mail
-                  will be used only for this alert.
-                </p>
-              </div>
-            </div>{" "}
-            {/* .legal-info */}
-            <div className="clear" />
-          </div>{" "}
-          {/* .newsletter-block */}
-        </div>{" "}
-        {/* .info-item */}
+        </div>
       </div>
     </>
   );
-}
+};
 
 Cek.public = true;
 export default Cek;

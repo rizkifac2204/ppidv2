@@ -104,7 +104,7 @@ const News = () => {
                   news!
                 </p>
                 <p>
-                  Don't miss your chance, <strong>Subscribe now!</strong>
+                  Dont miss your chance, <strong>Subscribe now!</strong>
                 </p>
                 <form action="php/notify-me.php" id="notifyMe" method="POST">
                   <div className="form-group">

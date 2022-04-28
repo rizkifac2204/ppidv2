@@ -25,7 +25,7 @@ import {
   FormLabelCustom,
   SelectCustom,
   MenuItemCustom,
-  FormControlLabelCustom,
+  FormControlLabelRadioCustom,
   TextRadioCustom,
 } from "components/PublicComponents/FieldCustom";
 
@@ -269,18 +269,6 @@ const Index = () => {
     });
   };
 
-  // Utils
-  const scrollToForm = () => {
-    formRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
-  const captchaChange = () => {
-    toast.dismiss();
-  };
-
   // load Pemohon
   const handleUsePemohon = (event) => {
     event.preventDefault();
@@ -388,46 +376,28 @@ const Index = () => {
             </p>
           </div>
           {/* .item-title */}
-          <button className="scroll-chevron" onClick={scrollToForm}>
+          <button
+            className="scroll-chevron"
+            onClick={() => {
+              formRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+          >
             <i className="fa fa-chevron-down fa-2x" />
           </button>
         </div>
         <div className="info-item">
-          <div ref={answerRef}>
-            {curData && Object.keys(curData).length !== 0 && (
-              <>
-                <ResponsePermohonan
-                  curData={curData}
-                  handlePrint={handlePrint}
-                  reset={() => {
-                    setTimeout(() => {
-                      setCurData({});
-                    }, 500);
-                    formRef.current.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  }}
-                />
-                <BuktiPermohonan
-                  ref={printBuktiRef}
-                  detail={curData}
-                  profileBawaslu={profileBawaslu}
-                />
-              </>
-            )}
-          </div>
-
           <div
             className="newsletter-block"
-            ref={formRef}
             style={{
               display:
                 curData && Object.keys(curData).length === 0 ? "block" : "none",
             }}
           >
             {/* Formulir Start  */}
-            <div className="col-xs-12 block-right-newsletter">
+            <div className="col-xs-12 block-right-newsletter" ref={formRef}>
               <div id="subscribe">
                 <h2>Formulir Pemohonan Informasi</h2>
                 <p>Isi Data Dengan Lengkap dan Jelas</p>
@@ -715,13 +685,13 @@ const Index = () => {
                           value={formik.values.cara_terima}
                           onChange={formik.handleChange}
                         >
-                          <FormControlLabelCustom
+                          <FormControlLabelRadioCustom
                             value="Melihat/Membaca/Mendengarkan/Mencatat"
                             label={
                               <TextRadioCustom text="Melihat/Membaca/Mendengarkan/Mencatat" />
                             }
                           />
-                          <FormControlLabelCustom
+                          <FormControlLabelRadioCustom
                             value="Mendapatkan salinan Informasi (hardcopy/softcopy)"
                             label={
                               <TextRadioCustom text="Mendapatkan salinan Informasi (hardcopy/softcopy)" />
@@ -753,25 +723,25 @@ const Index = () => {
                           value={formik.values.cara_dapat}
                           onChange={formik.handleChange}
                         >
-                          <FormControlLabelCustom
+                          <FormControlLabelRadioCustom
                             value="Mengambil Langsung"
                             label={
                               <TextRadioCustom text="Mengambil Langsung" />
                             }
                           />
-                          <FormControlLabelCustom
+                          <FormControlLabelRadioCustom
                             value="Pos"
                             label={<TextRadioCustom text="Pos" />}
                           />
-                          <FormControlLabelCustom
+                          <FormControlLabelRadioCustom
                             value="Email"
                             label={<TextRadioCustom text="Email" />}
                           />
-                          <FormControlLabelCustom
+                          <FormControlLabelRadioCustom
                             value="Kurir"
                             label={<TextRadioCustom text="Kurir" />}
                           />
-                          <FormControlLabelCustom
+                          <FormControlLabelRadioCustom
                             value="Faksimili"
                             label={<TextRadioCustom text="Faksimili" />}
                           />
@@ -785,7 +755,6 @@ const Index = () => {
 
                     {/* tanda pengenal */}
                     <div className="col-xs-12" style={{ marginTop: "10px" }}>
-                      <p>ini {formik.values.identitas_pemohon} mana</p>
                       <Thumb
                         file={
                           formik.values.file
@@ -825,7 +794,7 @@ const Index = () => {
                       <ReCAPTCHA
                         sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
                         ref={recaptchaRef}
-                        onChange={captchaChange}
+                        onChange={() => toast.dismiss()}
                       />
                     </div>
                     <div className="col-xs-12 col-lg-9">
@@ -844,17 +813,42 @@ const Index = () => {
             </div>
             {/* Formulir End  */}
             <div className="clear" />
-            <div className="legal-info col-md-12">
-              <div className="text-center">
-                <p>
-                  * You will be alerted 1 day before the launch, your e-mail
-                  will be used only for this alert.
-                </p>
-              </div>
-            </div>
-            {/* .legal-info */}
+          </div>
+
+          <div ref={answerRef}>
+            {curData && Object.keys(curData).length !== 0 && (
+              <>
+                <ResponsePermohonan
+                  curData={curData}
+                  handlePrint={handlePrint}
+                  reset={() => {
+                    setTimeout(() => {
+                      setCurData({});
+                    }, 500);
+                    setTimeout(() => {
+                      formRef.current.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }, 800);
+                  }}
+                />
+                <BuktiPermohonan
+                  ref={printBuktiRef}
+                  detail={curData}
+                  profileBawaslu={profileBawaslu}
+                />
+              </>
+            )}
           </div>
           <div className="clear" />
+          <div className="legal-info col-md-12">
+            <div className="text-center">
+              <p>
+                Pejabat Pengelola Informasi dan Dokumentasi Bawaslu Terintegrasi
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
