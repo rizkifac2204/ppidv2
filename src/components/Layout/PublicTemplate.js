@@ -5,6 +5,11 @@ import $ from "jquery";
 // MUI
 import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
+const Transition = React.forwardRef(function Transition(props, ref) {
+  props.timeout.enter = 0;
+  props.timeout.exit = 600;
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function initPgae() {
   setTimeout(function () {
@@ -44,12 +49,6 @@ function closePage() {
   }, 100);
 }
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  props.timeout.enter = 0;
-  props.timeout.exit = 600;
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const Template = ({ children }) => {
   const router = useRouter();
   const [first, setFirst] = useState(true);
@@ -75,51 +74,48 @@ const Template = ({ children }) => {
     open ? openPage() : closePage();
   }, [open]);
 
+  function allReady(open) {
+    setTimeout(() => {
+      if (open) setOpen(() => true);
+      setFirst(false);
+      setPageReady(() => true);
+      $("#loading-popup").fadeOut(3000);
+    }, 1000);
+  }
+
   useEffect(() => {
     if (!router.isReady) return;
     // fisrt bite / first window load
-    if (Object.keys(router.query).length !== 0 && first) {
-      setTimeout(() => {
-        setOpen(() => true);
-        setPageReady(() => true);
-        $("#loading-popup").fadeOut(2000);
-      }, 800);
-    }
+    if (router.pathname !== "/" && first) allReady(true);
     // router change
     router.events.on("routeChangeStart", () => setPageReady(() => false));
-    router.events.on("routeChangeComplete", () => {
-      setPageReady(() => true);
-      $("#loading-popup").fadeOut(2000);
-    });
-    router.events.on("routeChangeError", () => {
-      setPageReady(() => true);
-      $("#loading-popup").fadeOut(2000);
-    });
+    router.events.on("routeChangeComplete", () => allReady());
+    router.events.on("routeChangeError", () => allReady());
 
     // setting text dan link untuk formulir section
     if (router.pathname === "/")
       setCurrentFormulir({
         currentUrl: router.asPath,
-        head: "Permohonan",
-        foot: "Permohoan Informasi",
+        head: "Permohonan Informasi",
+        foot: "Buka Formulir Permohoan Informasi",
       });
     if (router.pathname === "/cek")
       setCurrentFormulir({
         currentUrl: router.asPath,
-        head: "Cek Permohonan",
-        foot: "Cek Permohoan Informasi",
+        head: "Cek Permohonan Informasi",
+        foot: "Buka Formulir Permohoan Informasi",
       });
     if (router.pathname === "/keberatan")
       setCurrentFormulir({
         currentUrl: router.asPath,
-        head: "Keberatan",
-        foot: "Pengajuan Keberatan",
+        head: "Pengajuan Keberatan",
+        foot: "Buka Formulir Pengajuan Keberatan",
       });
     if (router.pathname === "/survey")
       setCurrentFormulir({
         currentUrl: router.asPath,
-        head: "Survey",
-        foot: "Survey Layanan",
+        head: "Survey Layanan",
+        foot: "Buka Formulir Survey Layanan",
       });
 
     return () => setFirst(false);
@@ -198,10 +194,10 @@ const Template = ({ children }) => {
                       <br />
                       <span className="point">.L</span>okasi
                     </h2>
-                    <p>Bawaslu</p>
+                    <p>Bawaslu Se-Indonesia</p>
                   </div>
                   <div className="item-plus">
-                    <p>Alamat Bawaslu.</p>
+                    <p>ADaftar lamat Bawaslu Se-Indonesia</p>
                     <br />
                     <i className="fa fa-plus-circle fa-2x" />
                   </div>
