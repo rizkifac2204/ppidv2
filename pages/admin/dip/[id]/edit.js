@@ -25,7 +25,6 @@ const handleSubmit = (values, setSubmitting) => {
   axios
     .put(`/api/dip/` + values.id, values)
     .then((res) => {
-      console.log(res);
       toast.update(toastProses, {
         render: res.data.message,
         type: "success",
@@ -34,7 +33,6 @@ const handleSubmit = (values, setSubmitting) => {
       });
     })
     .catch((err) => {
-      console.log(err.response.data);
       toast.update(toastProses, {
         render: err.response.data.message,
         type: "error",
@@ -51,9 +49,9 @@ const validationSchema = yup.object({
   id: yup.number().required("Harus Diisi"),
   divisi_id: yup.number().required("Harus Diisi"),
   sifat: yup.string().required("Harus Diisi"),
-  materi: yup.string().required("Harus Diisi"),
-  nama_dip: yup.string().required("Harus Diisi"),
-  tahun: yup.number().required("Harus Diisi"),
+  jenis_informasi: yup.string().required("Harus Diisi"),
+  ringkasan: yup.string().required("Harus Diisi"),
+  tahun_pembuatan: yup.number().required("Harus Diisi"),
   no_sk: yup.string().required("Harus Diisi"),
   penanggung_jawab: yup.string().required("Harus Diisi"),
   bentuk_informasi: yup.string().required("Harus Diisi"),
@@ -69,9 +67,9 @@ function DipEdit() {
     id: "",
     divisi_id: "",
     sifat: "",
-    materi: "",
-    nama_dip: "",
-    tahun: "",
+    jenis_informasi: "",
+    ringkasan: "",
+    tahun_pembuatan: "",
     no_sk: "",
     penanggung_jawab: "",
     bentuk_informasi: "",
@@ -138,10 +136,10 @@ function DipEdit() {
                       Boolean(formik.errors.divisi_id)
                     }
                   >
-                    <InputLabel>Divisi *</InputLabel>
+                    <InputLabel>Unit Yang Menguasai *</InputLabel>
                     <Select
                       name="divisi_id"
-                      label="Divisi *"
+                      label="Unit Yang Menguasai *"
                       value={formik.values.divisi_id}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
@@ -188,13 +186,16 @@ function DipEdit() {
                 <FormControl
                   fullWidth
                   sx={{ mt: 2.6, mb: 0.8 }}
-                  error={formik.touched.materi && Boolean(formik.errors.materi)}
+                  error={
+                    formik.touched.jenis_informasi &&
+                    Boolean(formik.errors.jenis_informasi)
+                  }
                 >
-                  <InputLabel>Materi *</InputLabel>
+                  <InputLabel>Jenis Informasi *</InputLabel>
                   <Select
-                    name="materi"
-                    label="Materi *"
-                    value={formik.values.materi}
+                    name="jenis_informasi"
+                    label="Jenis Informasi *"
+                    value={formik.values.jenis_informasi}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   >
@@ -205,7 +206,8 @@ function DipEdit() {
                     </MenuItem>
                   </Select>
                   <FormHelperText>
-                    {formik.touched.materi && formik.errors.materi}
+                    {formik.touched.jenis_informasi &&
+                      formik.errors.jenis_informasi}
                   </FormHelperText>
                 </FormControl>
 
@@ -213,15 +215,17 @@ function DipEdit() {
                   fullWidth
                   required
                   margin="normal"
-                  label="Nama"
-                  name="nama_dip"
-                  value={formik.values.nama_dip}
+                  label="Ringkasan Isi Materi"
+                  name="ringkasan"
+                  value={formik.values.ringkasan}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={
-                    formik.touched.nama_dip && Boolean(formik.errors.nama_dip)
+                    formik.touched.ringkasan && Boolean(formik.errors.ringkasan)
                   }
-                  helperText={formik.touched.nama_dip && formik.errors.nama_dip}
+                  helperText={
+                    formik.touched.ringkasan && formik.errors.ringkasan
+                  }
                 />
 
                 <TextField
@@ -229,13 +233,19 @@ function DipEdit() {
                   required
                   type="number"
                   margin="normal"
-                  label="Tahun"
-                  name="tahun"
-                  value={formik.values.tahun}
+                  label="Tahun Pembuatan"
+                  name="tahun_pembuatan"
+                  value={formik.values.tahun_pembuatan}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.tahun && Boolean(formik.errors.tahun)}
-                  helperText={formik.touched.tahun && formik.errors.tahun}
+                  error={
+                    formik.touched.tahun_pembuatan &&
+                    Boolean(formik.errors.tahun_pembuatan)
+                  }
+                  helperText={
+                    formik.touched.tahun_pembuatan &&
+                    formik.errors.tahun_pembuatan
+                  }
                 />
               </Grid>
 
@@ -276,7 +286,7 @@ function DipEdit() {
                   fullWidth
                   required
                   margin="normal"
-                  label="Penanggung Jawab"
+                  label="Unit Yang Bertanggung Jawab Atas Informasi"
                   name="penanggung_jawab"
                   value={formik.values.penanggung_jawab}
                   onChange={formik.handleChange}
@@ -295,7 +305,7 @@ function DipEdit() {
                   fullWidth
                   required
                   margin="normal"
-                  label="Jangka Waktu"
+                  label="Jangka Waktu (Tahun)"
                   name="jangka_waktu"
                   value={formik.values.jangka_waktu}
                   onChange={formik.handleChange}

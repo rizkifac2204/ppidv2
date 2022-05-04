@@ -98,7 +98,7 @@ function DipDetail() {
                 </Grid>
 
                 <Grid item xs={4}>
-                  Divisi
+                  Unit Yang Menguasai
                 </Grid>
                 <Grid item xs={8}>
                   : {detail.nama_divisi}
@@ -112,24 +112,24 @@ function DipDetail() {
                 </Grid>
 
                 <Grid item xs={4}>
-                  Materi
+                  Jenis Informasi
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.materi}
+                  : {detail.jenis_informasi}
                 </Grid>
 
                 <Grid item xs={4}>
-                  Nama DIP
+                  Ringkasan
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.nama_dip}
+                  : {detail.ringkasan}
                 </Grid>
 
                 <Grid item xs={4}>
-                  Tahun
+                  Tahun Pembuatan
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.tahun}
+                  : {detail.tahun_pembuatan}
                 </Grid>
 
                 <Grid item xs={4}>
@@ -157,7 +157,7 @@ function DipDetail() {
                   Jangka Waktu
                 </Grid>
                 <Grid item xs={8}>
-                  : {detail.jangka_waktu}
+                  : {detail.jangka_waktu} Tahun
                 </Grid>
 
                 <Grid item xs={4}>

@@ -11,6 +11,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const formulirPage = ["/", "/cek", "/survey", "/keberatan"];
+
 function initPgae() {
   setTimeout(function () {
     $(".item-list").each(function (i) {
@@ -211,52 +213,54 @@ const Template = ({ children }) => {
           <button type="button" className="mfp-close" onClick={handleClose}>
             <i className="fa fa-bars fa-2x" />
           </button>
-          <div className="social-icons">
-            <Link href="/">
-              <a
-                style={
-                  currentFormulir.currentUrl === "/"
-                    ? { color: "#2b2d35", background: "#ffffff" }
-                    : {}
-                }
-              >
-                Permohonan
-              </a>
-            </Link>
-            <Link href="/cek">
-              <a
-                style={
-                  currentFormulir.currentUrl === "/cek"
-                    ? { color: "#2b2d35", background: "#ffffff" }
-                    : {}
-                }
-              >
-                Cek
-              </a>
-            </Link>
-            <Link href="/keberatan">
-              <a
-                style={
-                  currentFormulir.currentUrl === "/keberatan"
-                    ? { color: "#2b2d35", background: "#ffffff" }
-                    : {}
-                }
-              >
-                Keberatan
-              </a>
-            </Link>
-            <Link href="/survey">
-              <a
-                style={
-                  currentFormulir.currentUrl === "/survey"
-                    ? { color: "#2b2d35", background: "#ffffff" }
-                    : {}
-                }
-              >
-                Survey
-              </a>
-            </Link>
-          </div>
+          {formulirPage.includes(router.pathname) && (
+            <div className="social-icons">
+              <Link href="/">
+                <a
+                  style={
+                    currentFormulir.currentUrl === "/"
+                      ? { color: "#2b2d35", background: "#ffffff" }
+                      : {}
+                  }
+                >
+                  Permohonan
+                </a>
+              </Link>
+              <Link href="/cek">
+                <a
+                  style={
+                    currentFormulir.currentUrl === "/cek"
+                      ? { color: "#2b2d35", background: "#ffffff" }
+                      : {}
+                  }
+                >
+                  Cek
+                </a>
+              </Link>
+              <Link href="/keberatan">
+                <a
+                  style={
+                    currentFormulir.currentUrl === "/keberatan"
+                      ? { color: "#2b2d35", background: "#ffffff" }
+                      : {}
+                  }
+                >
+                  Keberatan
+                </a>
+              </Link>
+              <Link href="/survey">
+                <a
+                  style={
+                    currentFormulir.currentUrl === "/survey"
+                      ? { color: "#2b2d35", background: "#ffffff" }
+                      : {}
+                  }
+                >
+                  Survey
+                </a>
+              </Link>
+            </div>
+          )}
         </nav>
       </div>
 

@@ -71,4 +71,25 @@ function CustomToolbar(props) {
   );
 }
 
-export { CustomToolbar };
+function CustomPublicToolbar(props) {
+  return (
+    <GridToolbarContainer>
+      <Grid container spacing={1}>
+        <Grid item>
+          <GridToolbarColumnsButton />
+        </Grid>
+        <Grid item>
+          <GridToolbarDensitySelector />
+        </Grid>
+        <Grid item>
+          <GridToolbarExport />
+        </Grid>
+        <Grid item>
+          <CsvHelper />
+        </Grid>
+      </Grid>
+    </GridToolbarContainer>
+  );
+}
+
+export { CustomToolbar, CustomPublicToolbar };

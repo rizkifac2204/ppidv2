@@ -60,7 +60,6 @@ function Dip() {
     }
   };
   const handleDeleteSelected = () => {
-    console.log(selected);
     const ask = confirm("Yakin Hapus Data Terpilih?");
     if (ask) {
       const toastProses = toast.loading("Tunggu Sebentar...");
@@ -98,7 +97,7 @@ function Dip() {
     },
     {
       field: "nama_divisi",
-      headerName: "Divisi",
+      headerName: "Unit",
       width: 180,
     },
     {
@@ -107,13 +106,13 @@ function Dip() {
       width: 180,
     },
     {
-      field: "materi",
-      headerName: "Materi",
+      field: "jenis_informasi",
+      headerName: "Jenis Informasi",
       width: 180,
     },
     {
-      field: "nama_dip",
-      headerName: "Nama",
+      field: "ringkasan",
+      headerName: "Ringkasan",
       flex: 1,
       minWidth: 180,
     },

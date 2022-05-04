@@ -156,8 +156,8 @@ export default PublicHandler().post(
           message: "Gagal Mengirim Permohonan",
         });
       }
-      // await sendingMail(setMailOptionPemohon);
-      // await sendingMail(setMailOptionAdmin);
+      await sendingMail(setMailOptionPemohon);
+      await sendingMail(setMailOptionAdmin);
 
       // success
       res.json({

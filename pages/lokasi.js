@@ -199,13 +199,13 @@ const Lokasi = () => {
                     curData.length !== 0 &&
                     curData.map((item, idk) => (
                       <div
-                        role="button"
-                        className="col-xs-12 col-sm-5 col-lg-5 location-bottom mr-5"
                         key={idk}
                         onClick={() => {
                           setDetail(item);
                           if (isMobile) setOpen(true);
                         }}
+                        role="button"
+                        className="col-xs-12 col-sm-5 col-lg-5 location-bottom mr-5"
                       >
                         <h5>
                           <i className="fa fa-university" /> {item.nama_bawaslu}
@@ -222,53 +222,57 @@ const Lokasi = () => {
             </div>
             {/* detail */}
             {detail && Object.keys(detail).length !== 0 && (
-              <div className={isMobile ? "hidden" : "" + "col-lg-5 no-padding"}>
-                <>
-                  <div id="map" ref={mapRef}>
-                    <GoogleMapReact
-                      bootstrapURLKeys={{ key: process.env.NEXT_PUBLIC_MAPS }}
-                      defaultCenter={{
-                        lat: 59.95,
-                        lng: 30.33,
-                      }}
-                      defaultZoom={11}
-                    >
-                      <AnyReactComponent
-                        lat={59.955413}
-                        lng={30.337844}
-                        text="Bawaslu Republik Indonesia"
-                      />
-                    </GoogleMapReact>
-                  </div>
-                </>
-                <div className="clear" />
-                <DetailBox detail={detail} />
-
-                <Dialog
-                  PaperProps={{
-                    style: {
-                      backgroundColor: "#0F0F19",
-                      boxShadow: "none",
-                    },
-                  }}
-                  fullWidth={true}
-                  maxWidth="lg"
-                  open={open}
-                  onClose={() => setOpen(false)}
+              <>
+                <div
+                  className={isMobile ? "hidden" : "" + "col-lg-5 no-padding"}
                 >
-                  <DialogContent>
-                    <DetailBox detail={detail} modal={true} />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button
-                      onClick={() => setOpen(false)}
-                      style={{ fontSize: 14 }}
-                    >
-                      Close
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </div>
+                  <>
+                    <div id="map" ref={mapRef}>
+                      <GoogleMapReact
+                        bootstrapURLKeys={{ key: process.env.NEXT_PUBLIC_MAPS }}
+                        defaultCenter={{
+                          lat: 59.95,
+                          lng: 30.33,
+                        }}
+                        defaultZoom={11}
+                      >
+                        <AnyReactComponent
+                          lat={59.955413}
+                          lng={30.337844}
+                          text="Bawaslu Republik Indonesia"
+                        />
+                      </GoogleMapReact>
+                    </div>
+                  </>
+                  <div className="clear" />
+                  <DetailBox detail={detail} />
+
+                  <Dialog
+                    PaperProps={{
+                      style: {
+                        backgroundColor: "#0F0F19",
+                        boxShadow: "none",
+                      },
+                    }}
+                    fullWidth={true}
+                    maxWidth="lg"
+                    open={open}
+                    onClose={() => setOpen(false)}
+                  >
+                    <DialogContent>
+                      <DetailBox detail={detail} modal={true} />
+                    </DialogContent>
+                    <DialogActions>
+                      <Button
+                        onClick={() => setOpen(false)}
+                        style={{ fontSize: 14 }}
+                      >
+                        Tutup
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                </div>
+              </>
             )}
             <div className="clear" />
             <div className="legal-info col-md-12">

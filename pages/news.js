@@ -158,7 +158,7 @@ const News = () => {
               </div>
             </div>
           </div>
-          {/* .countdown-block */}
+
           <div className="newsletter-block">
             <div className="col-xs-12 col-sm-12 col-lg-5 block-left-newsletter">
               <i className="fa fa-bell" />
@@ -311,7 +311,6 @@ const News = () => {
               </div>
             </div>
           </div>
-          {/* .newsletter-block */}
         </div>
       </div>
     </>
