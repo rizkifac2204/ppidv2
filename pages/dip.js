@@ -172,6 +172,9 @@ const Dip = () => {
       field: "jangka_waktu",
       headerName: "Jangka Waktu (Tahun)",
       hide: true,
+      valueFormatter: (params) => {
+        return params.value + " Tahun";
+      },
     },
     {
       field: "link_file",
