@@ -26,19 +26,26 @@ export default Handler().get(async (req, res) => {
   const jwt = process.env.JWT_SECRET_KEY;
   const nxurl = process.env.NEXTAUTH_URL;
   const port = process.env.PORT;
+
+  const dev = process.env.NODE_ENV !== "production";
+
   res.json({
-    db_host,
-    db_name,
-    db_user,
-    db_pass,
-    email_host,
-    email_pass,
-    email_user,
-    g_i,
-    g_s,
-    host,
-    jwt,
-    nxurl,
-    port,
+    all: process.env,
+    part: {
+      db_host,
+      db_name,
+      db_user,
+      db_pass,
+      email_host,
+      email_pass,
+      email_user,
+      g_i,
+      g_s,
+      host,
+      jwt,
+      nxurl,
+      port,
+    },
+    dev,
   });
 });
