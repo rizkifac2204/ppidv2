@@ -101,16 +101,18 @@ function Keberatan() {
       .get(`/api/public/keberatan?nomor=${regOrTiket}`)
       .then((res) => {
         setData(() => res.data);
-        formRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
         toast.update(toastProses, {
           render: "Ditemukan, Lanjutkan Mengisi Formulir",
           type: "success",
           isLoading: false,
           autoClose: 2000,
         });
+        setTimeout(() => {
+          formRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 1000);
       })
       .catch((err) => {
         toast.update(toastProses, {
@@ -134,10 +136,12 @@ function Keberatan() {
     const curTemp = { ...data, ...resData };
     setCurData(() => curTemp);
     formik.resetForm();
-    answerRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    setTimeout(() => {
+      answerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 1000);
   };
 
   const formik = useFormik({

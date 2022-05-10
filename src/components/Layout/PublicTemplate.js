@@ -62,10 +62,10 @@ const Template = ({ children }) => {
     foot: "Pengajuan Permohoan Informasi",
   });
   const handleClickOpen = () => {
-    setOpen(true);
+    setOpen(() => true);
   };
   const handleClose = () => {
-    setOpen(false);
+    setOpen(() => false);
   };
 
   useEffect(() => {
@@ -81,7 +81,7 @@ const Template = ({ children }) => {
       if (open) setOpen(() => true);
       setFirst(false);
       setPageReady(() => true);
-      $("#loading-popup").fadeOut(3000);
+      $("#loading-popup").fadeOut(2000);
     }, 1000);
   }
 

@@ -34,7 +34,9 @@ function ResponsePermohonan({ curData, handlePrint, reset }) {
           <p>
             Email yang anda terima dapat digunakan sebagai bukti Permohonan
             Informasi. Atau anda bisa cetak Bukti Permohonan{" "}
-            <a onClick={() => handlePrint()}>Disini</a>
+            <a onClick={() => handlePrint()} role="button">
+              Disini
+            </a>
             <br />
             Jika anda keberatan dengan jabawan/response kami, anda bisa
             mengajukan keberatan dengan mengisi form melalui link{" "}

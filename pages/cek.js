@@ -102,10 +102,12 @@ const Cek = () => {
   const afterSubmit = (data) => {
     setCurData(() => data);
     formik.resetForm();
-    answerRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    setTimeout(() => {
+      answerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 1000);
   };
 
   const formik = useFormik({

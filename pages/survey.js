@@ -148,7 +148,7 @@ function Survey() {
       return;
     }
     axios
-      .get(`/api/services/provinsis`)
+      .get(`/api/services/provinsis-selected`)
       .then((res) => {
         setProvinsis(() => res.data);
         if (cb) cb();
@@ -159,7 +159,7 @@ function Survey() {
   };
   const fetchKabkota = (id, cb) => {
     axios
-      .get(`/api/services/provinsis/` + id)
+      .get(`/api/services/provinsis-selected/` + id)
       .then((res) => {
         setKabkotas(() => res.data.kabkota);
         if (cb) cb();
@@ -187,10 +187,12 @@ function Survey() {
   const afterSubmit = (res) => {
     setResponse(true);
     formik.resetForm();
-    answerRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    setTimeout(() => {
+      answerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 1000);
   };
 
   // load Pemohon

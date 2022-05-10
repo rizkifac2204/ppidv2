@@ -38,14 +38,14 @@ function ResponseCek({ curData, handlePrint, reset }) {
                 <tr>
                   <td>Nomor Registrasi</td>
                   <td>
-                    :<b>{curData.no_registrasi}</b>
+                    : <b>{curData.no_registrasi}</b>
                     {!curData.no_registrasi && <>Saat ini belum tersedia</>}
                   </td>
                 </tr>
                 <tr>
                   <td>Ditujukan Kepada</td>
                   <td>
-                    :<b>{curData.nama_bawaslu}</b>
+                    : <b>{curData.nama_bawaslu}</b>
                   </td>
                 </tr>
                 <tr>

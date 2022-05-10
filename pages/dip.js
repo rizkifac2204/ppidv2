@@ -39,7 +39,7 @@ const Dip = () => {
       return;
     }
     axios
-      .get(`/api/services/provinsis`)
+      .get(`/api/services/provinsis-selected`)
       .then((res) => {
         setProvinsis(() => res.data);
         if (cb) cb();
@@ -50,7 +50,7 @@ const Dip = () => {
   };
   const fetchkabkota = (id, cb) => {
     axios
-      .get(`/api/services/provinsis/` + id)
+      .get(`/api/services/provinsis-selected/` + id)
       .then((res) => {
         setKabkotas(() => res.data.kabkota);
         if (cb) cb();

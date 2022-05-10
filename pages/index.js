@@ -197,7 +197,7 @@ const Index = () => {
       return;
     }
     axios
-      .get(`/api/services/provinsis`)
+      .get(`/api/services/provinsis-selected`)
       .then((res) => {
         setProvinsis(() => res.data);
         if (cb) cb();
@@ -208,7 +208,7 @@ const Index = () => {
   };
   const fetchkabkota = (id, cb) => {
     axios
-      .get(`/api/services/provinsis/` + id)
+      .get(`/api/services/provinsis-selected/` + id)
       .then((res) => {
         setKabkotas(() => res.data.kabkota);
         if (cb) cb();
@@ -263,10 +263,12 @@ const Index = () => {
     if (data.identitas_pemohon) {
       formik.setFieldValue("identitas_pemohon", data.identitas_pemohon);
     }
-    answerRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    setTimeout(() => {
+      answerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 1000);
   };
 
   // load Pemohon
