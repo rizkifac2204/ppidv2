@@ -46,7 +46,6 @@ export default function Login(props) {
     signIn("credentials", {
       username: values.username,
       password: values.password,
-      callbackUrl: "https://demo.spd.bawaslu.go.id/admin",
     });
   };
 
@@ -150,8 +149,8 @@ export default function Login(props) {
               </form>
               <Grid container>
                 <Grid item xs>
-                  <Button variant="text" onClick={() => router.reload("/")}>
-                    Kembali
+                  <Button variant="text" onClick={() => router.push("/")}>
+                    HOME
                   </Button>
                 </Grid>
                 <Button

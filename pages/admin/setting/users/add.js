@@ -150,8 +150,18 @@ function UsersAdd() {
     <Card>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} gutterBottom>
-          Tambah User Baru
+          Tambah User Baru{" "}
         </Typography>
+        {session.user.level !== 1 && (
+          <Typography
+            sx={{ fontSize: 12, fontStyle: "italic" }}
+            color="error"
+            gutterBottom
+          >
+            Saat Ini Belum Tersedia untuk menambah user
+          </Typography>
+        )}
+
         <Box>
           <form onSubmit={formik.handleSubmit}>
             <Grid container spacing={2}>
@@ -175,7 +185,7 @@ function UsersAdd() {
                     <MenuItem value="">Pilih</MenuItem>
                     {levels.length !== 0 &&
                       levels.map((item) => {
-                        if (item.id > session.user.level)
+                        if (session.user.level === 1)
                           return (
                             <MenuItem key={item.id} value={item.id}>
                               {item.level}

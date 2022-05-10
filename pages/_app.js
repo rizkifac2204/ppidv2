@@ -63,7 +63,7 @@ function Auth({ children }) {
   const isUser = !!session?.user;
   useEffect(() => {
     if (status === "loading") return; // Do nothing while loading
-    if (!isUser) Router.push("/"); // signIn() // If not authenticated, force log in
+    if (!isUser) Router.push("/login"); // signIn() // If not authenticated, force log in
   }, [isUser, status]);
 
   if (isUser) {

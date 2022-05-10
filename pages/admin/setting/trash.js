@@ -116,7 +116,6 @@ function Trash() {
       axios
         .delete(`/api/setting/trash/`, { data: { id: selected } })
         .then((res) => {
-          console.log(res);
           setTimeout(() => {
             setData((prevRows) =>
               prevRows.filter((row) => !selected.includes(row.id))
