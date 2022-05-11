@@ -199,7 +199,7 @@ const Template = ({ children }) => {
                     <p>Bawaslu Se-Indonesia</p>
                   </div>
                   <div className="item-plus">
-                    <p>ADaftar lamat Bawaslu Se-Indonesia</p>
+                    <p>Data dan Lokasi Bawaslu Se-Indonesia</p>
                     <br />
                     <i className="fa fa-plus-circle fa-2x" />
                   </div>

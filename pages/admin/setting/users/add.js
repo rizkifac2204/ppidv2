@@ -50,7 +50,7 @@ const validationSchema = yup.object({
   level_bawaslu: yup.number().required("Harus Diisi"),
   nama_admin: yup.string().required("Harus Diisi"),
   telp_admin: yup.string().required("Harus Diisi"),
-  email_admin: yup.string().email("Email Tidak Valid").required("Harus Diisi"),
+  // email_admin: yup.string().email("Email Tidak Valid").required("Harus Diisi"),
   alamat_admin: yup.string().required("Alamat Harus Diisi"),
   provinsi_id: yup.number().when("level_bawaslu", {
     is: (level_bawaslu) => level_bawaslu > 1,
@@ -235,7 +235,6 @@ function UsersAdd() {
                 />
                 <TextField
                   fullWidth
-                  required
                   type="email"
                   margin="normal"
                   label="Email"

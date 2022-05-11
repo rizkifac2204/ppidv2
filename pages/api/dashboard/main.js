@@ -47,6 +47,16 @@ export default Handler().get(async (req, res) => {
     )
     .first();
 
+  // ambil jumlah DIP
+  const dip = await db
+    .from("dip")
+    .count("id", { as: "jumlah" })
+    .whereNull("deleted_at")
+    .modify((builder) =>
+      conditionWillSpesific(db, builder, req.session.user, "dip")
+    )
+    .first();
+
   // return hasil
   res.json({
     message: "Succes",
@@ -55,5 +65,6 @@ export default Handler().get(async (req, res) => {
     jumlahPermohonan: permohonan.jumlah,
     jumlahSurvey: survey.jumlah,
     jumlahKeberatan: keberatan.jumlah,
+    jumlahDip: dip.jumlah,
   });
 });

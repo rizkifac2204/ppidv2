@@ -18,6 +18,7 @@ import PanToolIcon from "@mui/icons-material/PanTool";
 import DynamicFormIcon from "@mui/icons-material/DynamicForm";
 import WifiIcon from "@mui/icons-material/Wifi";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
+import DataSaverOnIcon from "@mui/icons-material/DataSaverOn";
 
 // Components
 import {
@@ -98,7 +99,7 @@ function Index() {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={12} md={4}>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
         <Card
           sx={{
             display: "flex",
@@ -137,7 +138,46 @@ function Index() {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <Card
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box>
+            <CardContent>
+              <Typography component="div" variant="h5">
+                {main.jumlahDip}
+              </Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                DIP
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Link href="/admin/dip">
+                <a>
+                  <SettingsSuggestIcon
+                    color="secondary"
+                    sx={{ cursor: "pointer" }}
+                  />
+                </a>
+              </Link>
+            </CardActions>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignContent: "center",
+            }}
+          >
+            <DataSaverOnIcon color="primary" sx={{ fontSize: 120 }} />
+          </Box>
+        </Card>
+      </Grid>
+
+      <Grid item xs={12} sm={6} md={4} lg={3}>
         <Card
           sx={{
             display: "flex",
@@ -176,7 +216,7 @@ function Index() {
         </Card>
       </Grid>
 
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
         <Card
           sx={{
             display: "flex",
