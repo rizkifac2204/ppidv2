@@ -1,24 +1,28 @@
+import { useState } from "react";
 import Link from "next/link";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
+import { FormatedDate, WithDynamicImage } from "components/Attributes";
 
-function getValueResponse(obj, param, download) {
+function getValueResponse(show = 0, obj, param, download) {
   if (!obj.responses) return "Tidak Tersedia";
-  if (obj.responses[0][param]) {
+  const idx = show ? show : 0;
+  if (obj.responses[idx][param]) {
     if (download) {
       return (
-        <a href={`/${download}/${obj.responses[0][param]}`} download>
+        <a href={`/${download}/${obj.responses[idx][param]}`} download>
           <i className="fa fa-download"></i>
         </a>
       );
     } else {
-      return obj.responses[0][param];
+      return obj.responses[idx][param];
     }
   }
   return "Tidak Ditemukan";
 }
 
 function ResponseCek({ curData, handlePrint, reset }) {
+  const [show, setShow] = useState(0);
   return (
     <>
       <div className="first-block">
@@ -58,7 +62,7 @@ function ResponseCek({ curData, handlePrint, reset }) {
                 </tr>
                 <tr>
                   <td>Status Permohonan</td>
-                  <td>: {curData.status_permohonan}</td>
+                  <td>: {curData.status_permohonan} </td>
                 </tr>
                 <tr>
                   <td>Cetak Bukti Permohonan</td>
@@ -74,6 +78,7 @@ function ResponseCek({ curData, handlePrint, reset }) {
                   <td>
                     :{" "}
                     {getValueResponse(
+                      show,
                       curData,
                       "file_surat_pemberitahuan",
                       "pemberitahuan"
@@ -83,16 +88,52 @@ function ResponseCek({ curData, handlePrint, reset }) {
                 <tr>
                   <td>File Informasi</td>
                   <td>
-                    : {getValueResponse(curData, "file_informasi", "response")}
+                    :{" "}
+                    {getValueResponse(
+                      show,
+                      curData,
+                      "file_informasi",
+                      "response"
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Tanggal Respon</td>
+                  <td>
+                    :{" "}
+                    <FormatedDate
+                      tanggal={getValueResponse(
+                        show,
+                        curData,
+                        "tanggal_respon"
+                      )}
+                    />
                   </td>
                 </tr>
                 <tr>
                   <td>Pesan</td>
-                  <td>: {getValueResponse(curData, "pesan")}</td>
+                  <td>: {getValueResponse(show, curData, "pesan")}</td>
                 </tr>
                 <tr>
                   <td>Jumlah Response</td>
-                  <td>: {curData.responses ? curData.responses.length : 0}</td>
+                  <td>
+                    : {curData.responses ? curData.responses.length : 0}{" "}
+                    {curData.responses && curData.responses.length > 1 && (
+                      <select
+                        className="form form-control"
+                        onChange={(e) => {
+                          setShow(e.target.value);
+                        }}
+                      >
+                        <option value="">Pilih Tampilan Response</option>
+                        {curData.responses.map((item, index) => (
+                          <option key={index} value={index}>
+                            {index + 1} - {item.jenis_respon}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </td>
                 </tr>
               </tbody>
             </table>

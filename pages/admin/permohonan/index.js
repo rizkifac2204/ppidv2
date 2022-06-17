@@ -187,6 +187,7 @@ function Permohonan() {
       field: "platform",
       headerName: "Platform",
       minWidth: 180,
+      hide: true,
     },
     {
       field: "provinsi",

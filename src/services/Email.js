@@ -43,12 +43,12 @@ export const TextPerubahanStatus = (
     <h3>${status}</h3>
     Nomor Registrasi <b>${reg_number}</b> <br/>
     Dengan pesan/response <b>${response}</b><br/>
-  
+
     <p>
       Anda Dapat Cek dan Cetak Bukti Permohonan Informasi Anda <a href='".$URLCekPermohonan."' target='_blank'>Disini</a> <br/>
       Atau anda dapat mengajukan keberatan dengan mengisi formulir Pengajuan Keberatan <a href='".$URLKeberatan."' target='_blank'>Disini</a>.
     </p>
-  
+
     Terimakasih<br/>
     Bawaslu Terbuka, Pemilu Terpercaya<br/>
     --PPID Bawaslu`;
@@ -57,14 +57,14 @@ export const TextPerubahanStatus = (
 export const TextPermohonanBaruKepadaAdmin = (tiket_number, email) => {
   return ` Permohonan Informasi Baru. <br/>
     <p>
-      Hai Admin PPID, Anda menerima 1 (Satu) Permintaan Permohonan Informasi baru dari
+      Hai Bapak/Ibu Admin PPID, Anda menerima 1 (Satu) Permintaan Permohonan Informasi baru dari
     </p>
     Email <b>${email}</b><br/>
     Nomor Tiket <b>${tiket_number}</b><br/>
     <p>
       Silakan Login Website PPID bawaslu kemudian pilih Menu Permohonan Informasi - Online Untuk Melihat Rincian Permohonan Informasi
     </p>
-  
+
     Terimakasih<br/>
     Bawaslu Terbuka, Bawaslu Terpercaya<br/>
     --PPID Bawaslu`;
@@ -78,8 +78,11 @@ export const TextPermohonanBaruKepadaPemohon = (tiket_number, email) => {
       Anda dapat melakukan pengecekan informasi yang anda lakukan dengan mengunjungi halaman Cek Pemohonan di Website PPID dan mengisi form dengan data sebagai berikut :
     </p>
     Nomor Tiket <b>${tiket_number}</b><br/>
-    Email <b>${email}</b><br/>
-  
+    Email <b>${email}</b><br/><br/>
+
+    Atau anda dapat melihat detail permohonan anda pada link berikut : <br />
+    ${process.env.NEXT_PUBLIC_HOST}/cek?email=${email}&ticket=${tiket_number} <br />
+
     Terimakasih<br/>
     Bawaslu Terbuka, Bawaslu Terpercaya<br/>
     --PPID Bawaslu`;
@@ -104,10 +107,10 @@ export const TextKeberatanKepadaPemohon = (reg_number) => {
   return `Salam Awas. <br/>
     <p>
       Pengajuan Keberatan Anda telah kami terima <br/>
-      Pengajuan Keberatan yang anda ajukan akan segera kami tindak lanjut. 
+      Pengajuan Keberatan yang anda ajukan akan segera kami tindak lanjut.
       PPID Bawaslu akan segera menghubungi melalui Nomor Telp atau Email sesuai data Permohonan dengan Nomor Registrasi <b>${reg_number}</b>
     </p>
-  
+
     Terimakasih<br/>
     Bawaslu Terbuka, Bawaslu Terpercaya<br/>
     --PPID Bawaslu`;

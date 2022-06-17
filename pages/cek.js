@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
@@ -7,10 +8,16 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useReactToPrint } from "react-to-print";
 // MUI
 import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 // COMPONENTS
 import ResponseCek from "components/PublicComponents/ResponseCek";
 import BuktiPermohonan from "components/PrintPage/BuktiPermohonan";
 import { TextFieldCustom } from "components/PublicComponents/FieldCustom";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const handleSubmit = (
   values,
@@ -64,12 +71,61 @@ const validationSchema = yup.object({
 const Cek = () => {
   const [curData, setCurData] = useState({});
   const [profileBawaslu, setProfileBawaslu] = useState({});
+  const [initialValues, setInitialValues] = useState({
+    tiket: "",
+    email_pemohon: "",
+  });
+  const router = useRouter();
+  const [open, setOpen] = useState(true);
+  const [loadByQuery, setLoadByQuery] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
   // useRef
   const recaptchaRef = useRef(null);
   const answerRef = useRef(null);
   const formRef = useRef(null);
   const printBuktiRef = useRef();
+
+  // proses panggil data secara langsung dengan query
+  useEffect(() => {
+    // panggil langsung data jika terdapat query email dan tiket
+    const { email, ticket } = router.query;
+    if (!email) return;
+    if (!ticket) return;
+    // siapkan snackbar
+    setLoadByQuery({
+      open: true,
+      message: "Loading...",
+      severity: "info",
+    });
+    // siapkan postdata
+    const datapost = {
+      tiket: ticket,
+      email_pemohon: email,
+    };
+    // isi form default
+    setInitialValues(() => datapost);
+    axios
+      .post(`/api/public/cek`, datapost)
+      .then((res) => {
+        afterSubmit(res.data);
+        setLoadByQuery({
+          open: true,
+          message: "Ditemukan Detail Permohona Informasi",
+          severity: "success",
+        });
+      })
+      .catch((err) => {
+        setLoadByQuery({
+          open: true,
+          message: "Tidak Ditemukan",
+          severity: "error",
+        });
+      });
+  }, [router]);
 
   const fetchProfileBawaslu = (callback) => {
     const toastProses = toast.loading("Menyiapkan Format...");
@@ -101,7 +157,6 @@ const Cek = () => {
 
   const afterSubmit = (data) => {
     setCurData(() => data);
-    formik.resetForm();
     setTimeout(() => {
       answerRef.current.scrollIntoView({
         behavior: "smooth",
@@ -111,10 +166,7 @@ const Cek = () => {
   };
 
   const formik = useFormik({
-    initialValues: {
-      tiket: "",
-      email_pemohon: "",
-    },
+    initialValues: initialValues,
     enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: (values, { setSubmitting }) =>
@@ -266,6 +318,24 @@ const Cek = () => {
           </div>
         </div>
       </div>
+
+      <Snackbar
+        open={loadByQuery.open}
+        autoHideDuration={5000}
+        onClose={() =>
+          setLoadByQuery((prev) => (prev = { ...loadByQuery, open: false }))
+        }
+      >
+        <Alert
+          onClose={() =>
+            setLoadByQuery((prev) => (prev = { ...loadByQuery, open: false }))
+          }
+          severity={loadByQuery.severity}
+          sx={{ width: "100%" }}
+        >
+          <p style={{ fontSize: 14 }}>{loadByQuery.message}</p>
+        </Alert>
+      </Snackbar>
     </>
   );
 };

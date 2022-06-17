@@ -19,6 +19,23 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import { styled } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
+import HelpIcon from "@mui/icons-material/Help";
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#f5f5f9",
+    color: "rgba(0, 0, 0, 0.87)",
+    // maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: "1px solid #dadde9",
+  },
+}));
 
 const handleSubmit = (values, props, setSubmitting) => {
   const postData = {
@@ -88,8 +105,14 @@ const validationSchema = yup.object({
     is: (v) => v === "Badan Publik Lain",
     then: yup.string().required("Isi Badan Publik"),
   }),
-  penjelasan_penghitaman: yup.string().required("Harus Diisi"),
-  jangka_waktu: yup.number().required("Harus Diisi"),
+  penjelasan_penghitaman: yup.string().when("status_permohonan", {
+    is: (v) => v === "Tidak Dapat Diberukan",
+    then: yup.string().required("Harus Diisi"),
+  }),
+  jangka_waktu: yup.number().when("jenis_respon", {
+    is: (v) => v === "Respon Final",
+    then: yup.number().required("Harus Diisi"),
+  }),
   pesan: yup.string().required("Harus Diisi"),
   // diberikan
   bentuk_fisik: yup.string().when("status_permohonan", {
@@ -188,26 +211,65 @@ function ResponseDialog(props) {
 
             {/* Jenis Respon  */}
             <Grid item xs={12} md={6}>
-              <FormControl
-                fullWidth
-                required
-                margin="normal"
-                error={Boolean(formik.errors.jenis_respon)}
-              >
-                <InputLabel>Jenis Respon</InputLabel>
-                <Select
-                  name="jenis_respon"
-                  label="Jenis Respon"
-                  value={formik.values.jenis_respon}
-                  onChange={formik.handleChange}
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <FormControl
+                  fullWidth
+                  required
+                  margin="normal"
+                  error={Boolean(formik.errors.jenis_respon)}
                 >
-                  <MenuItem value="Respon Awal">Respon Awal</MenuItem>
-                  <MenuItem value="Respon Perbaikan">Respon Perbaikan</MenuItem>
-                  <MenuItem value="Respon Penolakan">Respon Penolakan</MenuItem>
-                  <MenuItem value="Respon Keberatan">Respon Keberatan</MenuItem>
-                </Select>
-                <FormHelperText>{formik.errors.jenis_respon}</FormHelperText>
-              </FormControl>
+                  <InputLabel>Jenis Respon</InputLabel>
+                  <Select
+                    name="jenis_respon"
+                    label="Jenis Respon"
+                    value={formik.values.jenis_respon}
+                    onChange={formik.handleChange}
+                  >
+                    <MenuItem value="Respon Awal">Respon Awal</MenuItem>
+                    <MenuItem value="Respon Lanjutan">Respon Lanjutan</MenuItem>
+                    <MenuItem value="Respon Final">Respon Final</MenuItem>
+                    <MenuItem value="Respon Perbaikan">
+                      Respon Perbaikan
+                    </MenuItem>
+                    <MenuItem value="Respon Keberatan">
+                      Respon Keberatan
+                    </MenuItem>
+                  </Select>
+                  <FormHelperText>{formik.errors.jenis_respon}</FormHelperText>
+                </FormControl>
+                <HtmlTooltip
+                  title={
+                    <>
+                      <Typography color="inherit">Jenis Respon</Typography>
+                      <ul>
+                        <li>
+                          Respon Awal : merupakan Respon Pertama yang diberikan
+                          (Biasanya pada saat memberikan Nomor Registrasi)
+                        </li>
+                        <li>
+                          Respon Lanjutan : merupakan Respon setelah respon awal
+                          dan belum selesai dalam memberikan informasi
+                        </li>
+                        <li>
+                          Respon Final : merupakan Respon terkahir setelah
+                          memberikan informasi yang diminta
+                        </li>
+                        <li>
+                          Respon Perbaikan : merupakan Respon jika terjadi
+                          perbaikan dalam memberikan informasi
+                        </li>
+                        <li>
+                          Respon Keberatan : merupakan Respon yang diberikan
+                          setelah permohon melakukan keberatan terkait
+                          permohonan
+                        </li>
+                      </ul>
+                    </>
+                  }
+                >
+                  <HelpIcon />
+                </HtmlTooltip>
+              </Box>
             </Grid>
 
             {/* Status Permohonan  */}
@@ -411,54 +473,64 @@ function ResponseDialog(props) {
             </Grid>
           )}
 
+          {/* #################TIDAKDAPATDIBERIKAN#################### */}
+          {formik.values.status_permohonan === "Tidak Dapat Diberikan" && (
+            <Grid container columnSpacing={1}>
+              {/* penjelasan penghitaman  */}
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  required
+                  multiline
+                  rows={2}
+                  margin="normal"
+                  label="Penjelasan Penghitaman"
+                  name="penjelasan_penghitaman"
+                  value={formik.values.penjelasan_penghitaman}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.penjelasan_penghitaman &&
+                    Boolean(formik.errors.penjelasan_penghitaman)
+                  }
+                  helperText={
+                    formik.touched.penjelasan_penghitaman &&
+                    formik.errors.penjelasan_penghitaman
+                  }
+                />
+              </Grid>
+            </Grid>
+          )}
+
+          {/* #################FINAL################## */}
+          {formik.values.jenis_respon === "Respon Final" && (
+            <Grid container columnSpacing={1}>
+              {/* waktu  */}
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  required
+                  type="number"
+                  margin="normal"
+                  label="Jangka Waktu Proses (Hari)"
+                  name="jangka_waktu"
+                  value={formik.values.jangka_waktu}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.jangka_waktu &&
+                    Boolean(formik.errors.jangka_waktu)
+                  }
+                  helperText={
+                    formik.touched.jangka_waktu && formik.errors.jangka_waktu
+                  }
+                />
+              </Grid>
+            </Grid>
+          )}
+
           {/* #################UMUM################## */}
           <Grid container columnSpacing={1}>
-            {/* penjelasan penghitaman  */}
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                required
-                multiline
-                rows={2}
-                margin="normal"
-                label="Penjelasan Penghitaman"
-                name="penjelasan_penghitaman"
-                value={formik.values.penjelasan_penghitaman}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.penjelasan_penghitaman &&
-                  Boolean(formik.errors.penjelasan_penghitaman)
-                }
-                helperText={
-                  formik.touched.penjelasan_penghitaman &&
-                  formik.errors.penjelasan_penghitaman
-                }
-              />
-            </Grid>
-
-            {/* waktu  */}
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                required
-                type="number"
-                margin="normal"
-                label="Jangka Waktu Proses (Hari)"
-                name="jangka_waktu"
-                value={formik.values.jangka_waktu}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.jangka_waktu &&
-                  Boolean(formik.errors.jangka_waktu)
-                }
-                helperText={
-                  formik.touched.jangka_waktu && formik.errors.jangka_waktu
-                }
-              />
-            </Grid>
-
             {/* pesan  */}
             <Grid item xs={12}>
               <TextField
