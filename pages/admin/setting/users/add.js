@@ -2,8 +2,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useEffect, useState, useContext } from "react";
+import AuthContext from "context/AuthContext";
 // MUI
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -71,7 +71,7 @@ const validationSchema = yup.object({
 });
 
 function UsersAdd() {
-  const { data: session } = useSession();
+  const { user: session } = useContext(AuthContext);
   const [initialValues, setInitialValues] = useState({
     level_bawaslu: "",
     nama_admin: "",
@@ -152,7 +152,7 @@ function UsersAdd() {
         <Typography sx={{ fontSize: 14 }} gutterBottom>
           Tambah User Baru{" "}
         </Typography>
-        {session.user.level !== 1 && (
+        {session && session.level !== 1 && (
           <Typography
             sx={{ fontSize: 12, fontStyle: "italic" }}
             color="error"
@@ -185,7 +185,7 @@ function UsersAdd() {
                     <MenuItem value="">Pilih</MenuItem>
                     {levels.length !== 0 &&
                       levels.map((item) => {
-                        if (session.user.level === 1)
+                        if (session && session.level === 1)
                           return (
                             <MenuItem key={item.id} value={item.id}>
                               {item.level}

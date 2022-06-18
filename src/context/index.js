@@ -68,9 +68,6 @@ const ContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const isFirstRun = useRef(true);
 
-  const isMobile =
-    window.matchMedia && window.matchMedia("(max-width: 480px)").matches;
-
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
@@ -87,6 +84,8 @@ const ContextProvider = ({ children }) => {
   }, [state.darkMode, state.primary, state.secondary]);
 
   useEffect(() => {
+    const isMobile =
+      window.matchMedia && window.matchMedia("(max-width: 480px)").matches;
     toast.dismiss();
     if (isMobile) dispatch({ type: "TOGGLE_SIDEBAR", value: false });
   }, [router]);

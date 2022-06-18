@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useFormik } from "formik";
-import { signIn, getSession } from "next-auth/react";
 import * as yup from "yup";
+import { toast } from "react-toastify";
+import axios from "axios";
 // MUI
 import Image from "next/image";
 import Avatar from "@mui/material/Avatar";
@@ -15,24 +16,9 @@ import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 // COMPONENTS
 import Footer from "components/Layout/Footer";
-
-export async function getServerSideProps(ctx) {
-  const isUser = await getSession(ctx);
-  if (isUser) {
-    return {
-      redirect: {
-        destination: "/admin",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: { isUser },
-  };
-}
+import SignInButton from "components/Auth/SignIn";
 
 export default function Login(props) {
-  console.log(props);
   const [error, setError] = useState(null);
   const router = useRouter();
 
@@ -41,12 +27,31 @@ export default function Login(props) {
     password: yup.string("Masukan password").required("Password Harus Diisi"),
   });
 
-  const handleSubmit = (values) => {
-    setError(null);
-    signIn("credentials", {
-      username: values.username,
-      password: values.password,
-    });
+  const handleSubmit = (values, setSubmitting) => {
+    const toastProses = toast.loading("Tunggu Sebentar...");
+    axios
+      .post(`/api/auth/loginCredential`, values)
+      .then((res) => {
+        toast.update(toastProses, {
+          render: res.data.message,
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+        });
+        router.push("/admin");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.update(toastProses, {
+          render: err.response.data.message,
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      })
+      .then(() => {
+        setSubmitting(false);
+      });
   };
 
   const formik = useFormik({
@@ -55,7 +60,8 @@ export default function Login(props) {
       password: "",
     },
     validationSchema: validationSchema,
-    onSubmit: handleSubmit,
+    onSubmit: (values, { setSubmitting }) =>
+      handleSubmit(values, setSubmitting),
   });
 
   const getQueryRouter = router.query;
@@ -140,6 +146,7 @@ export default function Login(props) {
                 />
                 <Button
                   type="submit"
+                  disabled={formik.isSubmitting}
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
@@ -153,14 +160,7 @@ export default function Login(props) {
                     HOME
                   </Button>
                 </Grid>
-                <Button
-                  type="button"
-                  variant="text"
-                  size="small"
-                  onClick={() => signIn("google")}
-                >
-                  Sudah Daftar Email? Login Dengan Google
-                </Button>
+                <SignInButton />
               </Grid>
               <Footer />
             </Box>

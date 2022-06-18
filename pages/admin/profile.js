@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useEffect, useState, useContext } from "react";
+import AuthContext from "context/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 // MUI
@@ -35,7 +35,7 @@ function a11yProps(index) {
 }
 
 function Profile() {
-  const { data: session } = useSession();
+  const { user: session } = useContext(AuthContext);
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
 

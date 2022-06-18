@@ -15,9 +15,9 @@ import { styled } from "@mui/material/styles";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
-
-import { signOut } from "next-auth/react";
 import Link from "next/link";
+import { useContext } from "react";
+import AuthContext from "context/AuthContext";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -83,6 +83,7 @@ const secondaryColors = {
 };
 
 function DrawerSetting(props) {
+  const { logout } = useContext(AuthContext);
   return (
     <Drawer
       variant="persistent"
@@ -136,7 +137,7 @@ function DrawerSetting(props) {
           variant="outlined"
           size="small"
           startIcon={<LogoutIcon />}
-          onClick={signOut}
+          onClick={logout}
         >
           Logout
         </Button>

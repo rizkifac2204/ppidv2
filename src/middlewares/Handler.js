@@ -1,5 +1,6 @@
 import nextConnect from "next-connect";
-import { getSession } from "next-auth/react";
+import jwtDecode from "jwt-decode";
+import cookie from "cookie";
 
 export default function Handler() {
   return nextConnect({
@@ -11,8 +12,17 @@ export default function Handler() {
       res.status(404).json({ message: "Not found", type: "error" });
     },
   }).use(async (req, res, next) => {
-    req.session = await getSession({ req });
-    if (!req.session) return res.status(401).json({ message: "Siapa kamu?" });
-    next();
+    try {
+      const { eppidV2 } = cookie.parse(req.headers.cookie);
+      if (!eppidV2)
+        return res.status(401).json({ message: "Akses Tidak Dikenal" });
+      const decoded = jwtDecode(eppidV2);
+      req.session = {
+        user: decoded,
+      };
+      next();
+    } catch (err) {
+      return res.status(401).json({ message: "Akses Tidak Dikenal" });
+    }
   });
 }

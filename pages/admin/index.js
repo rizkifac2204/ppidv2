@@ -60,7 +60,7 @@ function Index() {
           setMain(res.data);
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err.response);
           toast.error("Terjadi Kesalahan");
         });
     }
