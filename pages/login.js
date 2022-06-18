@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Link from "@mui/material/Link";
 // MUI
 import Image from "next/image";
 import Avatar from "@mui/material/Avatar";
@@ -16,7 +17,7 @@ import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 // COMPONENTS
 import Footer from "components/Layout/Footer";
-import SignInButton from "components/Auth/SignIn";
+import GoogleSignInButton from "components/Auth/SignIn";
 
 export default function Login(props) {
   const [error, setError] = useState(null);
@@ -160,9 +161,28 @@ export default function Login(props) {
                     HOME
                   </Button>
                 </Grid>
-                <SignInButton />
+                <GoogleSignInButton />
               </Grid>
-              <Footer />
+              <br />
+              <br />
+              <Typography
+                sx={{ pt: 3 }}
+                variant="body2"
+                color="text.secondary"
+                align="center"
+                {...props}
+              >
+                {"Copyright © "}
+                <a
+                  href="https://bawaslu.go.id/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Bawaslu Repiblik Indonesia
+                </a>{" "}
+                {new Date().getFullYear()}
+                {"."}
+              </Typography>
             </Box>
           </Box>
         </Grid>

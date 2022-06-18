@@ -20,12 +20,7 @@ export default Handler()
       .orderBy("bawaslu.level_bawaslu")
       .where("admin.id", req.session.user.id)
       .first();
-    const data = await db
-      .select("admin.*", "bawaslu.nama_bawaslu")
-      .from("admin")
-      .innerJoin("bawaslu", "admin.bawaslu_id", "bawaslu.id")
-      .where("admin.id", req.session.user.id)
-      .first();
+
     if (!result) return res.status(404).json({ message: "Tidak Ditemukan" });
 
     res.json(result);
@@ -53,6 +48,17 @@ export default Handler()
       if (old !== password)
         return res.status(401).json({ message: "Password Anda Salah" });
     }
+
+    //cek jika ada email yang sama
+    const cekEmailSama = await db("admin")
+      .where("id", "!=", id)
+      .andWhere("email_admin", email_admin)
+      .first();
+    if (cekEmailSama)
+      return res.status(401).json({
+        message:
+          "Email yang anda masukan sudah di pakai user lain, silakan masukan email pengganti",
+      });
 
     const proses = await db("admin").where("id", id).update({
       nama_admin,

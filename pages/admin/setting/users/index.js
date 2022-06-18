@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Link from "next/link";
 // MUI
 import Card from "@mui/material/Card";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
@@ -92,22 +93,20 @@ function Users() {
   const actionColumn = (values) => {
     if (values.row.myself) {
       return [
-        <GridActionsCellItem
-          key="0"
-          icon={<ManageAccountsIcon />}
-          label="Profile"
-          onClick={() => router.push("/admin/profile")}
-        />,
+        <Link href={`/admin/profile`}>
+          <a>
+            <ManageAccountsIcon fontSize="small" />
+          </a>
+        </Link>,
       ];
     }
     if (values.row.editable) {
       return [
-        <GridActionsCellItem
-          key="0"
-          icon={<ManageAccountsIcon />}
-          label="Detail dan Edit"
-          onClick={() => router.push("/admin/setting/users/" + values.id)}
-        />,
+        <Link href={`/admin/setting/users/${values.id}`}>
+          <a>
+            <ManageAccountsIcon fontSize="small" />
+          </a>
+        </Link>,
         <GridActionsCellItem
           key="2"
           icon={<DeleteIcon />}
@@ -117,12 +116,11 @@ function Users() {
       ];
     } else {
       return [
-        <GridActionsCellItem
-          key="0"
-          icon={<VisibilityIcon />}
-          label="Detail"
-          onClick={() => router.push("/admin/setting/users/" + values.id)}
-        />,
+        <Link href={`/admin/setting/users/${values.id}`}>
+          <a>
+            <VisibilityIcon fontSize="small" />
+          </a>
+        </Link>,
       ];
     }
   };

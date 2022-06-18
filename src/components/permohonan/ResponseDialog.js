@@ -139,10 +139,6 @@ const validationSchema = yup.object({
 });
 
 function ResponseDialog(props) {
-  useEffect(() => {
-    if (props.open) formik.resetForm();
-  }, [props.open, formik]);
-
   const formik = useFormik({
     initialValues: {
       current_no_registrasi: props.detail.no_registrasi
@@ -175,6 +171,11 @@ function ResponseDialog(props) {
     onSubmit: (values, { setSubmitting }) =>
       handleSubmit(values, props, setSubmitting),
   });
+
+  useEffect(() => {
+    if (props.open) formik.resetForm();
+  }, [props.open, formik]);
+
   return (
     <Dialog
       open={props.open}

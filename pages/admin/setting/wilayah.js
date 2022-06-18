@@ -126,7 +126,7 @@ const Wilayah = () => {
               required
               margin="normal"
               type="email"
-              label="Email"
+              label="Email Bawaslu"
               name="email_bawaslu"
               value={formik.values.email_bawaslu}
               onChange={formik.handleChange}
@@ -143,7 +143,7 @@ const Wilayah = () => {
               fullWidth
               required
               margin="normal"
-              label="HP / Telp"
+              label="HP / Telp Bawaslu"
               name="telp_bawaslu"
               value={formik.values.telp_bawaslu}
               onChange={formik.handleChange}
@@ -162,7 +162,7 @@ const Wilayah = () => {
               multiline
               rows={3}
               margin="normal"
-              label="Alamat"
+              label="Alamat Bawaslu"
               name="alamat_bawaslu"
               value={formik.values.alamat_bawaslu}
               onChange={formik.handleChange}

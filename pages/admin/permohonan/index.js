@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
+import Link from "next/link";
 // MUI
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
@@ -240,12 +241,11 @@ function Permohonan() {
       cellClassName: "actions",
       getActions: (values) => {
         return [
-          <GridActionsCellItem
-            key="0"
-            icon={<VisibilityIcon />}
-            label="Detail"
-            onClick={() => router.push("/admin/permohonan/" + values.id)}
-          />,
+          <Link href={`/admin/permohonan/${values.id}`}>
+            <a>
+              <VisibilityIcon fontSize="small" />
+            </a>
+          </Link>,
           <GridActionsCellItem
             key="1"
             icon={<LocalLibraryIcon />}

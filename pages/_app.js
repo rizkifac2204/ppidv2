@@ -29,6 +29,7 @@ function MyApp({ Component, pageProps }) {
         <title>PPID</title>
       </Head>
       <ToastContainer />
+      <noscript>Browswer Anda Tidak Mendukung Javascript</noscript>
       {Component.auth ? (
         <AuthContextProvider>
           <ContextProvider>

@@ -16,23 +16,25 @@ export const SingleLevel = ({ item }) => {
   const isActive = () => routes.pathname === item.path;
   return (
     <Link href={item.path} passHref={true}>
-      <ListItem
-        button
-        sx={{
-          color: isActive() ? "primary.main" : "",
-        }}
-      >
-        <Tooltip title={item.title} placement="right">
-          <ListItemIcon
-            sx={{
-              color: isActive() ? "primary.main" : "",
-            }}
-          >
-            {item.icon}
-          </ListItemIcon>
-        </Tooltip>
-        <ListItemText primary={item.title} />
-      </ListItem>
+      <a>
+        <ListItem
+          button
+          sx={{
+            color: isActive() ? "primary.main" : "",
+          }}
+        >
+          <Tooltip title={item.title} placement="right">
+            <ListItemIcon
+              sx={{
+                color: isActive() ? "primary.main" : "",
+              }}
+            >
+              {item.icon}
+            </ListItemIcon>
+          </Tooltip>
+          <ListItemText primary={item.title} />
+        </ListItem>
+      </a>
     </Link>
   );
 };
