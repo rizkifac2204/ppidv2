@@ -1,6 +1,6 @@
 import { serialize } from "cookie";
 
-export default async function (req, res) {
+const Logout = async (req, res) => {
   const serialized = serialize("eppidV2", null, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== "development",
@@ -11,4 +11,6 @@ export default async function (req, res) {
 
   res.setHeader("Set-Cookie", serialized);
   res.status(200).json({ message: "Success Logout" });
-}
+};
+
+export default Logout;

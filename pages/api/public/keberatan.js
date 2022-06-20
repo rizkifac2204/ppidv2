@@ -39,6 +39,7 @@ export default PublicHandler()
     const {
       id,
       no_registrasi,
+      tiket,
       email_pemohon,
       email_bawaslu,
       alasan_a,
@@ -56,12 +57,12 @@ export default PublicHandler()
     const setMailOptionPemohon = mailOption(
       email_pemohon,
       "Pengajuan Keberatan PPID Bawaslu",
-      TextKeberatanKepadaPemohon(no_registrasi)
+      TextKeberatanKepadaPemohon(no_registrasi, tiket)
     );
     const setMailOptionAdmin = mailOption(
       email_bawaslu,
       "Pengajuan Keberatan Permohonan Informasi Baru",
-      TextKeberatanKepadaAdmin(no_registrasi, email_pemohon)
+      TextKeberatanKepadaAdmin(no_registrasi, email_pemohon, tiket)
     );
 
     const dataForInsert = {

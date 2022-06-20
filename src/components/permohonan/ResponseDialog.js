@@ -82,7 +82,7 @@ const handleSubmit = (values, props, setSubmitting) => {
       });
     })
     .catch((err) => {
-      console.log(err.response.data);
+      console.log(err);
       toast.update(toastProses, {
         render: err.response.data.message,
         type: "error",
@@ -174,7 +174,7 @@ function ResponseDialog(props) {
 
   useEffect(() => {
     if (props.open) formik.resetForm();
-  }, [props.open, formik]);
+  }, [props.open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Dialog

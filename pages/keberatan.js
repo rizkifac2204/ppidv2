@@ -43,6 +43,7 @@ const handleSubmit = (
     ...values,
     id: data.id,
     no_registrasi: data.no_registrasi,
+    tiket: data.tiket,
     email_pemohon: data.email_pemohon,
     email_bawaslu: data.email_bawaslu,
   };
@@ -463,7 +464,7 @@ function Keberatan() {
                       <div className="col-xs-12 col-lg-9">
                         <Button
                           style={{ marginTop: 10 }}
-                          disabled={formik.isSubmitting}
+                          // disabled={formik.isSubmitting}
                           type="submit"
                           variant="contained"
                         >

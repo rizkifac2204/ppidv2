@@ -166,10 +166,12 @@ function EmailDetail() {
             </Accordion>
 
             <div
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(detail.isi),
-              }}
-            ></div>
+            // dangerouslySetInnerHTML={{
+            //   __html: DOMPurify.sanitize(detail.isi),
+            // }}
+            >
+              {detail.isi}
+            </div>
           </Grid>
         </Grid>
       </CardContent>

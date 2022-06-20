@@ -92,7 +92,7 @@ export default PublicHandler().post(
     const setMailOptionAdmin = mailOption(
       getEmailBawaslu.email_bawaslu
         ? getEmailBawaslu.email_bawaslu
-        : "rizkifac2204@gmail.com",
+        : process.env.EMAIL_USER,
       "Permohonan Informasi Baru",
       TextPermohonanBaruKepadaAdmin(tiket, email_pemohon)
     );

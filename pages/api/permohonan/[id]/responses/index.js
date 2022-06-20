@@ -120,7 +120,7 @@ export default Handler()
     // setting email
     const setMailOption = mailOption(
       email_pemohon,
-      "Perubahan Status Permohona Informasi",
+      "Perubahan Status Permohonan Informasi",
       TextPerubahanStatus(
         tiket,
         email_pemohon,

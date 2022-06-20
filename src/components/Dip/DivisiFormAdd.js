@@ -44,10 +44,6 @@ const validationSchema = yup.object({
 });
 
 function DivisiFormAdd(props) {
-  useEffect(() => {
-    if (props.open) formik.resetForm();
-  }, [props.open, formik]);
-
   const formik = useFormik({
     initialValues: {
       nama_divisi: "",
@@ -57,6 +53,11 @@ function DivisiFormAdd(props) {
     onSubmit: (values, { setSubmitting }) =>
       handleSubmit(values, props, setSubmitting),
   });
+
+  useEffect(() => {
+    if (props.open) formik.resetForm();
+  }, [props.open]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <Dialog
       open={props.open}

@@ -1,27 +1,10 @@
-const nodemailer = require("nodemailer");
+const formData = require("form-data");
+const Mailgun = require("mailgun.js");
+const mailgun = new Mailgun(formData);
 
-const transporter = nodemailer.createTransport({
-  // service: "gmail",
-  // auth: {
-  //   user: process.env.EMAIL,
-  //   pass: process.env.EMAIL_PASS,
-  // },
-  pool: true,
-  host: process.env.EMAIL_HOST,
-  port: 465,
-  secure: true, // upgrade later with STARTTLS
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-transporter.verify(function (error, success) {
-  if (error) {
-    console.log(error);
-  } else {
-    // console.log("Server is ready to take our messages");
-  }
+const client = mailgun.client({
+  username: "api",
+  key: process.env.MAILGUN_API_KEY,
 });
 
 export const TextPerubahanStatus = (
@@ -45,8 +28,8 @@ export const TextPerubahanStatus = (
     Dengan pesan/response <b>${response}</b><br/>
 
     <p>
-      Anda Dapat Cek dan Cetak Bukti Permohonan Informasi Anda <a href='".$URLCekPermohonan."' target='_blank'>Disini</a> <br/>
-      Atau anda dapat mengajukan keberatan dengan mengisi formulir Pengajuan Keberatan <a href='".$URLKeberatan."' target='_blank'>Disini</a>.
+    Atau anda dapat melihat detail permohonan anda pada link berikut : <br />
+    ${process.env.NEXT_PUBLIC_HOST}/cek?email=${email}&ticket=${tiket_number}
     </p>
 
     Terimakasih<br/>
@@ -90,11 +73,12 @@ export const TextPermohonanBaruKepadaPemohon = (tiket_number, email) => {
 
 export const TextKeberatanKepadaAdmin = (
   reg_number,
-  email = "Tidak Diketahui"
+  email = "Tidak Diketahui",
+  tiket = "Tidak Diketahui"
 ) => {
   return `Pengajuan Keberatan. <br/>
     <p>
-      Hai Admin PPID, Ada Pengajuan Keberatan dari Nomor Registrasi <b>${reg_number}</b> dengan email <b>${email}</b> <br/>
+      Hai Admin PPID, Ada Pengajuan Keberatan dari Nomor Registrasi <b>${reg_number} / ${tiket}</b> dengan email <b>${email}</b> <br/>
       Silakan Buka Website ppid bawaslu dan Login Sebagai Dengan Data Yang Sudah Diberikan Untuk Melihat Rincian Pengajuan Keberatan.
     </p>
 
@@ -103,12 +87,15 @@ export const TextKeberatanKepadaAdmin = (
     --PPID Bawaslu`;
 };
 
-export const TextKeberatanKepadaPemohon = (reg_number) => {
+export const TextKeberatanKepadaPemohon = (
+  reg_number,
+  tiket = "Tidak Diketahui"
+) => {
   return `Salam Awas. <br/>
     <p>
       Pengajuan Keberatan Anda telah kami terima <br/>
       Pengajuan Keberatan yang anda ajukan akan segera kami tindak lanjut.
-      PPID Bawaslu akan segera menghubungi melalui Nomor Telp atau Email sesuai data Permohonan dengan Nomor Registrasi <b>${reg_number}</b>
+      PPID Bawaslu akan segera menghubungi melalui Nomor Telp atau Email sesuai data Permohonan dengan Nomor Registrasi <b>${reg_number} / ${tiket}</b>
     </p>
 
     Terimakasih<br/>
@@ -118,7 +105,7 @@ export const TextKeberatanKepadaPemohon = (reg_number) => {
 
 export const mailOption = (to, subject, text) => {
   const option = {
-    from: process.env.EMAIL_USER,
+    from: `ePPID Bawaslu ${process.env.EMAIL_USER}`,
     to: to,
     subject: subject,
     html: text,
@@ -126,15 +113,16 @@ export const mailOption = (to, subject, text) => {
   return option;
 };
 
-const sendingMail = (setMailOption) => {
+const sendingMail = (messageData) => {
   return new Promise((resolve, reject) => {
-    transporter.sendMail(setMailOption, (err, data) => {
-      if (err) {
-        resolve(false);
-      } else {
+    client.messages
+      .create(process.env.MAILGUN_DOMAIN, messageData)
+      .then((res) => {
         resolve(true);
-      }
-    });
+      })
+      .catch((err) => {
+        resolve(false);
+      });
   });
 };
 

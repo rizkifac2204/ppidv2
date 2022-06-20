@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Link from "next/link";
 // MUI
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
@@ -176,11 +175,12 @@ function Email() {
           ];
         }
         return [
-          <Link href={`/admin/subscriber/email/${values.id}`}>
-            <a>
-              <VisibilityIcon fontSize="small" />
-            </a>
-          </Link>,
+          <GridActionsCellItem
+            key="0"
+            icon={<VisibilityIcon />}
+            label="Detail"
+            onClick={() => router.push("/admin/subscriber/email/" + values.id)}
+          />,
           <GridActionsCellItem
             key="1"
             icon={<DeleteIcon />}

@@ -45,10 +45,6 @@ const validationSchema = yup.object({
 });
 
 function SubscriberFormAdd(props) {
-  useEffect(() => {
-    if (props.open) formik.resetForm();
-  }, [props.open, formik]);
-
   const formik = useFormik({
     initialValues: {
       nama_subscriber: "",
@@ -58,6 +54,10 @@ function SubscriberFormAdd(props) {
     validationSchema: validationSchema,
     onSubmit: (values) => handleSubmit(values, props),
   });
+
+  useEffect(() => {
+    if (props.open) formik.resetForm();
+  }, [props.open]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <Dialog
       open={props.open}
