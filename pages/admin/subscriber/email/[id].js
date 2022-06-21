@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import DOMPurify from "dompurify";
+import DOMPurify from "isomorphic-dompurify";
 // MUI
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -166,12 +166,10 @@ function EmailDetail() {
             </Accordion>
 
             <div
-            // dangerouslySetInnerHTML={{
-            //   __html: DOMPurify.sanitize(detail.isi),
-            // }}
-            >
-              {detail.isi}
-            </div>
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(detail.isi),
+              }}
+            ></div>
           </Grid>
         </Grid>
       </CardContent>

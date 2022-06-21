@@ -8,7 +8,7 @@ async function kirim(send, setMailOption, id) {
     await sendingMail(setMailOption).then(async (resolve) => {
       if (!resolve) {
         // ubah email tidak terkirim jika gagal
-        await db("tbl_email_send").where("id", id).update({
+        await db("subscriber_email").where("id", id).update({
           status: 0,
           sended_at: null,
         });

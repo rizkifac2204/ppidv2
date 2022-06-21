@@ -118,9 +118,11 @@ const sendingMail = (messageData) => {
     client.messages
       .create(process.env.MAILGUN_DOMAIN, messageData)
       .then((res) => {
+        console.log(res);
         resolve(true);
       })
       .catch((err) => {
+        console.log(err);
         resolve(false);
       });
   });

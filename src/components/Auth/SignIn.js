@@ -3,24 +3,13 @@ import jwtDecode from "jwt-decode";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Router from "next/router";
-import { styled } from "@mui/material/styles";
-import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
+import Popover from "@mui/material/Popover";
+import Button from "@mui/material/Button";
 import HelpIcon from "@mui/icons-material/Help";
 import Typography from "@mui/material/Typography";
 
-const HtmlTooltip = styled(({ className, ...props }) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: "#f5f5f9",
-    color: "rgba(0, 0, 0, 0.87)",
-    // maxWidth: 220,
-    fontSize: theme.typography.pxToRem(12),
-    border: "1px solid #dadde9",
-  },
-}));
-
 export default function SignInButton() {
+  const [anchorEl, setAnchorEl] = useState(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
   const handleLogin = (response) => {
@@ -77,18 +66,28 @@ export default function SignInButton() {
   return (
     <>
       <div id="signInDiv"></div>
-      <HtmlTooltip
-        title={
-          <>
-            <Typography color="inherit" variant="title">
-              Daftarkan/isi email pada Halaman Profile untuk dapat Login kedalam
-              Aplikasi lebih mudah
-            </Typography>
-          </>
-        }
+      <Button
+        aria-describedby={Boolean(anchorEl) ? "login-google" : undefined}
+        variant="text"
+        onClick={(e) => setAnchorEl(e.currentTarget)}
       >
-        <HelpIcon />
-      </HtmlTooltip>
+        <HelpIcon fontSize="small" />
+      </Button>
+      <Popover
+        id={Boolean(anchorEl) ? "login-google" : undefined}
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+      >
+        <Typography sx={{ p: 2 }}>
+          Daftarkan/isi email pada Halaman Profile untuk dapat Login kedalam
+          Aplikasi lebih mudah
+        </Typography>
+      </Popover>
     </>
   );
 }

@@ -66,12 +66,6 @@ const validationSchema = yup.object({
 function EmailForm(props) {
   const editorRef = useRef(null);
 
-  useEffect(() => {
-    if (!props.open) {
-      formik.resetForm();
-    }
-  }, [props.open]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const formik = useFormik({
     initialValues: {
       id: props.detail.id ? props.detail.id : "",
@@ -84,6 +78,12 @@ function EmailForm(props) {
     validationSchema: validationSchema,
     onSubmit: (values) => handleSubmit(values, props, editorRef),
   });
+
+  useEffect(() => {
+    if (!props.open) {
+      formik.resetForm();
+    }
+  }, [props.open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleSubmitClick(send, formik) {
     formik.setFieldValue("send", send, formik.handleSubmit());
