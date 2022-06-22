@@ -35,7 +35,9 @@ function Dip() {
   const handleDelete = (id) => {
     const ask = confirm("Yakin Hapus Data?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/dip/` + id)
         .then((res) => {
@@ -62,7 +64,9 @@ function Dip() {
   const handleDeleteSelected = () => {
     const ask = confirm("Yakin Hapus Data Terpilih?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/dip/`, { data: selected })
         .then((res) => {

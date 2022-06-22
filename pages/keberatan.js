@@ -54,7 +54,7 @@ const handleSubmit = (
     return;
   }
 
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .post(`/api/public/keberatan`, postValues)
     .then((res) => {

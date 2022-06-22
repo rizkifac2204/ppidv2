@@ -14,7 +14,7 @@ import {
 } from "components/PublicComponents/FieldCustom";
 
 const handleSubmit = (values, afterSubmit, setSubmitting) => {
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .post(`/api/public/subscribe`, values)
     .then((res) => {

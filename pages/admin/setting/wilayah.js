@@ -7,7 +7,7 @@ import { Card, CardContent, Grid, Box, Button, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
 const handleSubmit = (values, setSubmitting) => {
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .post(`/api/setting/wilayah`, values)
     .then((res) => {

@@ -76,7 +76,9 @@ function PermohonanDetail() {
   const handleDelete = () => {
     const ask = confirm("Yakin Hapus Data?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/permohonan/` + id)
         .then((res) => {
@@ -179,7 +181,10 @@ function PermohonanDetail() {
                     minHeight: 200,
                   }}
                 >
-                  <WithDynamicImage image={detail.identitas_pemohon} />
+                  <WithDynamicImage
+                    altText={detail.nama_pemohon}
+                    image={detail.identitas_pemohon}
+                  />
                 </Grid>
                 <Grid item xs={12} md={9}>
                   <Grid container>

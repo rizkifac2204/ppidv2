@@ -29,7 +29,9 @@ export default function Login(props) {
   });
 
   const handleSubmit = (values, setSubmitting) => {
-    const toastProses = toast.loading("Tunggu Sebentar...");
+    const toastProses = toast.loading("Tunggu Sebentar...", {
+      autoClose: false,
+    });
     axios
       .post(`/api/auth/loginCredential`, values)
       .then((res) => {

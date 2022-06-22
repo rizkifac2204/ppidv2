@@ -21,7 +21,7 @@ import InputLabel from "@mui/material/InputLabel";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 
 const handleSubmit = (values, setSubmitting) => {
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .post(`/api/setting/users`, values)
     .then((res) => {

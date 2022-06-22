@@ -75,7 +75,9 @@ function Email() {
   const handleDelete = (id) => {
     const ask = confirm("Yakin Hapus Data?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/subscriber/email/${id}`)
         .then((res) => {
@@ -102,7 +104,9 @@ function Email() {
   const handleDeleteSelected = () => {
     const ask = confirm("Yakin Hapus Data Terpilih?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/subscriber/email`, { data: selected })
         .then((res) => {

@@ -42,12 +42,12 @@ export function NumberWithCommas({ number }) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-export function WithDynamicImage({ image }) {
+export function WithDynamicImage({ image, altText = "Pemohon" }) {
   const namaImage = image ? "/upload/" + image : "/images/no-file.png";
   return (
     <Image
       src={namaImage}
-      alt="Identitas"
+      alt={altText}
       layout="fill"
       objectFit="contain"
       priority

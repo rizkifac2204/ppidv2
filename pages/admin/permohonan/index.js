@@ -66,7 +66,9 @@ function Permohonan() {
   const handleDeleteSelected = () => {
     const ask = confirm("Yakin Hapus Data Terpilih?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/permohonan/`, { data: selected })
         .then((res) => {
@@ -95,7 +97,9 @@ function Permohonan() {
   const handleDeleteClick = (id) => {
     const ask = confirm("Yakin Hapus Data?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/permohonan/` + id)
         .then((res) => {

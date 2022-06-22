@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function Thumb({ file }) {
+export default function Thumb({ file, altText = "Pemohon" }) {
   const [loading, setLoading] = useState(false);
   const [thumb, setThumb] = useState(undefined);
   const [alt, setAlt] = useState("");
@@ -19,7 +19,7 @@ export default function Thumb({ file }) {
     } else {
       setLoading(false);
       setThumb("/upload/" + file);
-      setAlt("Data Diri");
+      setAlt(altText);
     }
   }, [file]);
 

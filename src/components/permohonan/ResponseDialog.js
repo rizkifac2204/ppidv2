@@ -30,7 +30,7 @@ const handleSubmit = (values, props, setSubmitting) => {
     email_pemohon: props.detail.email_pemohon,
     tiket: props.detail.tiket,
   };
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .post(`/api/permohonan/${values.permohonan_id}/responses`, postData)
     .then((res) => {

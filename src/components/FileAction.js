@@ -82,7 +82,9 @@ function FileAction({ data, path, namaFile, responses, setResponses }) {
   const deleteFile = (id, file, kolom) => {
     const ask = confirm("Yakin Hapus File Data?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/permohonan/upload`, {
           params: { id, file, path, namaFile },

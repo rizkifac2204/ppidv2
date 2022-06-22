@@ -35,7 +35,9 @@ function Users() {
   const handleDeleteSelected = () => {
     const ask = confirm("Yakin Hapus Data Terpilih?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/setting/users/`, { data: selected })
         .then((res) => {
@@ -64,7 +66,9 @@ function Users() {
   const handleDeleteClick = (id) => {
     const ask = confirm("Yakin Hapus Data?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/setting/users/` + id)
         .then((res) => {

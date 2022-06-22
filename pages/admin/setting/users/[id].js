@@ -40,7 +40,9 @@ function UsersDetail() {
   const handleDelete = () => {
     const ask = confirm("Yakin Hapus Data?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/setting/users/` + id)
         .then((res) => {

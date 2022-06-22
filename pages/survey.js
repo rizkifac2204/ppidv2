@@ -40,7 +40,7 @@ const handleSubmit = (
   }
   setResponse(false);
 
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .post(`/api/public/survey`, values)
     .then((res) => {

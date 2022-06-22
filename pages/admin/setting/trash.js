@@ -49,7 +49,9 @@ function Trash() {
   const handleDelete = (detail) => {
     const ask = confirm("Hapus Data Secara Permanen?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .post(`/api/setting/trash/`, { id: detail.id })
         .then((res) => {
@@ -76,7 +78,9 @@ function Trash() {
   const handleRestore = (detail) => {
     const ask = confirm("Yakin Mengembalikan Data?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .put(`/api/setting/trash/`, { id: detail.id })
         .then((res) => {
@@ -112,7 +116,9 @@ function Trash() {
   const handleDeleteSelected = () => {
     const ask = confirm("Yakin Hapus Data Terpilih?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/setting/trash/`, { data: { id: selected } })
         .then((res) => {

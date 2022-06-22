@@ -138,7 +138,10 @@ const DataPermohonan = React.forwardRef(({ detail, profileBawaslu }, ref) => {
             </Box>
           </Box>
           <Box sx={{ position: "relative", width: 100, height: 90, mr: 3 }}>
-            <WithDynamicImage image={detail.identitas_pemohon} />
+            <WithDynamicImage
+              image={detail.identitas_pemohon}
+              altText={detail.nama_pemohon}
+            />
             <Box sx={{ fontSize: 10, m: 1 }}>Pemohon</Box>
           </Box>
         </Box>

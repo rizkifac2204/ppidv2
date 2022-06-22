@@ -54,7 +54,7 @@ const handleSubmit = (
   // for (var pair of form.entries()) {
   //   console.log(pair[0] + ", " + pair[1]);
   // }
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .post(`/api/public/permohonan`, form, {
       headers: {
@@ -128,8 +128,8 @@ const validationSchema = yup.object({
     .mixed()
     .test(
       "FILE_SIZE",
-      "Ukuran Gambar Melebihi 4mb.",
-      (value) => !value || (value && value.size <= 4194304) // 4 mb
+      "Ukuran Gambar Tidak Boleh Melebihi 10mb.",
+      (value) => !value || (value && value.size <= 10485760) // 10 mb
     )
     .test(
       "FILE_FORMAT",
@@ -758,6 +758,7 @@ const Index = () => {
                     {/* tanda pengenal */}
                     <div className="col-xs-12" style={{ marginTop: "10px" }}>
                       <Thumb
+                        altText={formik.values.nama_pemohon}
                         file={
                           formik.values.file
                             ? formik.values.file

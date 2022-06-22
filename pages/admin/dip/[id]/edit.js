@@ -21,7 +21,7 @@ import InputLabel from "@mui/material/InputLabel";
 import EditIcon from "@mui/icons-material/Edit";
 
 const handleSubmit = (values, setSubmitting) => {
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .put(`/api/dip/` + values.id, values)
     .then((res) => {

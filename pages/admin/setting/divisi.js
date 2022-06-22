@@ -35,7 +35,9 @@ function Divisi() {
   const handleDelete = (id) => {
     const ask = confirm("Yakin Hapus Data?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .delete(`/api/setting/divisi`, { data: { id } })
         .then((res) => {
@@ -62,7 +64,9 @@ function Divisi() {
   const handleDeleteSelected = () => {
     const ask = confirm("Yakin Hapus Data Terpilih?");
     if (ask) {
-      const toastProses = toast.loading("Tunggu Sebentar...");
+      const toastProses = toast.loading("Tunggu Sebentar...", {
+        autoClose: false,
+      });
       axios
         .put(`/api/setting/divisi`, { data: selected })
         .then((res) => {

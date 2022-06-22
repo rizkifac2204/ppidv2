@@ -26,7 +26,7 @@ const handleSubmit = (values, props, editorRef) => {
   const editor = editorRef.current.getContent();
   if (!editor) return toast.info("Isi Email Masih Kosong");
   values = { ...values, isi: editor };
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .post(`/api/subscriber/email`, values)
     .then((res) => {

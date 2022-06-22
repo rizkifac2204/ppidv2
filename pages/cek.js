@@ -34,7 +34,7 @@ const handleSubmit = (
   }
   setCurData(() => {});
 
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .post(`/api/public/cek`, values)
     .then((res) => {

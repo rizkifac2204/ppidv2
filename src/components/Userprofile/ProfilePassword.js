@@ -13,7 +13,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 
 const handleSubmit = (values, setSubmitting) => {
-  const toastProses = toast.loading("Tunggu Sebentar...");
+  const toastProses = toast.loading("Tunggu Sebentar...", { autoClose: false });
   axios
     .put(`/api/profile/gantiPassword`, values)
     .then((res) => {
