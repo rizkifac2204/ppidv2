@@ -17,6 +17,3 @@ module.exports = {
     ];
   },
 };
-
-// 27838850976-2ch473tnh2tvf8d377e91to8a9qqjvhb.apps.googleusercontent.com
-// 1011746210255-hclqtau5lv77hnfstbsscltfc4sai57c.apps.googleusercontent.com

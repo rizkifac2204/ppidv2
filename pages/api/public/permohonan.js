@@ -11,7 +11,7 @@ import sendingMail, {
   TextPermohonanBaruKepadaAdmin,
   TextPermohonanBaruKepadaPemohon,
 } from "services/Email";
-import * as fs from "fs";
+const fs = require("fs"); // import * as fs from "fs";
 
 export const config = {
   api: {
@@ -23,14 +23,14 @@ export default PublicHandler().post(
   UploadPublic().single("file"),
   async (req, res) => {
     // jika tidak ada identitas
-    if (!req.file && !req.body.identitas_pemohon) {
-      return res.status(400).json({
-        message: "File Identitas Tidak Ditemukan atau Tidak Sesuai",
-        type: "error",
-      });
-    }
-    // jika tidak upload ulang, cek apakah filenya masih ada
-    if (!req.file && req.body.identitas_pemohon) {
+    // atau jika ada nama tapi tidak ada file
+    if (!req.file) {
+      if (!req.body.identitas_pemohon)
+        return res.status(400).json({
+          message: "File Identitas Tidak Ditemukan atau Tidak Sesuai",
+          type: "error",
+        });
+
       if (!fs.existsSync("./public/upload/" + req.body.identitas_pemohon))
         return res.status(400).json({
           message: "File identitas Harus Upload Ulang",

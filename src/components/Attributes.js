@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import axios from "axios";
 
 export function SetQRCode({ text }) {
   const [src, setSrc] = useState("");
@@ -43,14 +44,39 @@ export function NumberWithCommas({ number }) {
 }
 
 export function WithDynamicImage({ image, altText = "Pemohon" }) {
-  const namaImage = image ? "/upload/" + image : "/images/no-file.png";
+  const [initImage, setInitImage] = useState("/images/no-file.png");
+  useEffect(() => {
+    if (!image) return;
+    let mounted = true;
+    if (mounted) {
+      axios
+        .get(`/api/services/getfile`, {
+          responseType: "arraybuffer",
+          params: { path: `./public/upload/${image}` },
+        })
+        .then((res) => {
+          const buffer64 = Buffer.from(res.data, "binary").toString("base64");
+          setInitImage(
+            `data:${res.headers["content-type"]};base64, ${buffer64}`
+          );
+        })
+        .catch((err) => {
+          console.log(err.response);
+        });
+    }
+    return function cleanup() {
+      mounted = false;
+    };
+  }, [image]);
   return (
-    <Image
-      src={namaImage}
-      alt={altText}
-      layout="fill"
-      objectFit="contain"
-      priority
-    />
+    <>
+      <Image
+        src={initImage}
+        alt={altText}
+        layout="fill"
+        objectFit="contain"
+        priority
+      />
+    </>
   );
 }

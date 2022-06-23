@@ -114,7 +114,7 @@ const Cek = () => {
         afterSubmit(res.data);
         setLoadByQuery({
           open: true,
-          message: "Ditemukan Detail Permohona Informasi",
+          message: "Ditemukan Detail Permohonan Informasi",
           severity: "success",
         });
       })
