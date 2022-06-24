@@ -9,8 +9,9 @@ function getValueResponse(show = 0, obj, param, download) {
   const idx = show ? show : 0;
   if (obj.responses[idx][param]) {
     if (download) {
+      const url = `/api/services/file/public/${download}/${obj.responses[idx][param]}`;
       return (
-        <a href={`/${download}/${obj.responses[idx][param]}`} download>
+        <a href={url} download>
           <i className="fa fa-download"></i>
         </a>
       );

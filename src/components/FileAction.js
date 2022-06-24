@@ -131,14 +131,17 @@ function FileAction({ data, path, namaFile, responses, setResponses }) {
   return (
     <>
       <a
-        href={"/" + path + "/" + data[namaFile]}
+        href={"/api/services/file/public/" + path + "/" + data[namaFile]}
         target="_blank"
         rel="noreferrer"
       >
         {data[namaFile]}
       </a>
       <br />
-      <a href={"/" + path + "/" + data[namaFile]} download>
+      <a
+        href={"/api/services/file/public/" + path + "/" + data[namaFile]}
+        download
+      >
         <IconButton>
           <CloudDownloadIcon />
         </IconButton>

@@ -18,10 +18,10 @@ export default function Thumb({ file, altText = "Pemohon" }) {
       };
       reader.readAsDataURL(file);
     } else {
+      const url = `/api/services/file/public/upload/${file}`;
       axios
-        .get(`/api/services/getfile`, {
+        .get(url, {
           responseType: "arraybuffer",
-          params: { path: `./public/upload/${file}` },
         })
         .then((res) => {
           const buffer64 = Buffer.from(res.data, "binary").toString("base64");

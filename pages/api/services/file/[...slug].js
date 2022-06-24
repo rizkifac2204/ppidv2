@@ -4,13 +4,13 @@ const fs = require("fs");
 var mime = require("mime-types");
 
 export default PublicHandler().get(async (req, res) => {
-  const _path = req.query.path;
+  const _path = req.query.slug.join("/");
   if (!_path)
     return res.status(404).json({
       message: "File tidak terdeteksi",
       type: "error",
     });
-  const filePath = path.resolve(".", _path);
+  const filePath = path.resolve("./", _path);
   try {
     if (fs.existsSync(filePath)) {
       fs.readFile(filePath, function (err, data) {

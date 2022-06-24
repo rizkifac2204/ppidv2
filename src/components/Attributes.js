@@ -45,14 +45,15 @@ export function NumberWithCommas({ number }) {
 
 export function WithDynamicImage({ image, altText = "Pemohon" }) {
   const [initImage, setInitImage] = useState("/images/no-file.png");
+
   useEffect(() => {
     if (!image) return;
     let mounted = true;
-    if (mounted) {
+    const url = `/api/services/file/public/upload/${image}`;
+    if (mounted)
       axios
-        .get(`/api/services/getfile`, {
+        .get(url, {
           responseType: "arraybuffer",
-          params: { path: `./public/upload/${image}` },
         })
         .then((res) => {
           const buffer64 = Buffer.from(res.data, "binary").toString("base64");
@@ -63,11 +64,12 @@ export function WithDynamicImage({ image, altText = "Pemohon" }) {
         .catch((err) => {
           console.log(err.response);
         });
-    }
+
     return function cleanup() {
       mounted = false;
     };
   }, [image]);
+
   return (
     <>
       <Image
